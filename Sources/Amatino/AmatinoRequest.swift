@@ -9,41 +9,72 @@ import Foundation
 
 enum AmatinoRequestError: Error {
     case SessionRequired(description: String)
+    case URLInitialisationFailure()
+    case ResponseError()
+    case InvalidSession()
 }
 
-internal class AmatinoRequest: Operation {
-    
-    private let no_sesh_path = "/authorisation/session"
-    private let no_sesh_method = HTTPMethod.POST
-    private let missing_session_message = """
+internal class AmatinoRequest {
+
+    #if DEBUG
+    private let apiEndpoint = "127.0.0.1:5000"
+    #else
+    private let apiEndpoint = "api.amatino.io"
+    #endif
+    private let apiSession = URLSession(configuration: URLSessionConfiguration.ephemeral)
+    private let noSessionPath = "/authorisation/session"
+    private let noSessionMethod = HTTPMethod.POST
+    private let missingSessionMessage = """
     A Session is required for all requests other than
     /authorisation/session + POST
     """
-    
-    private let path: String
-    private let data: Dictionary<String, Any?>?
-    private let session: Session?
-    private let url_params: String?
-    private let method: HTTPMethod
-    
+    private let signatureHeaderName = "X-Signature"
+    private let sessionIdHeaderName = "X-Session-ID"
+    private let completionHandler: (Data?) throws -> Void
+
     init(
         path: String,
-        data: Dictionary<String, Any?>?,
+        data: RequestData?,
         session: Session?,
-        url_params: String?,
-        method: HTTPMethod
+        urlParams: URLParameters?,
+        method: HTTPMethod,
+        completionHandler: @escaping (Data?) throws -> Void
         ) throws {
         
-        self.path = path
-        self.data = data
-        self.session = session
-        self.url_params = url_params
-        self.method = method
+        self.completionHandler = completionHandler
         
-        if self.session == nil && (self.path != no_sesh_path || self.method != no_sesh_method){
-            throw AmatinoRequestError.SessionRequired(description: self.missing_session_message)
+        if session == nil && (path != noSessionPath || method != noSessionMethod) {
+            throw AmatinoRequestError.SessionRequired(description: self.missingSessionMessage)
         }
         
+        let fullURL: String
+        if urlParams != nil {
+            fullURL = apiEndpoint + path + urlParams!.toString()
+        } else {
+            fullURL = apiEndpoint + path
+        }
+        
+        let targetURL = URL(string: fullURL)
+        guard targetURL != nil else {throw AmatinoRequestError.URLInitialisationFailure()}
+        var request = URLRequest(url: targetURL!)
+        request.httpMethod = method.rawValue
+        request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
+        
+        if session != nil {
+            let signature = session!.signature(path: path, data: data)
+            guard session!.id != nil else {throw AmatinoRequestError.InvalidSession()}
+            let sessionId = String(describing: session!.id)
+            request.setValue(signature, forHTTPHeaderField: signatureHeaderName)
+            request.setValue(sessionId, forHTTPHeaderField: sessionIdHeaderName)
+        }
+        
+        let task = apiSession.dataTask(with: request, completionHandler: self.processCompletion)
+        task.resume()
+        
+        return
+    }
+    
+    private func processCompletion(data: Data?, response: URLResponse?, error: Error?) -> Void {
         return
     }
     
