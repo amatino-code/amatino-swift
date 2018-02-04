@@ -16,8 +16,8 @@ public struct TransactionAttributes {
     let versionTime: Date
     let description: String
     let version: Int
-    let globalUnitDenominationId: Int?
-    let customUnitDenominationId: Int?
+    let globalUnitDenominationCode: String?
+    let customUnitDenominationCode: String?
     let authorUserId: Int64
     let active: Bool
     let entries: Array<Entry>
@@ -36,8 +36,8 @@ public class Transaction {
     private var versionTime: Date?
     private var description: String?
     private var version: Int?
-    private var globalUnitDenominationId: Int?
-    private var customUnitDenominationId: Int?
+    private var globalUnitDenominationCode: String?
+    private var customUnitDenominationCode: String?
     private var authorUserId: Int64?
     private var active: Bool?
     private var entries: Array<Entry>?
@@ -81,7 +81,7 @@ public class Transaction {
     
     public func describe() throws -> TransactionAttributes {
         guard ready == true else {throw TransactionError(.notReady)}
-        if (self.id == nil) {
+        if (self.id == nil || self.transactionTime == nil) {
             let data = try self.core.processResponse(errorClass: TransactionError.self,
                                                     request: self.request)
             _ = try loadResponseData(parsedData: data, errorClass: TransactionError.self)
@@ -89,7 +89,7 @@ public class Transaction {
         guard (
             self.id != nil && self.transactionTime != nil && self.versionTime != nil
             && self.description != nil && self.version != nil
-            && !(self.globalUnitDenominationId == nil && self.customUnitDenominationId == nil)
+            && !(self.globalUnitDenominationCode == nil && self.customUnitDenominationCode == nil)
             && authorUserId != nil && active != nil && entries != nil
             ) else {
                 throw InternalLibraryError.InconsistentState()
@@ -101,8 +101,8 @@ public class Transaction {
             versionTime: self.versionTime!,
             description: self.description!,
             version: self.version!,
-            globalUnitDenominationId: self.globalUnitDenominationId,
-            customUnitDenominationId: self.customUnitDenominationId,
+            globalUnitDenominationCode: self.globalUnitDenominationCode,
+            customUnitDenominationCode: self.customUnitDenominationCode,
             authorUserId: self.authorUserId!,
             active: self.active!,
             entries: self.entries!
@@ -137,28 +137,38 @@ public class Transaction {
     }
     
     private func loadResponseData(parsedData: Dictionary<String, Any>, errorClass: ObjectError.Type) throws -> Void {
+
         let badResponse = errorClass.init(.badResponse)
+
         guard let id: Int64 = parsedData["transaction_id"] as? Int64 else {throw badResponse}
         self.id = id
+
         guard let txDateString = parsedData["transaction_time"] as? String else {throw badResponse}
         guard let txDate: Date = self.core.parseStringToDate(txDateString) else {throw badResponse}
         self.transactionTime = txDate
+
         guard let vDateString = parsedData["version_time"] as? String else {throw badResponse}
         guard let vDate: Date = self.core.parseStringToDate(vDateString) else {throw badResponse}
         self.versionTime = vDate
+
         guard let description: String = parsedData["description"] as? String else {throw badResponse}
         self.description = description
+
         guard let version: Int = parsedData["version"] as? Int else {throw badResponse}
         self.version = version
-        let gUnit = parsedData["global_unit_denomination"] as? Int
-        let cUnit = parsedData["custom_unit_denomination"] as? Int
+
+        let gUnit = parsedData["global_unit_denomination"] as? String
+        let cUnit = parsedData["custom_unit_denomination"] as? String
         guard !(gUnit == nil && cUnit == nil) else {throw badResponse}
-        self.globalUnitDenominationId = gUnit
-        self.customUnitDenominationId = cUnit
+        self.globalUnitDenominationCode = gUnit
+        self.customUnitDenominationCode = cUnit
+
         guard let authorId: Int64 = parsedData["author"] as? Int64 else {throw badResponse}
         self.authorUserId = authorId
+
         guard let active: Bool = parsedData["active"] as? Bool else {throw badResponse}
         self.active = active
+
         guard let rawEntries: Array<Dictionary<String, Any>> = parsedData["entries"] as? Array<Dictionary<String, Any>> else {
             throw badResponse
         }
