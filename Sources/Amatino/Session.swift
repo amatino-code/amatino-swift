@@ -18,12 +18,14 @@ public class Session {
     typealias callback = (_ session: Session) -> Void
     private let readyCallback: callback?
     
+    internal var ready = false
+    internal var request: AmatinoRequest? = nil
+    
     init (new email: String, secret: String, readyCallback: @escaping (_ session: Session) -> Void) throws {
         
         self.api_key = nil
         self.id = nil
         self.readyCallback = readyCallback
-        
         try self.create(secret: secret, email: email)
         
         return
@@ -34,7 +36,6 @@ public class Session {
         self.api_key = api_key
         self.id = session_id
         self.readyCallback = nil
-        
         return
     }
     
@@ -44,19 +45,26 @@ public class Session {
             "email": email
         ]
         let requestData = RequestData(data: data)
-        let _ = try AmatinoRequest(path: self.path, data: requestData, session: nil,
-                                            urlParams: nil, method: HTTPMethod.POST,
-                                            completionHandler: self.loadResponse)
+        self.request = try AmatinoRequest(
+            path: self.path,
+            data: requestData,
+            session: nil,
+            urlParams: nil,
+            method: HTTPMethod.POST,
+            readyCallback: self.notifyReady
+        )
 
+        return
+    }
+    
+    private func notifyReady() -> Void {
+        self.ready = true
+        self.readyCallback!(self)
         return
     }
     
     public func delete() -> Void {
         return
-    }
-    
-    private func loadResponse(data: Data?) throws -> Void {
-        
     }
     
     internal func signature(path: String, data: RequestData?) -> String {

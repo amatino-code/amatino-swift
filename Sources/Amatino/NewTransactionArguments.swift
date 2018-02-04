@@ -23,23 +23,23 @@ internal class NewTransactionArguments {
     
     private let transaction_time: Date
     private let description: String
-    private let global_unit: Int?
-    private let custom_unit: Int?
-    private let entries: [Int]
+    private let globalUnit: GlobalUnit?
+    private let customUnit: CustomUnit?
+    private let entries: Array<Entry>
     
     init (
         transaction_time: Date,
         description: String,
-        global_unit: Int?,
-        custom_unit: Int?,
-        entries: [Int]
+        globalUnit: GlobalUnit?,
+        customUnit: CustomUnit?,
+        entries: Array<Entry>
         ) throws {
         
-        if global_unit != nil && custom_unit != nil {
+        if globalUnit != nil && customUnit != nil {
             throw NewTxArgError.InvalidValue(description: self.err_two_units)
         }
         
-        if global_unit == nil && custom_unit == nil {
+        if globalUnit == nil && customUnit == nil {
             throw NewTxArgError.InvalidValue(description: self.err_two_units)
         }
         
@@ -49,8 +49,8 @@ internal class NewTransactionArguments {
         
         self.description = description
         self.transaction_time = transaction_time
-        self.global_unit = global_unit
-        self.custom_unit = custom_unit
+        self.globalUnit = globalUnit
+        self.customUnit = customUnit
         self.entries = entries
         
         return

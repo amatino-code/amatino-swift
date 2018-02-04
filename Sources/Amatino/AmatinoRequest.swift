@@ -30,7 +30,11 @@ internal class AmatinoRequest {
     """
     private let signatureHeaderName = "X-Signature"
     private let sessionIdHeaderName = "X-Session-ID"
-    private let completionHandler: (Data?) throws -> Void
+    private let readyCallback: () -> Void
+    
+    internal private(set) var data: Data? = nil;
+    internal private(set) var response: URLResponse? = nil;
+    internal private(set) var error: Error? = nil;
 
     init(
         path: String,
@@ -38,10 +42,10 @@ internal class AmatinoRequest {
         session: Session?,
         urlParams: URLParameters?,
         method: HTTPMethod,
-        completionHandler: @escaping (Data?) throws -> Void
+        readyCallback: @escaping () -> Void
         ) throws {
         
-        self.completionHandler = completionHandler
+        self.readyCallback = readyCallback
         
         if session == nil && (path != noSessionPath || method != noSessionMethod) {
             throw AmatinoRequestError.SessionRequired(description: self.missingSessionMessage)
@@ -75,7 +79,9 @@ internal class AmatinoRequest {
     }
     
     private func processCompletion(data: Data?, response: URLResponse?, error: Error?) -> Void {
+        self.data = data
+        self.response = response
+        self.error = error
         return
     }
-    
 }
