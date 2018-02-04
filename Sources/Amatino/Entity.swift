@@ -8,4 +8,6 @@ import Foundation
 
 public class Entity {
     
+    let id = "placeholder"
+    
 }

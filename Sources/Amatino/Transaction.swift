@@ -45,11 +45,16 @@ public class Transaction {
     private var request: AmatinoRequest?
     private var ready: Bool = false
     
+    private let entity: Entity
+    
     init(existing
         transactionId: Int64,
         session: Session,
+        entity: Entity,
         readyCallback: @escaping (_ transaction: Transaction) -> Void
         ) throws {
+        
+        self.entity = entity
         self.readyCallback = readyCallback
         try self.retrieve(transactionId, session)
     }
@@ -61,10 +66,12 @@ public class Transaction {
         customUnit: CustomUnit?,
         entries: Array<Entry>,
         session: Session,
+        entity: Entity,
         readyCallback: @escaping (_ transaction: Transaction) -> Void
         ) throws {
         
         self.readyCallback = readyCallback
+        self.entity = entity
         
         let newArguments = try NewTransactionArguments(
             transaction_time: transaction_time,
@@ -118,12 +125,13 @@ public class Transaction {
     
     private func create(newArguments: NewTransactionArguments) throws {
         self.ready = false
+        let urlParams = UrlParameters(singleEntity: self.entity)
         // form data from new transaction arguments
         self.request = try AmatinoRequest(
             path: path,
             data: nil,
             session: nil,
-            urlParams: nil,
+            urlParams: urlParams,
             method: HTTPMethod.POST,
             readyCallback: self.requestComplete
         )
