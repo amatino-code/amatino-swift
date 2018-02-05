@@ -12,4 +12,5 @@ internal enum InternalLibraryError: Error {
     case ResponseCastFailed()
     case ResponseDataMissing()
     case InconsistentState()
+    case InvalidJsonData()
 }

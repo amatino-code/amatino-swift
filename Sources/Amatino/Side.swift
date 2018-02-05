@@ -5,7 +5,7 @@
 //  author: hugh@blinkybeach.com
 //
 
-enum Side: String {
+enum Side: String, Codable {
     case Debit = "debit"
     case Credit = "credit"
 }

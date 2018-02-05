@@ -40,7 +40,7 @@ internal class AmatinoRequest {
         path: String,
         data: RequestData?,
         session: Session?,
-        urlParams: URLParameters?,
+        urlParams: UrlParameters?,
         method: HTTPMethod,
         readyCallback: @escaping () -> Void
         ) throws {
@@ -53,7 +53,7 @@ internal class AmatinoRequest {
         
         let fullURL: String
         if urlParams != nil {
-            fullURL = apiEndpoint + path + urlParams!.toString()
+            fullURL = apiEndpoint + path + urlParams!.paramString
         } else {
             fullURL = apiEndpoint + path
         }

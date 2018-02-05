@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Entry {
+public struct Entry : Codable {
 
     let side: Side
     let description: String

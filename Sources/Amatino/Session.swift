@@ -44,7 +44,7 @@ public class Session {
             "secret": secret,
             "email": email
         ]
-        let requestData = RequestData(data: data)
+        let requestData = try RequestData(data: data)
         self.request = try AmatinoRequest(
             path: self.path,
             data: requestData,

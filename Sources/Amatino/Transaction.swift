@@ -9,7 +9,7 @@ import Foundation
 
 internal class TransactionError: ObjectError {}
 
-public struct TransactionAttributes {
+public struct TransactionAttributes : Codable {
     
     let id: Int64
     let transactionTime: Date
@@ -22,29 +22,30 @@ public struct TransactionAttributes {
     let active: Bool
     let entries: Array<Entry>
     
+    enum Keys : String, CodingKey {
+        case id = "transaction_id"
+        case transactionTime = "transaction_time"
+        case versionTime = "version_time"
+        case description
+        case version
+        case globalUnitDenominationCode = "global_unit_denomination"
+        case customUnitDenominationCode = "custom_unit_denomination"
+        case authorUserId = "author"
+        case active
+        case entries
+    }
+    
 }
 
 public class Transaction {
 
     private let core = ObjectCore()
-    
     private let path = "/transaction"
     private let readyCallback: (_ transaction: Transaction) -> Void
     
-    private var id: Int64?
-    private var transactionTime: Date?
-    private var versionTime: Date?
-    private var description: String?
-    private var version: Int?
-    private var globalUnitDenominationCode: String?
-    private var customUnitDenominationCode: String?
-    private var authorUserId: Int64?
-    private var active: Bool?
-    private var entries: Array<Entry>?
-    
-    private var request: AmatinoRequest?
+    private var attributes: TransactionAttributes? = nil
     private var ready: Bool = false
-    
+    private var request: AmatinoRequest?
     private let entity: Entity
     
     init(existing
@@ -88,33 +89,14 @@ public class Transaction {
     
     public func describe() throws -> TransactionAttributes {
         guard ready == true else {throw TransactionError(.notReady)}
-        if (self.id == nil || self.transactionTime == nil) {
-            let data = try self.core.processResponse(errorClass: TransactionError.self,
-                                                    request: self.request)
-            _ = try loadResponseData(parsedData: data, errorClass: TransactionError.self)
+        if (self.attributes == nil) {
+            self.attributes = try self.core.processResponse(
+                errorClass: TransactionError.self,
+                request: self.request,
+                outputType: TransactionAttributes.self)
         }
-        guard (
-            self.id != nil && self.transactionTime != nil && self.versionTime != nil
-            && self.description != nil && self.version != nil
-            && !(self.globalUnitDenominationCode == nil && self.customUnitDenominationCode == nil)
-            && authorUserId != nil && active != nil && entries != nil
-            ) else {
-                throw InternalLibraryError.InconsistentState()
-        }
-
-        let attributes = TransactionAttributes(
-            id: self.id!,
-            transactionTime: self.transactionTime!,
-            versionTime: self.versionTime!,
-            description: self.description!,
-            version: self.version!,
-            globalUnitDenominationCode: self.globalUnitDenominationCode,
-            customUnitDenominationCode: self.customUnitDenominationCode,
-            authorUserId: self.authorUserId!,
-            active: self.active!,
-            entries: self.entries!
-        )
-        return attributes
+        guard self.attributes != nil else {throw InternalLibraryError.InconsistentState()}
+        return self.attributes!
     }
     
     private func retrieve(_ transactionId: Int64, _ session: Session) throws {
@@ -141,62 +123,6 @@ public class Transaction {
     private func requestComplete() -> Void {
         self.ready = true
         _ = readyCallback(self)
-        return
-    }
-    
-    private func loadResponseData(parsedData: Dictionary<String, Any>, errorClass: ObjectError.Type) throws -> Void {
-
-        let badResponse = errorClass.init(.badResponse)
-
-        guard let id: Int64 = parsedData["transaction_id"] as? Int64 else {throw badResponse}
-        self.id = id
-
-        guard let txDateString = parsedData["transaction_time"] as? String else {throw badResponse}
-        guard let txDate: Date = self.core.parseStringToDate(txDateString) else {throw badResponse}
-        self.transactionTime = txDate
-
-        guard let vDateString = parsedData["version_time"] as? String else {throw badResponse}
-        guard let vDate: Date = self.core.parseStringToDate(vDateString) else {throw badResponse}
-        self.versionTime = vDate
-
-        guard let description: String = parsedData["description"] as? String else {throw badResponse}
-        self.description = description
-
-        guard let version: Int = parsedData["version"] as? Int else {throw badResponse}
-        self.version = version
-
-        let gUnit = parsedData["global_unit_denomination"] as? String
-        let cUnit = parsedData["custom_unit_denomination"] as? String
-        guard !(gUnit == nil && cUnit == nil) else {throw badResponse}
-        self.globalUnitDenominationCode = gUnit
-        self.customUnitDenominationCode = cUnit
-
-        guard let authorId: Int64 = parsedData["author"] as? Int64 else {throw badResponse}
-        self.authorUserId = authorId
-
-        guard let active: Bool = parsedData["active"] as? Bool else {throw badResponse}
-        self.active = active
-
-        guard let rawEntries: Array<Dictionary<String, Any>> = parsedData["entries"] as? Array<Dictionary<String, Any>> else {
-            throw badResponse
-        }
-        var entries = Array<Entry>()
-        for rawEntry in rawEntries {
-            
-            guard let rawSide = rawEntry["side"] as? String else {throw badResponse}
-            guard let side = Side(rawValue: rawSide) else {throw badResponse}
-            guard let description = rawEntry["description"] as? String else {throw badResponse}
-            guard let accountId = rawEntry["account_id"] as? Int else {throw badResponse}
-            guard let rawAmount = rawEntry["amount"] as? String else {throw badResponse}
-            guard let amount = Decimal(string: rawAmount) else {throw badResponse}
-            
-            let entry = Entry(side: side, description: description, accountId: accountId, amount: amount)
-            entries.append(entry)
-        }
-        
-        guard entries.count >= 2 else {throw badResponse}
-        self.entries = entries
-        
         return
     }
 

@@ -11,9 +11,11 @@ internal class ObjectCore {
     
     private let dateFormatter = DateFormatter()
     private let dateStringFormat = "yyyy-MM-dd_HH:mm:ss.SSSSSS"
+    private let decoder = JSONDecoder()
     
     init() {
         self.dateFormatter.dateFormat = dateStringFormat
+        self.decoder.dateDecodingStrategy = .formatted(self.dateFormatter)
         return
     }
     
@@ -22,7 +24,11 @@ internal class ObjectCore {
         return self.dateFormatter.date(from: dateString)
     }
 
-    internal func processResponse(errorClass: ObjectError.Type, request: AmatinoRequest?) throws -> Dictionary<String, Any> {
+    internal func processResponse<objectForm: Codable>(
+        errorClass: ObjectError.Type,
+        request: AmatinoRequest?,
+        outputType: objectForm.Type
+        ) throws -> objectForm {
         guard request != nil else {throw InternalLibraryError.RequestNilOnReady()}
         if request?.error != nil {
             throw request!.error!
@@ -47,10 +53,9 @@ internal class ObjectCore {
             }
         }
         let data = request?.data
-        guard data != nil else {throw InternalLibraryError.ResponseDataMissing()}
-        let parsedData = try JSONSerialization.jsonObject(with: data!) as? Dictionary<String, Any>
-        guard parsedData != nil else {throw errorClass.init(.jsonParseFailed)}
-        return parsedData!
+        guard data != nil else {throw InternalLibraryError.InconsistentState()}
+        let parsedObject = try self.decoder.decode(outputType, from: data!)
+        return parsedObject
     }
     
 }
