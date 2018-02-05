@@ -1,6 +1,6 @@
 //
 //  Amatino Swift
-//  NewTransactionArguments.swift
+//  TransactionCreateArguments.swift
 //
 //  author: hugh@blinkybeach.com
 //
@@ -11,7 +11,7 @@ enum NewTxArgError: Error {
     case InvalidValue(description: String)
 }
 
-internal class NewTransactionArguments {
+internal struct TransactionCreateArguments {
     
     private let err_two_units = """
     Supply at least one of either custom_unit or global_unit, but not both
@@ -55,5 +55,4 @@ internal class NewTransactionArguments {
         
         return
     }
-    
 }
