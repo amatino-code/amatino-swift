@@ -13,7 +13,7 @@ public enum UnitCodeError: Error {
     case InvalidCharacter
 }
 
-public struct UnitCode {
+public struct UnitCode: Codable {
     
     let code: String
     

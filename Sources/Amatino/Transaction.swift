@@ -16,8 +16,8 @@ public struct TransactionAttributes : Codable {
     let versionTime: Date
     let description: String
     let version: Int
-    let globalUnitDenominationCode: String?
-    let customUnitDenominationCode: String?
+    let globalUnitDenominationCode: UnitCode?
+    let customUnitDenominationCode: UnitCode?
     let authorUserId: Int64
     let active: Bool
     let entries: Array<Entry>
@@ -34,29 +34,31 @@ public struct TransactionAttributes : Codable {
         case active
         case entries
     }
-    
+
 }
 
-public class Transaction {
+public class Transaction: AmatinoObject {
 
     private let core = ObjectCore()
     private let path = "/transaction"
     private let readyCallback: (_ transaction: Transaction) -> Void
     
     private var attributes: TransactionAttributes? = nil
-    private var ready: Bool = false
+    public private(set) var currentAction: Action? = nil
     private var request: AmatinoRequest?
     private let entity: Entity
+    private let batch: Batch?
     
     init(existing
         transactionId: Int64,
         session: Session,
         entity: Entity,
-        readyCallback: @escaping (_ transaction: Transaction) -> Void
+        readyCallback: @escaping (_ transaction: Transaction) -> Void,
+        batch: Batch? = nil
         ) throws {
-        
         self.entity = entity
         self.readyCallback = readyCallback
+        self.batch = batch
         try self.retrieve(transactionId, session)
     }
     
@@ -68,13 +70,15 @@ public class Transaction {
         entries: Array<Entry>,
         session: Session,
         entity: Entity,
-        readyCallback: @escaping (_ transaction: Transaction) -> Void
+        readyCallback: @escaping (_ transaction: Transaction) -> Void,
+        batch: Batch? = nil
         ) throws {
         
         self.readyCallback = readyCallback
         self.entity = entity
+        self.batch = batch
         
-        let newArguments = try NewTransactionArguments(
+        let newArguments = try TransactionCreateArguments(
             transaction_time: transaction_time,
             description: description,
             globalUnit: globalUnit,
@@ -88,7 +92,7 @@ public class Transaction {
     }
     
     public func describe() throws -> TransactionAttributes {
-        guard ready == true else {throw TransactionError(.notReady)}
+        guard currentAction == nil else {throw TransactionError(.notReady)}
         if (self.attributes == nil) {
             self.attributes = try self.core.processResponse(
                 errorClass: TransactionError.self,
@@ -100,13 +104,14 @@ public class Transaction {
     }
     
     private func retrieve(_ transactionId: Int64, _ session: Session) throws {
-        self.ready = false
+        currentAction = .Retrieve
+        if self.batch != nil { return }
         // form url parameters from transaction id
-        
+        return
     }
     
-    private func create(newArguments: NewTransactionArguments) throws {
-        self.ready = false
+    private func create(newArguments: TransactionCreateArguments) throws {
+        currentAction = .Create
         let urlParams = UrlParameters(singleEntity: self.entity)
         // form data from new transaction arguments
         self.request = try AmatinoRequest(
@@ -120,12 +125,22 @@ public class Transaction {
         return
     }
     
+    private func update() {
+        currentAction = .Update
+    }
+    
+    private func delete() {
+        currentAction = .Delete
+    }
+    
+    private func restore() {
+        currentAction = .Restore
+    }
+    
     private func requestComplete() -> Void {
-        self.ready = true
+        currentAction = nil
         _ = readyCallback(self)
         return
     }
-
+    
 }
-
-

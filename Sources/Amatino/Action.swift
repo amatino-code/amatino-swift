@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal enum Action {
+public enum Action {
     case Retrieve
     case Create
     case Update
