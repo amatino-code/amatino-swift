@@ -31,7 +31,7 @@ public class Batch {
         return
     }
 
-    internal func append(_ object: AmatinoObject) throws {
+    internal func append(_ object: AmatinoObject & ApiFacing) throws {
         if (objects.isEmpty) {
             guard object.currentAction != nil else {
                 throw BatchError.InactiveObject
@@ -54,7 +54,7 @@ public class Batch {
     }
 
     public func execute() {
-        
+        // for all 
         return
     }
 }

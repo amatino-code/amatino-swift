@@ -5,8 +5,10 @@
 //  author: hugh@blinkybeach.com
 //
 
-public protocol AmatinoObject {
+protocol AmatinoObject {
     
     var currentAction: Action? { get }
+    
+    func reset() throws
     
 }

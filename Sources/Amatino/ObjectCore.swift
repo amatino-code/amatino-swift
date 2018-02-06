@@ -27,7 +27,8 @@ internal class ObjectCore {
     internal func processResponse<objectForm: Codable>(
         errorClass: ObjectError.Type,
         request: AmatinoRequest?,
-        outputType: objectForm.Type
+        outputType: objectForm.Type,
+        requestIndex: Int?
         ) throws -> objectForm {
         guard request != nil else {throw InternalLibraryError.RequestNilOnReady()}
         if request?.error != nil {
@@ -54,8 +55,14 @@ internal class ObjectCore {
         }
         let data = request?.data
         guard data != nil else {throw InternalLibraryError.InconsistentState()}
-        let parsedObject = try self.decoder.decode(outputType, from: data!)
-        return parsedObject
+        let decodedData = try self.decoder.decode([objectForm].self, from: data!)
+        let returnIndex: Int
+        if decodedData.count > 1 {
+            guard requestIndex != nil else {throw InternalLibraryError.InconsistentState()}
+            returnIndex = requestIndex!
+        } else {
+            returnIndex = 0
+        }
+        return decodedData[returnIndex]
     }
-    
 }

@@ -17,6 +17,7 @@ internal class ObjectError: Error {
         case genericServerError
         case jsonParseFailed
         case badResponse
+        case neverInitialized
     }
     
     let kind: Kind
