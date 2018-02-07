@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+struct SessionCreateArguments: Encodable {
+
+    let secret: String
+    let email: String
+
+}

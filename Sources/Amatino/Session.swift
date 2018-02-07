@@ -40,10 +40,7 @@ public class Session {
     }
     
     private func create(secret: String, email: String) throws -> Void {
-        let data: Dictionary<String, Any?> = [
-            "secret": secret,
-            "email": email
-        ]
+        let data = SessionCreateArguments(secret: secret, email: email)
         let requestData = try RequestData(data: data)
         self.request = try AmatinoRequest(
             path: self.path,
