@@ -1,18 +1,30 @@
 //
 //  Amatino Swift
-//  UrkParameters.swift
+//  UrlParameters.swift
 //
-//  Created by Hugh Jeremy on 1/2/18.
+//  author: hugh@blinkbeach.com
 //
 
 import Foundation
 
-internal class UrlParameters {
+internal struct UrlParameters: CustomStringConvertible {
     
     let paramString: String
+    var description: String {
+        return paramString
+    }
     
     init(singleEntity entity: Entity) {
         self.paramString = "?entity_id=" + entity.id
+        return
+    }
+    
+    init(entityWithTargets entity: Entity, targets: [UrlTarget]) {
+        var workingString = "?entity_id=" + entity.id
+        for target in targets {
+            workingString += "&" + String(describing: target)
+        }
+        paramString = workingString
         return
     }
 }
