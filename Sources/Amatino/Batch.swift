@@ -33,15 +33,11 @@ public class Batch {
 
     internal func append(_ object: AmatinoObject & ApiFacing) throws {
         if (objects.isEmpty) {
-            guard object.currentAction != nil else {
-                throw BatchError.InactiveObject
-            }
+            guard object.currentAction != nil else {throw BatchError.InactiveObject}
             objects.append(object)
             return
         }
-        guard objects.count <= maxCount else {
-            throw BatchError.ExceededMaxCount
-        }
+        guard objects.count <= maxCount else {throw BatchError.ExceededMaxCount}
         let existing = self.objects[0]
         guard object_getClassName(existing) == object_getClassName(object) else {
             throw BatchError.InconsistentObjectType
@@ -54,7 +50,7 @@ public class Batch {
     }
 
     public func execute() {
-        // for all 
+        // for all, combine all data and URL params
         return
     }
 }

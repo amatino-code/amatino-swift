@@ -29,7 +29,7 @@ internal class RequestData {
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
         encodedData = try encoder.encode(data)
     }
-    
+
     internal func merge(constituents: [RequestData]) throws -> RequestData {
         var workingArray = Array<Encodable>()
         for constituent in constituents{
