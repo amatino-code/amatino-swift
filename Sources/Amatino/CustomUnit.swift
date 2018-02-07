@@ -8,14 +8,23 @@
 
 import Foundation
 
-public class CustomUnit {
+public class CustomUnit: Encodable  {
     
-    public init(
+    internal let unitCode: UnitCode
+    
+    init(
         existing
-        unit_code: String,
+        unitCode: UnitCode,
         session: Session,
         entity: Entity
         ) throws {
         
+        self.unitCode = unitCode
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case unitCode = "custom_unit_code"
     }
 }
+
+
