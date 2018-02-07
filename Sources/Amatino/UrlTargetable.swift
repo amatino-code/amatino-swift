@@ -2,7 +2,7 @@
 //  Amatino Swift
 //  UrlTargetable.swift
 //
-//  author: hugh@blinkbeach.com
+//  author: hugh@amatino.io
 //
 
 internal protocol UrlTargetable {

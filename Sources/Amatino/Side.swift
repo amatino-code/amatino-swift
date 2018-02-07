@@ -2,7 +2,7 @@
 //  Amatino Swift
 //  Side.swift
 //
-//  author: hugh@blinkybeach.com
+//  author: hugh@amatino.io
 //
 
 enum Side: String, Codable {

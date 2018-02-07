@@ -2,7 +2,7 @@
 //  Amatino Swift
 //  TransactionUpdateArguments.swift
 //
-//  author: hugh@blinkybeach.com
+//  author: hugh@amatino.io
 //
 
 import Foundation

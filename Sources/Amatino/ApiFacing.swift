@@ -2,7 +2,7 @@
 //  Amatino Swift
 //  ApiFacing.swift
 //
-//  author: hugh@blinkybeach.com
+//  author: hugh@amatino.io
 //
 
 internal protocol ApiFacing {

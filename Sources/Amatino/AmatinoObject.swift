@@ -2,7 +2,7 @@
 //  Amatino Swift
 //  AmatinoObject.swift
 //
-//  author: hugh@blinkybeach.com
+//  author: hugh@amatino.io
 //
 
 protocol AmatinoObject {

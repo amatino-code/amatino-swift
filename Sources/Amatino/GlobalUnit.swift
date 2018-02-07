@@ -2,7 +2,7 @@
 //  Amatino Swift
 //  GlobalUnit.swift
 //
-//  author: hugh@blinkybeach.com
+//  author: hugh@amatino.io
 //
 
 
