@@ -9,34 +9,6 @@ import Foundation
 
 internal class TransactionError: ObjectError {}
 
-public struct TransactionAttributes : Codable {
-    
-    let id: Int
-    let transactionTime: Date
-    let versionTime: Date
-    let description: String
-    let version: Int
-    let globalUnitDenominationCode: UnitCode?
-    let customUnitDenominationCode: UnitCode?
-    let authorUserId: Int
-    let active: Bool
-    let entries: Array<Entry>
-    
-    enum Keys : String, CodingKey {
-        case id = "transaction_id"
-        case transactionTime = "transaction_time"
-        case versionTime = "version_time"
-        case description
-        case version
-        case globalUnitDenominationCode = "global_unit_denomination"
-        case customUnitDenominationCode = "custom_unit_denomination"
-        case authorUserId = "author"
-        case active
-        case entries
-    }
-
-}
-
 public class Transaction: AmatinoObject, ApiFacing {
 
     public private(set) var currentAction: Action? = nil
@@ -120,7 +92,7 @@ public class Transaction: AmatinoObject, ApiFacing {
             path: path,
             data: RequestData(data: arguments),
             session: session,
-            urlParameters: UrlParameters(singleEntity: self.entity),
+            urlParameters: formActionUrlParameters(),
             method: .GET,
             readyCallback: self.requestComplete
         )
@@ -179,7 +151,15 @@ public class Transaction: AmatinoObject, ApiFacing {
     
     internal func formActionUrlParameters () throws -> UrlParameters {
         guard currentAction != nil else {throw InternalLibraryError.InconsistentState()}
-        return UrlParameters(singleEntity: self.entity)
+        let action = currentAction!
+        switch action {
+        case .Retrieve, .Create, .Update:
+            return UrlParameters(singleEntity: entity)
+        case .Delete, .Restore:
+            guard urlParameterId != nil else {throw InternalLibraryError.InconsistentState()}
+            let target = UrlTarget(integerValue: urlParameterId!, key: urlParameterKey)
+            return UrlParameters(entityWithTargets: entity, targets: [target])
+        }
     }
     
     internal func formActionData () throws -> RequestData {
@@ -200,15 +180,15 @@ public class Transaction: AmatinoObject, ApiFacing {
         return self.attributes!
     }
     
-    public func update() {
+    public func update() throws {
         prepareForAction(.Update)
     }
     
-    public func delete() {
+    public func delete() throws {
         prepareForAction(.Delete)
     }
     
-    public func restore() {
+    public func restore() throws {
         prepareForAction(.Restore)
     }
     
