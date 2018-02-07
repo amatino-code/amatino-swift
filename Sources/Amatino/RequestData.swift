@@ -15,20 +15,26 @@ internal class RequestData {
     private let dateFormatter = DateFormatter()
     private let dateStringFormat = "yyyy-MM-dd_HH:mm:ss.SSSSSS"
     private let encoder = JSONEncoder()
+    
+    init<T: Encodable>(data: T) throws {
+        rawData = [data]
+        dateFormatter.dateFormat = dateStringFormat
+        encoder.dateEncodingStrategy = .formatted(dateFormatter)
+        encodedData = try encoder.encode(rawData)
+    }
 
     init<T: Encodable>(data: [T]) throws {
-        
         rawData = data
         dateFormatter.dateFormat = dateStringFormat
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
         encodedData = try encoder.encode(data)
     }
     
-    internal func merge(constituents: [RequestData]) -> RequestData {
+    internal func merge(constituents: [RequestData]) throws -> RequestData {
         var workingArray = Array<Encodable>()
         for constituent in constituents{
             workingArray += constituent.rawData
         }
-        return RequestData(data: workingArray)
+        return try RequestData(data: workingArray)
     }
 }
