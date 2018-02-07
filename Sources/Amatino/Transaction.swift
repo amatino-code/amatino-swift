@@ -57,8 +57,7 @@ public class Transaction: AmatinoObject, ApiFacing {
     init(new
         transaction_time: Date,
         description: String,
-        globalUnit: GlobalUnit?,
-        customUnit: CustomUnit?,
+        globalUnit: GlobalUnit,
         entries: Array<Entry>,
         session: Session,
         entity: Entity,
@@ -74,11 +73,37 @@ public class Transaction: AmatinoObject, ApiFacing {
             transaction_time: transaction_time,
             description: description,
             globalUnit: globalUnit,
+            entries: entries
+        )
+        
+        _ = try self.create(newArguments, session)
+        
+        return
+    }
+    
+    init(new
+        transaction_time: Date,
+        description: String,
+        customUnit: CustomUnit,
+        entries: Array<Entry>,
+        session: Session,
+        entity: Entity,
+        readyCallback: @escaping (_ transaction: Transaction) -> Void,
+        batch: Batch? = nil
+        ) throws {
+        
+        self.readyCallback = readyCallback
+        self.entity = entity
+        try setBatch(batch)
+        
+        let newArguments = try TransactionCreateArguments(
+            transaction_time: transaction_time,
+            description: description,
             customUnit: customUnit,
             entries: entries
         )
         
-        _ = try self.create(newArguments: newArguments)
+        _ = try self.create(newArguments, session)
         
         return
     }
@@ -97,7 +122,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         return
     }
     
-    private func create(newArguments: TransactionCreateArguments) throws {
+    private func create(_ :TransactionCreateArguments, _ session: Session) throws {
         prepareForAction(.Create)
         let urlParams = try formActionUrlParameters()
         // form data from new transaction arguments
@@ -133,9 +158,8 @@ public class Transaction: AmatinoObject, ApiFacing {
     
     private func setBatch(_ batch: Batch?) throws {
         self.batch = batch
-        if batch != nil {
-            try batch!.append(self)
-        }
+        if batch != nil { return }
+        try batch!.append(self)
         return
     }
 
