@@ -9,19 +9,17 @@ import Foundation
 
 internal class RequestData {
     
-    private let data: Dictionary<String, Any?>
+    private let encodedData: Data
     
-    init(data: Dictionary<String, Any?>) throws {
-        let valid = JSONSerialization.isValidJSONObject(data)
-        guard valid == true else {throw InternalLibraryError.InvalidJsonData()}
-        self.data = data
-    }
-    
-    internal func asJsonData() throws -> Data {
-        return try JSONSerialization.data(withJSONObject: self.data)
-    }
-    
-    internal func as_json_string() throws -> String? {
-        return try String(data: self.asJsonData(), encoding: .utf8)
+    private let dateFormatter = DateFormatter()
+    private let dateStringFormat = "yyyy-MM-dd_HH:mm:ss.SSSSSS"
+    private let encoder = JSONEncoder()
+
+    init<T: Encodable>(data: T) throws {
+        
+        dateFormatter.dateFormat = dateStringFormat
+        encoder.dateEncodingStrategy = .formatted(dateFormatter)
+        
+        encodedData = try encoder.encode(data)
     }
 }
