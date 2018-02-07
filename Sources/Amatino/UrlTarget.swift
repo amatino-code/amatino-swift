@@ -14,12 +14,12 @@ internal struct UrlTarget: CustomStringConvertible {
         return self.key + "=" + self.value
     }
     
-    init(stringValue key: String, value: String) {
+    init(stringValue value: String, key: String) {
         self.key = key
         self.value = value
     }
     
-    init(integerValue key: String, value: Int) {
+    init(integerValue value: Int, key: String) {
         self.key = key
         self.value = String(value)
     }
