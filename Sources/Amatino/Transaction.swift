@@ -11,14 +11,14 @@ internal class TransactionError: ObjectError {}
 
 public struct TransactionAttributes : Codable {
     
-    let id: Int64
+    let id: Int
     let transactionTime: Date
     let versionTime: Date
     let description: String
     let version: Int
     let globalUnitDenominationCode: UnitCode?
     let customUnitDenominationCode: UnitCode?
-    let authorUserId: Int64
+    let authorUserId: Int
     let active: Bool
     let entries: Array<Entry>
     
@@ -51,21 +51,36 @@ public class Transaction: AmatinoObject, ApiFacing {
     internal let readyCallback: (Transaction) -> Void
     
     private var attributes: TransactionAttributes? = nil
-    private var priorAttributes: TransactionAttributes? = nil
 
     private let entity: Entity
     
+    private let urlParameterKey = "transaction_id"
+    private let urlParameterId: Int?
+    
     init(existing
-        transactionId: Int64,
+        transactionId: Int,
         session: Session,
         entity: Entity,
         readyCallback: @escaping (_ transaction: Transaction) -> Void,
-        batch: Batch? = nil
+        globalUnitDenomination: GlobalUnit? = nil,
+        customUnitDenomination: CustomUnit? = nil,
+        batch: Batch? = nil,
+        version: Int? = nil
         ) throws {
+        
+        let retrieveArguments = TransactionRetrieveArguments(
+            id: transactionId,
+            customUnit: customUnitDenomination,
+            globalUnit: globalUnitDenomination,
+            version: version
+        )
+        
+        self.urlParameterId = transactionId
         self.entity = entity
         self.readyCallback = readyCallback
         try setBatch(batch)
-        try self.retrieve(transactionId, session)
+        try self.retrieve(retrieveArguments, session)
+
     }
     
     init(new
@@ -80,6 +95,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         batch: Batch? = nil
         ) throws {
         
+        urlParameterId = nil
         self.readyCallback = readyCallback
         self.entity = entity
         try setBatch(batch)
@@ -97,6 +113,79 @@ public class Transaction: AmatinoObject, ApiFacing {
         return
     }
     
+    private func retrieve(_ arguments: TransactionRetrieveArguments, _ session: Session) throws {
+        prepareForAction(.Retrieve)
+        if self.batch != nil { return } // Maybe pass the data/url params into the batch here?
+        request = try AmatinoRequest(
+            path: path,
+            data: RequestData(data: arguments),
+            session: session,
+            urlParameters: UrlParameters(singleEntity: self.entity),
+            method: .GET,
+            readyCallback: self.requestComplete
+        )
+        return
+    }
+    
+    private func create(newArguments: TransactionCreateArguments) throws {
+        prepareForAction(.Create)
+        let urlParams = try formActionUrlParameters()
+        // form data from new transaction arguments
+        request = try AmatinoRequest(
+            path: path,
+            data: nil,
+            session: nil,
+            urlParameters: urlParams,
+            method: HTTPMethod.POST,
+            readyCallback: self.requestComplete
+        )
+        return
+    }
+
+    private func requestComplete() {
+        postAction()
+        _ = readyCallback(self)
+        return
+    }
+    
+    private func postAction() {
+        currentAction = nil
+        batch = nil
+    }
+    
+    private func prepareForAction(_ action: Action) {
+        request = nil
+        attributes = nil
+        currentAction = action
+        requestIndex = nil
+        return
+    }
+    
+    private func setBatch(_ batch: Batch?) throws {
+        self.batch = batch
+        if batch != nil {
+            try batch!.append(self)
+        }
+        return
+    }
+
+    internal func requestComplete(request: AmatinoRequest, index: Int) {
+        _ = postAction()
+        _ = readyCallback(self)
+        self.request = request
+        requestIndex = index
+        return
+    }
+    
+    internal func formActionUrlParameters () throws -> UrlParameters {
+        guard currentAction != nil else {throw InternalLibraryError.InconsistentState()}
+        return UrlParameters(singleEntity: self.entity)
+    }
+    
+    internal func formActionData () throws -> RequestData {
+        return try RequestData(data: ["hello": 1])
+    }
+
     public func describe() throws -> TransactionAttributes {
         guard currentAction == nil else {throw TransactionError(.notReady)}
         if (self.attributes == nil) {
@@ -111,28 +200,6 @@ public class Transaction: AmatinoObject, ApiFacing {
         return self.attributes!
     }
     
-    private func retrieve(_ transactionId: Int64, _ session: Session) throws {
-        prepareForAction(.Retrieve)
-        if self.batch != nil { return }
-        // form url parameters from transaction id
-        return
-    }
-    
-    private func create(newArguments: TransactionCreateArguments) throws {
-        prepareForAction(.Create)
-        let urlParams = UrlParameters(singleEntity: self.entity)
-        // form data from new transaction arguments
-        self.request = try AmatinoRequest(
-            path: path,
-            data: nil,
-            session: nil,
-            urlParams: urlParams,
-            method: HTTPMethod.POST,
-            readyCallback: self.requestComplete
-        )
-        return
-    }
-    
     public func update() {
         prepareForAction(.Update)
     }
@@ -143,59 +210,6 @@ public class Transaction: AmatinoObject, ApiFacing {
     
     public func restore() {
         prepareForAction(.Restore)
-    }
-    
-    private func requestComplete() {
-        postAction()
-        _ = readyCallback(self)
-        return
-    }
-    
-    internal func requestComplete(request: AmatinoRequest, index: Int) {
-        _ = postAction()
-        _ = readyCallback(self)
-        self.request = request
-        requestIndex = index
-        return
-    }
-    
-    private func postAction() {
-        currentAction = nil
-        batch = nil
-    }
-    
-    private func prepareForAction(_ action: Action) {
-        priorAttributes = attributes
-        request = nil
-        attributes = nil
-        currentAction = action
-        requestIndex = nil
-        return
-    }
-    
-    public func reset() throws {
-        guard currentAction == nil else {throw TransactionError(.notReady)}
-        guard priorAttributes != nil else {throw TransactionError(.neverInitialized)}
-        attributes = priorAttributes
-        request = nil
-        requestIndex = nil
-        return
-    }
-    
-    private func setBatch(_ batch: Batch?) throws {
-        self.batch = batch
-        if batch != nil {
-            try batch!.append(self)
-        }
-        return
-    }
-    
-    internal func formActionUrlParameters () -> UrlParameters {
-        return UrlParameters(singleEntity: self.entity)
-    }
-    
-    internal func formActionData () throws -> RequestData {
-        return try RequestData(data: ["hello": 1])
     }
     
 }

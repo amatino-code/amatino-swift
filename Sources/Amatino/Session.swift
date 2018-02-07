@@ -49,7 +49,7 @@ public class Session {
             path: self.path,
             data: requestData,
             session: nil,
-            urlParams: nil,
+            urlParameters: nil,
             method: HTTPMethod.POST,
             readyCallback: self.notifyReady
         )

@@ -13,7 +13,7 @@ internal protocol ApiFacing {
     var requestIndex: Int? { get }
     var request: AmatinoRequest? { get }
     
-    func formActionUrlParameters() -> UrlParameters
+    func formActionUrlParameters() throws -> UrlParameters
     func formActionData() throws -> RequestData
     func requestComplete(request: AmatinoRequest, index: Int)
     
