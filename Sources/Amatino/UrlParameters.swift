@@ -15,7 +15,7 @@ internal struct UrlParameters: CustomStringConvertible {
     }
     
     init(singleEntity entity: Entity) {
-        self.paramString = "?entity_id=" + entity.id
+        paramString = "?entity_id=" + entity.id
         return
     }
     
