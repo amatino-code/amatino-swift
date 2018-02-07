@@ -17,14 +17,14 @@ internal struct TransactionCreateArguments: Encodable {
     Transaction description is limited to 1024 characters
     """
 
-    private let transaction_time: Date
+    private let transactionTime: Date
     private let description: String
     private let globalUnit: GlobalUnit?
     private let customUnit: CustomUnit?
     private let entries: Array<Entry>
     
     init (
-        transaction_time: Date,
+        transactionTime: Date,
         description: String,
         globalUnit: GlobalUnit,
         entries: Array<Entry>
@@ -35,7 +35,7 @@ internal struct TransactionCreateArguments: Encodable {
         }
         
         self.description = description
-        self.transaction_time = transaction_time
+        self.transactionTime = transactionTime
         self.globalUnit = globalUnit
         self.customUnit = nil
         self.entries = entries
@@ -44,7 +44,7 @@ internal struct TransactionCreateArguments: Encodable {
     }
     
     init (
-        transaction_time: Date,
+        transactionTime: Date,
         description: String,
         customUnit: CustomUnit,
         entries: Array<Entry>
@@ -55,7 +55,7 @@ internal struct TransactionCreateArguments: Encodable {
         }
         
         self.description = description
-        self.transaction_time = transaction_time
+        self.transactionTime = transactionTime
         self.globalUnit = nil
         self.customUnit = customUnit
         self.entries = entries
@@ -63,5 +63,12 @@ internal struct TransactionCreateArguments: Encodable {
         return
     }
     
+    enum CodingKeys: String, CodingKey {
+        case transactionTime = "transaction_time"
+        case description
+        case globalUnit = "global_unit_denomination"
+        case customUnit = "custom_unit_denomination"
+        case entries
+    }
 
 }

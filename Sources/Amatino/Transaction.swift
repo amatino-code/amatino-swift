@@ -28,6 +28,7 @@ public class Transaction: AmatinoObject, ApiFacing {
     
     private let urlParameterKey = "transaction_id"
     private var urlParameterId: Int? = nil
+    private var actionRequestData: RequestData? = nil
     
     init(existing
         transactionId: Int,
@@ -55,7 +56,7 @@ public class Transaction: AmatinoObject, ApiFacing {
     }
     
     init(new
-        transaction_time: Date,
+        transactionTime: Date,
         description: String,
         globalUnit: GlobalUnit,
         entries: Array<Entry>,
@@ -70,7 +71,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         try setBatch(batch)
         
         let newArguments = try TransactionCreateArguments(
-            transaction_time: transaction_time,
+            transactionTime: transactionTime,
             description: description,
             globalUnit: globalUnit,
             entries: entries
@@ -82,7 +83,7 @@ public class Transaction: AmatinoObject, ApiFacing {
     }
     
     init(new
-        transaction_time: Date,
+        transactionTime: Date,
         description: String,
         customUnit: CustomUnit,
         entries: Array<Entry>,
@@ -97,7 +98,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         try setBatch(batch)
         
         let newArguments = try TransactionCreateArguments(
-            transaction_time: transaction_time,
+            transactionTime: transactionTime,
             description: description,
             customUnit: customUnit,
             entries: entries
@@ -110,22 +111,22 @@ public class Transaction: AmatinoObject, ApiFacing {
     
     private func retrieve(_ arguments: TransactionRetrieveArguments, _ session: Session) throws {
         prepareForAction(.Retrieve)
-        if self.batch != nil { return } // Maybe pass the data/url params into the batch here?
+        actionRequestData = try RequestData(data: arguments)
+        if self.batch != nil { return }
         request = try AmatinoRequest(
             path: path,
-            data: RequestData(data: arguments),
+            data: actionRequestData,
             session: session,
-            urlParameters: formActionUrlParameters(),
+            urlParameters: actionUrlParameters(),
             method: .GET,
             readyCallback: self.requestComplete
         )
         return
     }
     
-    private func create(_ :TransactionCreateArguments, _ session: Session) throws {
+    private func create(_ arguments: TransactionCreateArguments, _ session: Session) throws {
         prepareForAction(.Create)
-        let urlParams = try formActionUrlParameters()
-        // form data from new transaction arguments
+        let urlParams = try actionUrlParameters()
         request = try AmatinoRequest(
             path: path,
             data: nil,
@@ -171,7 +172,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         return
     }
     
-    internal func formActionUrlParameters () throws -> UrlParameters {
+    internal func actionUrlParameters () throws -> UrlParameters {
         guard currentAction != nil else {throw InternalLibraryError.InconsistentState()}
         let action = currentAction!
         switch action {
@@ -184,8 +185,9 @@ public class Transaction: AmatinoObject, ApiFacing {
         }
     }
     
-    internal func formActionData () throws -> RequestData {
-        return try RequestData(data: ["hello": 1])
+    internal func actionData () throws -> RequestData {
+        guard actionRequestData != nil else {throw InternalLibraryError.InconsistentState()}
+        return actionRequestData!
     }
 
     public func describe() throws -> TransactionAttributes {
