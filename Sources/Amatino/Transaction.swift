@@ -27,7 +27,7 @@ public class Transaction: AmatinoObject, ApiFacing {
     private let entity: Entity
     
     private let urlParameterKey = "transaction_id"
-    private let urlParameterId: Int?
+    private var urlParameterId: Int? = nil
     
     init(existing
         transactionId: Int,
@@ -47,7 +47,6 @@ public class Transaction: AmatinoObject, ApiFacing {
             version: version
         )
         
-        self.urlParameterId = transactionId
         self.entity = entity
         self.readyCallback = readyCallback
         try setBatch(batch)
@@ -67,7 +66,6 @@ public class Transaction: AmatinoObject, ApiFacing {
         batch: Batch? = nil
         ) throws {
         
-        urlParameterId = nil
         self.readyCallback = readyCallback
         self.entity = entity
         try setBatch(batch)
@@ -185,10 +183,12 @@ public class Transaction: AmatinoObject, ApiFacing {
     }
     
     public func delete() throws {
+        urlParameterId = try describe().id
         prepareForAction(.Delete)
     }
     
     public func restore() throws {
+        urlParameterId = try describe().id
         prepareForAction(.Restore)
     }
     
