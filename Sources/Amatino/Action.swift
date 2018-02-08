@@ -7,10 +7,11 @@
 
 import Foundation
 
-public enum Action {
+internal enum Action {
     case Retrieve
     case Create
     case Update
     case Delete
     case Restore
 }
+

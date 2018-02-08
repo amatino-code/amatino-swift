@@ -8,5 +8,6 @@
 protocol AmatinoObject {
     
     var currentAction: Action? { get }
+    var entity: Entity { get }
     
 }

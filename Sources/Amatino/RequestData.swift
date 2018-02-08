@@ -30,7 +30,7 @@ internal class RequestData {
         encodedData = try encoder.encode(data)
     }
 
-    internal func merge(constituents: [RequestData]) throws -> RequestData {
+    static func merge(constituents: [RequestData]) throws -> RequestData {
         var workingArray = Array<Encodable>()
         for constituent in constituents{
             workingArray += constituent.rawData

@@ -10,8 +10,11 @@ import Foundation
 internal class TransactionError: ObjectError {}
 
 public class Transaction: AmatinoObject, ApiFacing {
+    
 
-    public private(set) var currentAction: Action? = nil
+    internal private(set) var currentAction: Action? = nil
+
+    public let entity: Entity
 
     internal let core = ObjectCore()
     internal let path = "/transaction"
@@ -22,13 +25,10 @@ public class Transaction: AmatinoObject, ApiFacing {
     
     internal let readyCallback: (Transaction) -> Void
     
-    private var attributes: TransactionAttributes? = nil
-
-    private let entity: Entity
-    
     private let urlParameterKey = "transaction_id"
     private var urlParameterId: Int? = nil
     private var actionRequestData: RequestData? = nil
+    private var attributes: TransactionAttributes? = nil
     
     init(existing
         transactionId: Int,
@@ -47,10 +47,10 @@ public class Transaction: AmatinoObject, ApiFacing {
             globalUnit: globalUnitDenomination,
             version: version
         )
-        
+
         self.entity = entity
         self.readyCallback = readyCallback
-        try setBatch(batch)
+        try setBatch(batch, session, .GET)
         try self.retrieve(retrieveArguments, session)
 
     }
@@ -68,7 +68,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         
         self.readyCallback = readyCallback
         self.entity = entity
-        try setBatch(batch)
+        try setBatch(batch, session, .POST)
         
         let newArguments = try TransactionCreateArguments(
             transactionTime: transactionTime,
@@ -92,10 +92,10 @@ public class Transaction: AmatinoObject, ApiFacing {
         readyCallback: @escaping (_ transaction: Transaction) -> Void,
         batch: Batch? = nil
         ) throws {
-        
+
         self.readyCallback = readyCallback
         self.entity = entity
-        try setBatch(batch)
+        try setBatch(batch, session, .POST)
         
         let newArguments = try TransactionCreateArguments(
             transactionTime: transactionTime,
@@ -157,22 +157,22 @@ public class Transaction: AmatinoObject, ApiFacing {
         return
     }
     
-    private func setBatch(_ batch: Batch?) throws {
+    private func setBatch(_ batch: Batch?, _ session: Session, _ method: HTTPMethod) throws {
         self.batch = batch
         if batch != nil { return }
-        try batch!.append(self)
+        try batch!.append(object: self, session: session, method: method)
         return
     }
 
     internal func requestComplete(request: AmatinoRequest, index: Int) {
         _ = postAction()
-        _ = readyCallback(self)
         self.request = request
         requestIndex = index
+        _ = readyCallback(self)
         return
     }
     
-    internal func actionUrlParameters () throws -> UrlParameters {
+    internal func actionUrlParameters () throws -> UrlParameters? {
         guard currentAction != nil else {throw InternalLibraryError.InconsistentState()}
         let action = currentAction!
         switch action {
@@ -185,7 +185,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         }
     }
     
-    internal func actionData () throws -> RequestData {
+    internal func actionData () throws -> RequestData? {
         guard actionRequestData != nil else {throw InternalLibraryError.InconsistentState()}
         return actionRequestData!
     }

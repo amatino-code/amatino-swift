@@ -34,14 +34,14 @@ internal struct UrlParameters: CustomStringConvertible {
         return
     }
     
-    func merge(parameters: [UrlParameters]) throws -> UrlParameters{
+    static func merge(parameters: [UrlParameters], entity: Entity) throws -> UrlParameters{
         var workingArray = Array<UrlTarget>()
         for parameter in parameters {
-            guard parameter.entity == self.entity else {throw InternalLibraryError.InconsistentState()}
+            guard parameter.entity == entity else {throw InternalLibraryError.InconsistentState()}
             workingArray += parameter.targets
         }
         let targetSet = Set(workingArray)
         let uniqueArray = Array<UrlTarget>(targetSet)
-        return UrlParameters(entityWithTargets: self.entity, targets: uniqueArray)
+        return UrlParameters(entityWithTargets: entity, targets: uniqueArray)
     }
 }
