@@ -72,7 +72,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         
         let newArguments = try TransactionCreateArguments(
             transactionTime: transactionTime,
-            description: description,
+            description: TransactionDescription(description),
             globalUnit: globalUnit,
             entries: entries
         )
@@ -99,7 +99,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         
         let newArguments = try TransactionCreateArguments(
             transactionTime: transactionTime,
-            description: description,
+            description: TransactionDescription(description),
             customUnit: customUnit,
             entries: entries
         )

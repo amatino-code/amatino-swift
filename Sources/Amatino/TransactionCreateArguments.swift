@@ -7,15 +7,7 @@
 
 import Foundation
 
-enum NewTransactionArgumentError: Error {
-    case InvalidValue(description: String)
-}
-
 internal struct TransactionCreateArguments: Encodable {
-    
-    private let err_description_length = """
-    Transaction description is limited to 1024 characters
-    """
 
     private let transactionTime: Date
     private let description: String
@@ -25,16 +17,12 @@ internal struct TransactionCreateArguments: Encodable {
     
     init (
         transactionTime: Date,
-        description: String,
-        globalUnit: GlobalUnit,
+        description: TransactionDescription,
+        globalUnit: GlobalUnit?,
         entries: Array<Entry>
         ) throws {
         
-        if description.count > 1024 {
-            throw NewTransactionArgumentError.InvalidValue(description: self.err_description_length)
-        }
-        
-        self.description = description
+        self.description = String(describing: description)
         self.transactionTime = transactionTime
         self.globalUnit = globalUnit
         self.customUnit = nil
@@ -45,16 +33,12 @@ internal struct TransactionCreateArguments: Encodable {
     
     init (
         transactionTime: Date,
-        description: String,
-        customUnit: CustomUnit,
+        description: TransactionDescription,
+        customUnit: CustomUnit?,
         entries: Array<Entry>
         ) throws {
-        
-        if description.count > 1024 {
-            throw NewTransactionArgumentError.InvalidValue(description: self.err_description_length)
-        }
-        
-        self.description = description
+
+        self.description = String(describing: description)
         self.transactionTime = transactionTime
         self.globalUnit = nil
         self.customUnit = customUnit
