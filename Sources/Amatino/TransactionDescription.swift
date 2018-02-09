@@ -19,9 +19,17 @@ internal struct TransactionDescription: Encodable {
         return "Transaction description is limited to \(maxDescriptionLength) characters"
     }
     
-    init (_ description: String) throws {
-        rawStringValue = description
-        guard description.count < maxDescriptionLength else {throw TransactionUpdateArgumentError.InvalidValue(description: maxLengthErrorMessage)}
+    init (_ description: String?) throws {
+        let storedDescription: String
+        if (description == nil) {
+            storedDescription = ""
+        } else {
+            storedDescription = description!
+        }
+        rawStringValue = storedDescription
+        guard storedDescription.count < maxDescriptionLength else {
+            throw TransactionUpdateArgumentError.InvalidValue(description: maxLengthErrorMessage)
+        }
         return
     }
     

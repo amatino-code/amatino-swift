@@ -7,7 +7,7 @@
 
 protocol AmatinoObject {
     
-    var currentAction: Action? { get }
     var entity: Entity { get }
+    var session: Session { get }
     
 }

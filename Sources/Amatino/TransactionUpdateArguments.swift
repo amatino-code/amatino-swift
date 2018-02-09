@@ -14,16 +14,16 @@ enum TransactionUpdateArgumentError: Error {
 internal struct TransactionUpdateArguments: Encodable {
     
     private let id: Int
-    private let transactionTime: Date
-    private let description: String
+    private let transactionTime: Date?
+    private let description: String?
     private let globalUnit: GlobalUnit?
     private let customUnit: CustomUnit?
-    private let entries: Array<Entry>
+    private let entries: Array<Entry>?
 
     init (
         transactionId: Int,
-        transactionTime: Date,
-        description: TransactionDescription,
+        transactionTime: Date?,
+        description: TransactionDescription?,
         globalUnit: GlobalUnit?,
         entries: Array<Entry>
         ) throws {
@@ -40,10 +40,10 @@ internal struct TransactionUpdateArguments: Encodable {
     
     init (
         transactionId: Int,
-        transactionTime: Date,
-        description: TransactionDescription,
+        transactionTime: Date?,
+        description: TransactionDescription?,
         customUnit: CustomUnit?,
-        entries: Array<Entry>
+        entries: Array<Entry>?
         ) throws {
         
         self.id = transactionId

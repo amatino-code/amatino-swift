@@ -43,7 +43,7 @@ public class Batch {
         if (objects.isEmpty) {
             guard object.currentAction != nil else {throw BatchError.InactiveObject}
             objects.append(object)
-            self.method = methodForAction(object.currentAction!)
+            self.method = method
             self.session = session
             self.entity = object.entity
             self.path = object.path
@@ -104,16 +104,6 @@ public class Batch {
         }
         self.readyCallback(objects)
         return
-    }
-    
-    private func methodForAction(_ action: Action) -> HTTPMethod {
-        switch action {
-        case .Create: return .POST
-        case .Update: return .PUT
-        case .Retrieve: return .GET
-        case .Delete: return .DELETE
-        case .Restore: return .PATCH
-        }
     }
 }
 

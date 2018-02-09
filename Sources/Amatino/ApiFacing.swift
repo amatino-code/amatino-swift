@@ -12,6 +12,7 @@ internal protocol ApiFacing {
     var batch: Batch? { get }
     var requestIndex: Int? { get }
     var request: AmatinoRequest? { get }
+    var currentAction: HTTPMethod? { get }
 
     func actionUrlParameters() throws -> UrlParameters?
     func actionData() throws -> RequestData?
