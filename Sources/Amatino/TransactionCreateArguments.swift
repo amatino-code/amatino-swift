@@ -27,7 +27,7 @@ internal struct TransactionCreateArguments: Encodable {
         self.globalUnit = globalUnit
         self.customUnit = nil
         self.entries = entries
-        
+
         return
     }
     
