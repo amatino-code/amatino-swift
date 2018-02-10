@@ -47,7 +47,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         self.readyCallback = readyCallback
 
         let retrieveArguments = TransactionRetrieveArguments(
-            id: transactionId,
+            id: existingTransactionId,
             customUnit: nil,
             globalUnit: globalUnitDenomination,
             version: version
@@ -72,7 +72,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         self.readyCallback = readyCallback
         
         let retrieveArguments = TransactionRetrieveArguments(
-            id: transactionId,
+            id: existingTransactionId,
             customUnit: customUnitDenomination,
             globalUnit: nil,
             version: version
