@@ -32,8 +32,8 @@ public class Transaction: AmatinoObject, ApiFacing {
     private var attributes: TransactionAttributes? = nil
     private var readyCallback: (Transaction) -> Void
     
-    init(existing
-        transactionId: Int,
+    public init(existing
+        existingTransactionId: Int,
         session: Session,
         entity: Entity,
         readyCallback: @escaping (_ transaction: Transaction) -> Void,
@@ -57,14 +57,14 @@ public class Transaction: AmatinoObject, ApiFacing {
 
     }
 
-    init(existing
-        transactionId: Int,
-         session: Session,
-         entity: Entity,
-         customUnitDenomination: CustomUnit? = nil,
-         readyCallback: @escaping (_ transaction: Transaction) -> Void,
-         batch: Batch? = nil,
-         version: Int? = nil
+    public init(
+        existingTransactionId: Int,
+        session: Session,
+        entity: Entity,
+        customUnitDenomination: CustomUnit? = nil,
+        readyCallback: @escaping (_ transaction: Transaction) -> Void,
+        batch: Batch? = nil,
+        version: Int? = nil
         ) throws {
         
         self.entity = entity
@@ -82,7 +82,7 @@ public class Transaction: AmatinoObject, ApiFacing {
 
     }
     
-    init(new
+    public init(
         transactionTime: Date,
         description: String,
         globalUnit: GlobalUnit,
@@ -109,7 +109,7 @@ public class Transaction: AmatinoObject, ApiFacing {
         return
     }
     
-    init(new
+    public init(
         transactionTime: Date,
         description: String,
         customUnit: CustomUnit,
