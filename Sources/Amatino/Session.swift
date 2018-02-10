@@ -18,16 +18,16 @@ public class Session {
     internal let getPath = "/authorisation/session"
 
     private var currentAction: HTTPMethod?
-    private var api_key: String?
+    private var apiKey: String?
     private var request: AmatinoRequest? = nil
 
     internal private (set) var id: Int?
     
     private let readyCallback: ((_ session: Session) -> Void)?
 
-    init (new email: String, secret: String, readyCallback: @escaping (_ session: Session) -> Void) throws {
+    public init (email: String, secret: String, readyCallback: @escaping (_ session: Session) -> Void) throws {
         
-        self.api_key = nil
+        self.apiKey = nil
         self.id = nil
         self.readyCallback = readyCallback
         try self.create(secret: secret, email: email)
@@ -35,10 +35,10 @@ public class Session {
         return
     }
     
-    init (existing api_key: String, session_id: Int) {
+    public init (apiKey: String, sessionId: Int) {
 
-        self.api_key = api_key
-        self.id = session_id
+        self.apiKey = apiKey
+        self.id = sessionId
         self.readyCallback = nil
         self.ready = true
 
@@ -74,7 +74,7 @@ public class Session {
     internal func signature(path: String, data: RequestData?) throws -> String {
 
         guard ready == true else {throw SessionError(.notReady)}
-        guard api_key != nil else {throw InternalLibraryError.InconsistentState()}
+        guard apiKey != nil else {throw InternalLibraryError.InconsistentState()}
         
         let dataString: String
         if data == nil {
@@ -87,7 +87,7 @@ public class Session {
 
         let dataToHash = timestamp + path + dataString
 
-        let signature = AMSignature.sha512(api_key!, data:dataToHash)
+        let signature = AMSignature.sha512(apiKey!, data:dataToHash)
         guard signature != nil else {throw InternalLibraryError.SignatureHashFailed()}
 
         return signature!
