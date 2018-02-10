@@ -65,7 +65,7 @@ internal class AmatinoRequest {
         request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
         
         if session != nil {
-            let signature = session!.signature(path: path, data: data)
+            let signature = try session!.signature(path: path, data: data)
             guard session!.id != nil else {throw AmatinoRequestError.InvalidSession()}
             let sessionId = String(describing: session!.id)
             request.setValue(signature, forHTTPHeaderField: signatureHeaderName)

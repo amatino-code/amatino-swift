@@ -19,7 +19,7 @@ internal class ObjectError: Error {
         case badResponse
         case neverInitialized
     }
-    
+
     let kind: Kind
     
     required internal init(_ kind: Kind) {

@@ -13,4 +13,6 @@ internal enum InternalLibraryError: Error {
     case ResponseDataMissing()
     case InconsistentState()
     case InvalidJsonData()
+    case SignatureHashFailed()
+    case DataStringEncodingFailed()
 }
