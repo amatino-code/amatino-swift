@@ -66,8 +66,9 @@ internal class AmatinoRequest {
         
         if session != nil {
             let signature = try session!.signature(path: path, data: data)
-            guard session!.id != nil else {throw AmatinoRequestError.InvalidSession()}
-            let sessionId = String(describing: session!.id)
+            let sessionAttributes = try? session!.describe()
+            guard sessionAttributes != nil else {throw AmatinoRequestError.InvalidSession()}
+            let sessionId = String(describing: sessionAttributes!.sessionId)
             request.setValue(signature, forHTTPHeaderField: signatureHeaderName)
             request.setValue(sessionId, forHTTPHeaderField: sessionIdHeaderName)
         }

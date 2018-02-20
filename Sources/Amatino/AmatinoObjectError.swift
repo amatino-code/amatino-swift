@@ -8,7 +8,7 @@
 import Foundation
 
 public class AmatinoObjectError: Error {
-    enum Kind {
+    public enum Kind {
         case notFound
         case notAuthorised
         case notAuthenticated
@@ -22,7 +22,7 @@ public class AmatinoObjectError: Error {
 
     let kind: Kind
     
-    required internal init(_ kind: Kind) {
+    public required init(_ kind: Kind) {
         self.kind = kind
     }
 }

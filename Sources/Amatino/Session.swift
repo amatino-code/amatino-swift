@@ -19,9 +19,10 @@ public class Session {
 
     private var currentAction: HTTPMethod?
     private var apiKey: String?
+    private var userId: Int?
+    private var id: Int?
     private var request: AmatinoRequest? = nil
-
-    internal private (set) var id: Int?
+    private var attributes: SessionAttributes? = nil
     
     private let readyCallback: ((_ session: Session) -> Void)?
 
@@ -29,23 +30,50 @@ public class Session {
         
         self.apiKey = nil
         self.id = nil
+        self.userId = nil
         self.readyCallback = readyCallback
         try self.create(secret: secret, email: email)
 
         return
     }
     
-    public init (apiKey: String, sessionId: Int) {
+    public init (apiKey: String, sessionId: Int, userId: Int) {
 
         self.apiKey = apiKey
         self.id = sessionId
+        self.userId = userId
         self.readyCallback = nil
         self.ready = true
 
         return
     }
     
+    public func describe() throws -> SessionAttributes {
+        
+        if (apiKey != nil && userId != nil && id != nil) {
+            let directAttributes = SessionAttributes(
+                apiKey: self.apiKey!,
+                sessionId: id!,
+                userId: self.userId!
+            )
+            return directAttributes
+        }
+
+        guard currentAction != nil else { throw SessionError(.notReady)}
+        if (attributes == nil) {
+            attributes = try core.processResponse(
+                errorClass: SessionError.self,
+                request: request,
+                outputType: SessionAttributes.self,
+                requestIndex: nil
+            )
+        }
+        guard attributes != nil else { throw InternalLibraryError.InconsistentState() }
+        return self.attributes!
+    }
+    
     private func create(secret: String, email: String) throws -> Void {
+        guard readyCallback != nil else { throw InternalLibraryError.InconsistentState() }
         let data = SessionCreateArguments(secret: secret, email: email)
         let requestData = try RequestData(data: data)
         self.request = try AmatinoRequest(
@@ -61,6 +89,7 @@ public class Session {
     }
     
     private func notifyReady() -> Void {
+        
         self.ready = true
         self.readyCallback!(self)
     

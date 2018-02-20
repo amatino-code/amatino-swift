@@ -23,9 +23,7 @@ public class Transaction: AmatinoObject, ApiFacing {
     internal private(set) var batch: Batch?
     internal private(set) var requestIndex: Int? = nil
     internal private(set) var request: AmatinoRequest?
-    
 
-    
     private let urlParameterKey = "transaction_id"
     private var urlParameterId: Int? = nil
     private var actionRequestData: RequestData? = nil
