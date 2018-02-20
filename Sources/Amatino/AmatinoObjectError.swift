@@ -19,6 +19,7 @@ public class AmatinoObjectError: Error {
         case badResponse
         case neverInitialized
         case operationInProgress
+        case incomprehensibleResponse
     }
 
     let kind: Kind

@@ -53,16 +53,28 @@ internal class ObjectCore {
                 throw errorClass.init(.genericServerError)
             }
         }
+
         let data = request?.data
         guard data != nil else {throw InternalLibraryError.InconsistentState()}
-        let decodedData = try self.decoder.decode([objectForm].self, from: data!)
-        let returnIndex: Int
-        if decodedData.count > 1 {
-            guard requestIndex != nil else {throw InternalLibraryError.InconsistentState()}
-            returnIndex = requestIndex!
-        } else {
-            returnIndex = 0
+
+        do {
+            if let decodedData = try self.decoder.decode([objectForm]?.self, from: data!) {
+                let returnIndex: Int
+                if decodedData.count > 1 {
+                    guard requestIndex != nil else {throw InternalLibraryError.InconsistentState()}
+                    returnIndex = requestIndex!
+                } else {
+                    returnIndex = 0
+                }
+                return decodedData[returnIndex]
+            }
+        } catch is DecodingError {
+            if let decodedData = try self.decoder.decode(objectForm?.self, from: data!) {
+                guard requestIndex == nil else { throw InternalLibraryError.InconsistentState() }
+                return decodedData
+            }
         }
-        return decodedData[returnIndex]
+        
+        throw errorClass.init(.incomprehensibleResponse)
     }
 }
