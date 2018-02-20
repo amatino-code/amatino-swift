@@ -25,7 +25,7 @@ internal class ObjectCore {
     }
 
     internal func processResponse<objectForm: Codable>(
-        errorClass: ObjectError.Type,
+        errorClass: AmatinoObjectError.Type,
         request: AmatinoRequest?,
         outputType: objectForm.Type,
         requestIndex: Int?

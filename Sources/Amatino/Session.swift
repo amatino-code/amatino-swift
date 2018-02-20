@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class SessionError: ObjectError {}
+public class SessionError: AmatinoObjectError {}
 
 public class Session {
     

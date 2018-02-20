@@ -1,13 +1,13 @@
 //
 //  Amatino Swift
-//  ObjectError.swift
+//  AmatinoObjectError.swift
 //
 //  author: hugh@amatino.io
 //
 
 import Foundation
 
-internal class ObjectError: Error {
+public class AmatinoObjectError: Error {
     enum Kind {
         case notFound
         case notAuthorised

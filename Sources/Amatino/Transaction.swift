@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal class TransactionError: ObjectError {}
+public class TransactionError: AmatinoObjectError {}
 
 public class Transaction: AmatinoObject, ApiFacing {
     
