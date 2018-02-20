@@ -11,5 +11,10 @@ struct SessionCreateArguments: Encodable {
 
     let secret: String
     let email: String
+    
+    enum CodingKeys: String, CodingKey {
+        case secret
+        case email = "account_email"
+    }
 
 }

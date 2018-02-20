@@ -18,6 +18,7 @@ public class AmatinoObjectError: Error {
         case jsonParseFailed
         case badResponse
         case neverInitialized
+        case operationInProgress
     }
 
     let kind: Kind

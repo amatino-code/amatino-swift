@@ -15,14 +15,16 @@ enum AmatinoRequestError: Error {
 }
 
 internal class AmatinoRequest {
+    
+    private let agent = "Amatino Swift"
 
     #if DEBUG
-    private let apiEndpoint = "127.0.0.1:5000"
+    private let apiEndpoint = "http://127.0.0.1:5000"
     #else
-    private let apiEndpoint = "api.amatino.io"
+    private let apiEndpoint = "https://api.amatino.io"
     #endif
     private let apiSession = URLSession(configuration: URLSessionConfiguration.ephemeral)
-    private let noSessionPath = "/authorisation/session"
+    private let noSessionPath = "/session"
     private let noSessionMethod = HTTPMethod.POST
     private let missingSessionMessage = """
     A Session is required for all requests other than
@@ -63,6 +65,11 @@ internal class AmatinoRequest {
         var request = URLRequest(url: targetURL!)
         request.httpMethod = method.rawValue
         request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
+        request.setValue(agent, forHTTPHeaderField: "User-Agent")
+        if data != nil {
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = data!.encodedData
+        }
         
         if session != nil {
             let signature = try session!.signature(path: path, data: data)
@@ -80,9 +87,12 @@ internal class AmatinoRequest {
     }
     
     private func processCompletion(data: Data?, response: URLResponse?, error: Error?) -> Void {
-        self.data = data
-        self.response = response
-        self.error = error
-        return
+        
+        DispatchQueue.main.async(execute: {() -> Void in
+            self.data = data
+            self.response = response
+            self.error = error
+            self.readyCallback()
+        })
     }
 }

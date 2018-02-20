@@ -15,7 +15,7 @@ public class Session {
     public var ready: Bool = false;
     
     internal let core = ObjectCore()
-    internal let getPath = "/authorisation/session"
+    internal let getPath = "/session"
 
     private var currentAction: HTTPMethod?
     private var apiKey: String?
@@ -59,7 +59,7 @@ public class Session {
             return directAttributes
         }
 
-        guard currentAction != nil else { throw SessionError(.notReady)}
+        guard currentAction == nil else { throw SessionError(.notReady) }
         if (attributes == nil) {
             attributes = try core.processResponse(
                 errorClass: SessionError.self,
@@ -73,9 +73,11 @@ public class Session {
     }
     
     private func create(secret: String, email: String) throws -> Void {
+        guard currentAction == nil else { throw SessionError(.operationInProgress) }
         guard readyCallback != nil else { throw InternalLibraryError.InconsistentState() }
+        currentAction = .POST
         let data = SessionCreateArguments(secret: secret, email: email)
-        let requestData = try RequestData(data: data)
+        let requestData = try RequestData(data: data, overrideListing: true)
         self.request = try AmatinoRequest(
             path: self.getPath,
             data: requestData,
@@ -90,6 +92,7 @@ public class Session {
     
     private func notifyReady() -> Void {
         
+        currentAction = nil
         self.ready = true
         self.readyCallback!(self)
     
@@ -97,6 +100,7 @@ public class Session {
     }
     
     public func delete() -> Void {
+        // Not yet implemented
         return
     }
     
