@@ -122,8 +122,16 @@ public class Session {
 
         let signature = AMSignature.sha512(apiKey!, data:dataToHash)
         guard signature != nil else {throw InternalLibraryError.SignatureHashFailed()}
-
+        
         return signature!
+    }
+    
+    public func retrieveUser(readyCallback: @escaping (_ : User) -> Void) throws {
+
+        guard currentAction == nil else { throw SessionError(.notReady) }
+        let _ = try User(session: self, readyCallback: readyCallback)
+
+        return
     }
     
 }

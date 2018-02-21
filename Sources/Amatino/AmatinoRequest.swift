@@ -92,6 +92,20 @@ internal class AmatinoRequest {
             self.data = data
             self.response = response
             self.error = error
+            
+            #if DEBUG
+            let debugResponse = response as? HTTPURLResponse
+            if debugResponse?.statusCode != 200 || error != nil {
+                print("Object response included an error")
+                print("Status code: \(String(describing: debugResponse?.statusCode))")
+                print("Headers:")
+                print(String(describing: debugResponse?.allHeaderFields))
+                print("Data:")
+                let dataString = String(data: data!, encoding: String.Encoding.utf8) ?? "String parsing failed"
+                print(dataString)
+            }
+            #endif
+            
             self.readyCallback()
         })
     }
