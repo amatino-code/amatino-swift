@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SessionCreateArguments: Encodable {
+struct SessionCreateArguments: ApiRequestEncodable {
 
     let secret: String
     let email: String

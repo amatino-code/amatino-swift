@@ -49,7 +49,9 @@ public class Batch {
             self.path = object.path
             return
         }
-        guard object.entity == self.objects[0].entity else {throw BatchError.MismatchedEntities}
+        let existingEntityId = try objects[0].entity.describe().entityId
+        let newEntityId = try object.entity.describe().entityId
+        guard existingEntityId == newEntityId else {throw BatchError.MismatchedEntities}
         guard objects.count <= maxCount else {throw BatchError.ExceededMaxCount}
         let existing = self.objects[0]
         guard object_getClassName(existing) == object_getClassName(object) else {
@@ -65,10 +67,10 @@ public class Batch {
     public func execute() throws {
         
         guard objects.count > 0 else {throw BatchError.Empty}
-        guard method != nil else {throw InternalLibraryError.InconsistentState()}
-        guard entity != nil else {throw InternalLibraryError.InconsistentState()}
-        guard path != nil else {throw InternalLibraryError.InconsistentState()}
-        guard session != nil else {throw InternalLibraryError.InconsistentState()}
+        guard method != nil else {throw InternalLibraryError(.InconsistentState)}
+        guard entity != nil else {throw InternalLibraryError(.InconsistentState)}
+        guard path != nil else {throw InternalLibraryError(.InconsistentState)}
+        guard session != nil else {throw InternalLibraryError(.InconsistentState)}
         
         var urlParameters = [UrlParameters]()
         var data = [RequestData]()

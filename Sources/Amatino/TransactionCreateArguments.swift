@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal struct TransactionCreateArguments: Encodable {
+internal struct TransactionCreateArguments: ApiRequestEncodable {
 
     private let transactionTime: Date
     private let description: String

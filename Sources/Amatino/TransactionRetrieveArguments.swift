@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal struct TransactionRetrieveArguments: Encodable {
+internal struct TransactionRetrieveArguments: ApiRequestEncodable {
 
     let id: Int
     let customUnit: CustomUnit?

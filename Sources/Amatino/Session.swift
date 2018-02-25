@@ -68,13 +68,13 @@ public class Session {
                 requestIndex: nil
             )
         }
-        guard attributes != nil else { throw InternalLibraryError.InconsistentState() }
+        guard attributes != nil else { throw InternalLibraryError(.InconsistentState) }
         return self.attributes!
     }
     
     private func create(secret: String, email: String) throws -> Void {
         guard currentAction == nil else { throw SessionError(.operationInProgress) }
-        guard readyCallback != nil else { throw InternalLibraryError.InconsistentState() }
+        guard readyCallback != nil else { throw InternalLibraryError(.InconsistentState) }
         currentAction = .POST
         let data = SessionCreateArguments(secret: secret, email: email)
         let requestData = try RequestData(data: data, overrideListing: true)
@@ -107,7 +107,7 @@ public class Session {
     internal func signature(path: String, data: RequestData?) throws -> String {
 
         guard ready == true else {throw SessionError(.notReady)}
-        guard apiKey != nil else {throw InternalLibraryError.InconsistentState()}
+        let sessionAttributes = try describe()
         
         let dataString: String
         if data == nil {
@@ -120,8 +120,8 @@ public class Session {
 
         let dataToHash = timestamp + path + dataString
 
-        let signature = AMSignature.sha512(apiKey!, data:dataToHash)
-        guard signature != nil else {throw InternalLibraryError.SignatureHashFailed()}
+        let signature = AMSignature.sha512(sessionAttributes.apiKey, data:dataToHash)
+        guard signature != nil else {throw InternalLibraryError(.SignatureHashFailed)}
         
         return signature!
     }

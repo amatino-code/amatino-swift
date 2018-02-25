@@ -101,8 +101,11 @@ internal class AmatinoRequest {
                 print("Headers:")
                 print(String(describing: debugResponse?.allHeaderFields))
                 print("Data:")
-                let dataString = String(data: data!, encoding: String.Encoding.utf8) ?? "String parsing failed"
-                print(dataString)
+                if data == nil {
+                    print("Nil")
+                } else {
+                    print(String(data: data!, encoding: String.Encoding.utf8) ?? "String parsing failed")
+                }
             }
             #endif
             

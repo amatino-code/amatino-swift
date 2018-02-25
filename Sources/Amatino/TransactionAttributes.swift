@@ -20,7 +20,7 @@ public struct TransactionAttributes : Codable {
     let active: Bool
     let entries: Array<Entry>
     
-    enum Keys : String, CodingKey {
+    enum CodingKeys : String, CodingKey {
         case id = "transaction_id"
         case transactionTime = "transaction_time"
         case versionTime = "version_time"

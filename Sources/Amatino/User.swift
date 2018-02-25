@@ -43,7 +43,7 @@ public class User {
     }
     
     public func describe() throws -> UserAttributes {
-        guard currentAction == nil else { throw UserError(.notReady)}
+        guard currentAction == nil else { throw UserError(.notReady) }
         if (attributes == nil) {
             attributes = try core.processResponse(
                 errorClass: UserError.self,
@@ -52,7 +52,7 @@ public class User {
                 requestIndex: nil
             )
         }
-        guard attributes != nil else { throw InternalLibraryError.InconsistentState() }
+        guard attributes != nil else {throw InternalLibraryError(.InconsistentState)}
         return attributes!
     }
     

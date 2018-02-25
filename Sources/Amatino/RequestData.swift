@@ -2,7 +2,7 @@
 //  Amatino Swift
 //  RequestData.swift
 //
-//  Created by Hugh Jeremy on 1/2/18.
+//  author: hugh@blinkbeach.com
 //
 
 import Foundation
@@ -10,42 +10,38 @@ import Foundation
 internal class RequestData {
     
     internal let encodedData: Data
-    internal let rawData: Array<Encodable>
+    internal let rawData: Array<ApiRequestEncodable>
     internal let encodedDataString: String
     
     private let dateFormatter = DateFormatter()
     private let dateStringFormat = "yyyy-MM-dd_HH:mm:ss.SSSSSS"
     private let encoder = JSONEncoder()
     
-    init<T: Encodable>(data: T, overrideListing: Bool = false) throws {
+    init<T: ApiRequestEncodable>(data: T, overrideListing: Bool = false) throws {
         rawData = [data]
         dateFormatter.dateFormat = dateStringFormat
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
-        if overrideListing == true {
-            encodedData = try encoder.encode(data)
-        } else {
-        encodedData = try encoder.encode([data])
-        }
+        encodedData = try data.encode(encoder, !overrideListing)
         let dataString = String(data: encodedData, encoding: .utf8)
-        guard dataString != nil else {throw InternalLibraryError.DataStringEncodingFailed()}
+        guard dataString != nil else {throw InternalLibraryError(.DataStringEncodingFailed)}
         encodedDataString = String(data: encodedData, encoding: .utf8)!
     }
 
-    init<T: Encodable>(data: [T]) throws {
-        rawData = data
+    init (dataList: Array<ApiRequestEncodable>) throws {
+        rawData = dataList
         dateFormatter.dateFormat = dateStringFormat
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
-        encodedData = try encoder.encode(data)
+        encodedData = try encoder.encode(dataList)
         let dataString = String(data: encodedData, encoding: .utf8)
-        guard dataString != nil else {throw InternalLibraryError.DataStringEncodingFailed()}
+        guard dataString != nil else {throw InternalLibraryError(.DataStringEncodingFailed)}
         encodedDataString = String(data: encodedData, encoding: .utf8)!
     }
 
     static func merge(constituents: [RequestData]) throws -> RequestData {
-        var workingArray = Array<Encodable>()
+        var workingArray = Array<ApiRequestEncodable>()
         for constituent in constituents{
             workingArray += constituent.rawData
         }
-        return try RequestData(data: workingArray)
+        return try RequestData(dataList: workingArray)
     }
 }

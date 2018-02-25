@@ -10,9 +10,6 @@ import Foundation
 public class TransactionError: AmatinoObjectError {}
 
 public class Transaction: AmatinoObject, ApiFacing {
-    
-
-    internal private(set) var currentAction: HTTPMethod? = nil
 
     public let entity: Entity
     public let session: Session
@@ -23,12 +20,14 @@ public class Transaction: AmatinoObject, ApiFacing {
     internal private(set) var batch: Batch?
     internal private(set) var requestIndex: Int? = nil
     internal private(set) var request: AmatinoRequest?
+    internal private(set) var currentAction: HTTPMethod? = nil
 
     private let urlParameterKey = "transaction_id"
     private var urlParameterId: Int? = nil
     private var actionRequestData: RequestData? = nil
     private var attributes: TransactionAttributes? = nil
     private var readyCallback: (Transaction) -> Void
+    private var currentActionArguments: ApiRequestEncodable? = nil
     
     public init(existing
         existingTransactionId: Int,
@@ -137,16 +136,16 @@ public class Transaction: AmatinoObject, ApiFacing {
 
     public func describe() throws -> TransactionAttributes {
         guard currentAction == nil else {throw TransactionError(.notReady)}
-        if (self.attributes == nil) {
-            self.attributes = try self.core.processResponse(
+        if attributes == nil {
+            attributes = try self.core.processResponse(
                 errorClass: TransactionError.self,
-                request: self.request,
+                request: request,
                 outputType: TransactionAttributes.self,
-                requestIndex: self.requestIndex
+                requestIndex: requestIndex
             )
         }
-        guard self.attributes != nil else {throw InternalLibraryError.InconsistentState()}
-        return self.attributes!
+        guard attributes != nil else {throw InternalLibraryError(.InconsistentState)}
+        return attributes!
     }
     
     public func update(
@@ -204,7 +203,7 @@ public class Transaction: AmatinoObject, ApiFacing {
     }
     
     private func execute (
-        _ arguments: Encodable?,
+        _ arguments: ApiRequestEncodable?,
         _ batch: Batch?,
         _ action: HTTPMethod) throws {
 
@@ -212,12 +211,13 @@ public class Transaction: AmatinoObject, ApiFacing {
         attributes = nil
         currentAction = action
         requestIndex = nil
+        
+        currentActionArguments = arguments
 
-        if arguments != nil {actionRequestData = try RequestData(data: arguments)}
         if try setBatch(batch, session, action) { return }
         request = try AmatinoRequest(
             path: path,
-            data: actionRequestData,
+            data: try actionData(),
             session: self.session,
             urlParameters: try actionUrlParameters(),
             method: action,
@@ -238,6 +238,28 @@ public class Transaction: AmatinoObject, ApiFacing {
         return
     }
 
+    internal func actionData() throws -> RequestData? {
+        if currentActionArguments == nil {
+            return nil
+        }
+        
+        let requestData: RequestData
+        
+        switch currentActionArguments {
+        case is TransactionCreateArguments:
+            try requestData = RequestData(data: currentActionArguments! as! TransactionCreateArguments)
+        case is TransactionUpdateArguments:
+            try requestData = RequestData(data: currentActionArguments! as! TransactionUpdateArguments)
+        case is TransactionRetrieveArguments:
+            try requestData = RequestData(data: currentActionArguments! as! TransactionRetrieveArguments)
+        default:
+            throw InternalLibraryError(.InconsistentState)
+        }
+        
+        return requestData
+    }
+    
+
     private func setBatch(_ batch: Batch?, _ session: Session, _ method: HTTPMethod) throws -> Bool {
         self.batch = batch
         if batch != nil { return false}
@@ -254,21 +276,15 @@ public class Transaction: AmatinoObject, ApiFacing {
     }
     
     internal func actionUrlParameters () throws -> UrlParameters? {
-        guard currentAction != nil else {throw InternalLibraryError.InconsistentState()}
+        guard currentAction != nil else {throw InternalLibraryError(.InconsistentState)}
         let action = currentAction!
         switch action {
         case .GET, .POST, .PUT:
-            return UrlParameters(singleEntity: entity)
+            return try UrlParameters(singleEntity: entity)
         case .DELETE, .PATCH:
-            guard urlParameterId != nil else {throw InternalLibraryError.InconsistentState()}
+            guard urlParameterId != nil else {throw InternalLibraryError(.InconsistentState)}
             let target = UrlTarget(integerValue: urlParameterId!, key: urlParameterKey)
-            return UrlParameters(entityWithTargets: entity, targets: [target])
+            return try UrlParameters(entityWithTargets: entity, targets: [target])
         }
     }
-    
-    internal func actionData () throws -> RequestData? {
-        guard actionRequestData != nil else {throw InternalLibraryError.InconsistentState()}
-        return actionRequestData!
-    }
-    
 }

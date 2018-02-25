@@ -11,8 +11,8 @@ enum TransactionUpdateArgumentError: Error {
     case InvalidValue(description: String)
 }
 
-internal struct TransactionUpdateArguments: Encodable {
-    
+internal struct TransactionUpdateArguments: ApiRequestEncodable {
+
     private let id: Int
     private let transactionTime: Date?
     private let description: String?

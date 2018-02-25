@@ -9,12 +9,11 @@ import Foundation
 
 public struct UserAttributes: Codable {
     
-    let id: Int
-    let email: String
-    let name: String?
-    let handle: String?
-    let avatarUrl: String?
-    let entitiesAccessible: [Int]?
+    public let id: Int
+    public let email: String
+    public let name: String?
+    public let handle: String?
+    public let avatarUrl: String?
     
     enum CodingKeys: String, CodingKey {
         case id = "user_id"
@@ -22,7 +21,6 @@ public struct UserAttributes: Codable {
         case name
         case handle
         case avatarUrl = "avatar_url"
-        case entitiesAccessible = "entities_accessible"
     }
 
 }
