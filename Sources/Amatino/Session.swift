@@ -12,25 +12,17 @@ public class SessionError: AmatinoObjectError {}
 
 public class Session {
     
-    public var ready: Bool = false;
-    
     internal let core = ObjectCore()
     internal let getPath = "/session"
 
     private var currentAction: HTTPMethod?
-    private var apiKey: String?
-    private var userId: Int?
-    private var id: Int?
     private var request: AmatinoRequest? = nil
     private var attributes: SessionAttributes? = nil
     
     private let readyCallback: ((_ session: Session) -> Void)?
 
     public init (email: String, secret: String, readyCallback: @escaping (_ session: Session) -> Void) throws {
-        
-        self.apiKey = nil
-        self.id = nil
-        self.userId = nil
+
         self.readyCallback = readyCallback
         try self.create(secret: secret, email: email)
 
@@ -39,27 +31,25 @@ public class Session {
     
     public init (apiKey: String, sessionId: Int, userId: Int) {
 
-        self.apiKey = apiKey
-        self.id = sessionId
-        self.userId = userId
+        attributes = SessionAttributes(
+            apiKey: apiKey,
+            sessionId: sessionId,
+            userId: userId
+        )
+
         self.readyCallback = nil
-        self.ready = true
 
         return
     }
     
     public func describe() throws -> SessionAttributes {
+    
+        guard currentAction == nil else { throw SessionError(.notReady) }
         
-        if (apiKey != nil && userId != nil && id != nil) {
-            let directAttributes = SessionAttributes(
-                apiKey: self.apiKey!,
-                sessionId: id!,
-                userId: self.userId!
-            )
-            return directAttributes
+        if attributes != nil {
+            return attributes!
         }
 
-        guard currentAction == nil else { throw SessionError(.notReady) }
         if (attributes == nil) {
             attributes = try core.processResponse(
                 errorClass: SessionError.self,
@@ -84,16 +74,15 @@ public class Session {
             session: nil,
             urlParameters: nil,
             method: HTTPMethod.POST,
-            readyCallback: self.notifyReady
+            readyCallback: self.requestComplete
         )
 
         return
     }
     
-    private func notifyReady() -> Void {
+    private func requestComplete() -> Void {
         
         currentAction = nil
-        self.ready = true
         self.readyCallback!(self)
     
         return
@@ -106,7 +95,7 @@ public class Session {
     
     internal func signature(path: String, data: RequestData?) throws -> String {
 
-        guard ready == true else {throw SessionError(.notReady)}
+        guard currentAction == nil else {throw SessionError(.notReady)}
         let sessionAttributes = try describe()
         
         let dataString: String
