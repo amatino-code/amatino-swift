@@ -27,7 +27,10 @@ public class Session {
         let creationData = SessionCreateArguments(secret: secret, email: email)
         let requestData: RequestData
         do {
-            requestData = try RequestData(data: creationData)
+            requestData = try RequestData(
+                data: creationData,
+                overrideListing: true
+            )
         } catch {
             callback(error, nil)
             return
