@@ -17,11 +17,18 @@ internal class RequestData {
     private let dateStringFormat = "yyyy-MM-dd_HH:mm:ss.SSSSSS"
     private let encoder = JSONEncoder()
     
-    internal init <T: Encodable>(data: T) throws {
+    internal init <T: Encodable>(
+        data: T,
+        overrideListing: Bool = false
+        ) throws {
         rawData = [data]
         dateFormatter.dateFormat = dateStringFormat
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
-        encodedData = try encoder.encode(rawData as? [T])
+        if overrideListing == true {
+            encodedData = try encoder.encode(data)
+        } else {
+            encodedData = try encoder.encode(rawData as? [T])
+        }
         let dataString = String(data: encodedData, encoding: .utf8)
         guard dataString != nil else {
             throw InternalLibraryError(.DataStringEncodingFailed)
@@ -30,7 +37,7 @@ internal class RequestData {
     }
 
     internal init <T: Encodable>(arrayData: Array<T>) throws {
-        rawData = arrayData
+        rawData = arrayData as Array<T>
         dateFormatter.dateFormat = dateStringFormat
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
         encodedData = try encoder.encode(arrayData)
