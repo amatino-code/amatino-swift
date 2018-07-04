@@ -8,7 +8,7 @@ import Foundation
 
 public class EntityError: AmatinoObjectError {}
 
-internal  class Entity {
+public class Entity {
     let id: String
     
     init (id: String) {
