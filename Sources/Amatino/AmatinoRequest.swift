@@ -133,7 +133,6 @@ internal class AmatinoRequest {
         } else {
             fullURL = apiEndpoint + path
         }
-        print("Full URL: " + fullURL)
         let targetURL = URL(string: fullURL)
         guard targetURL != nil else {
             throw AmatinoRequestError.URLInitialisationFailure()

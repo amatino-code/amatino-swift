@@ -10,20 +10,14 @@ import Foundation
 
 public class CustomUnit: Encodable  {
     
-    internal let unitCode: UnitCode
+    public let id: Int
     
-    init(
-        existing
-        unitCode: UnitCode,
-        session: Session,
-        entity: Entity
-        ) throws {
-        
-        self.unitCode = unitCode
+    init(customUnitId: Int) {
+        id = customUnitId
     }
 
     enum CodingKeys: String, CodingKey {
-        case unitCode = "custom_unit_code"
+        case id = "custom_unit_id"
     }
 }
 

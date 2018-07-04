@@ -17,6 +17,7 @@ public struct UnitCode: Codable {
     
     let code: String
     
+    /*
     init(fromString code: String) throws {
         
         guard code.count <= 64 else {throw UnitCodeError.TooLong}
@@ -30,4 +31,8 @@ public struct UnitCode: Codable {
         self.code = code
         return
     }
+    
+    */
+    
+    
 }
