@@ -12,44 +12,117 @@ enum AmatinoRequestError: Error {
     case URLInitialisationFailure()
     case ResponseError()
     case InvalidSession()
+    case EmptyResponse()
+    case JsonParse()
 }
 
 internal class AmatinoRequest {
 
     #if DEBUG
-    private let apiEndpoint = "127.0.0.1:5000"
+    private let apiEndpoint = "http://127.0.0.1:5000"
     #else
-    private let apiEndpoint = "api.amatino.io"
+    private let apiEndpoint = "https://api.amatino.io"
     #endif
-    private let apiSession = URLSession(configuration: URLSessionConfiguration.ephemeral)
-    private let noSessionPath = "/authorisation/session"
+    private static let apiSession = URLSession(
+        configuration: URLSessionConfiguration.ephemeral
+    )
+    private let noSessionPath = "session"
     private let noSessionMethod = HTTPMethod.POST
     private let missingSessionMessage = """
-    A Session is required for all requests other than
-    /authorisation/session + POST
+    A Session is required for all requests other than /authorisation/session +
+    POST
     """
     private let signatureHeaderName = "X-Signature"
     private let sessionIdHeaderName = "X-Session-ID"
-    private let readyCallback: () -> Void
     
     internal private(set) var data: Data? = nil;
     internal private(set) var response: URLResponse? = nil;
     internal private(set) var error: Error? = nil;
-
+    
     init(
         path: String,
         data: RequestData?,
         session: Session?,
         urlParameters: UrlParameters?,
         method: HTTPMethod,
-        readyCallback: @escaping () -> Void
+        callback: @escaping (Error?, Data?) -> Void
         ) throws {
         
-        self.readyCallback = readyCallback
+        let request = try buildRequest(
+            path,
+            data,
+            session,
+            urlParameters,
+            method
+        )
         
-        if session == nil && (path != noSessionPath || method != noSessionMethod) {
-            throw AmatinoRequestError.SessionRequired(description: self.missingSessionMessage)
+        let _ = AmatinoRequest.apiSession.dataTask(
+            with: request,
+            completionHandler: {(
+                data: Data?,
+                response: URLResponse?,
+                error: Error?
+            ) in
+                if error != nil {
+                    callback(error, nil)
+                    return
+                }
+                guard let httpResponse = response as? HTTPURLResponse,
+                    (200...299).contains(httpResponse.statusCode) else {
+                        callback(AmatinoRequestError.ResponseError(), nil)
+                        // To Do - Descriptive error responses
+                        return
+                }
+                callback(nil, data)
+        }).resume()
+        return
+    }
+    
+    private static func executeTask(
+        request: URLRequest,
+        taskCallback: @escaping (Error?, Data?) -> Void
+        ) {
+        
+        let _ = AmatinoRequest.apiSession.dataTask(
+            with: request,
+            completionHandler: {(
+                data: Data?,
+                response: URLResponse?,
+                error: Error?
+                ) in
+                if error != nil {
+                    taskCallback(error, nil)
+                    return
+                }
+                guard let httpResponse = response as? HTTPURLResponse,
+                    (200...299).contains(httpResponse.statusCode) else {
+                        taskCallback(AmatinoRequestError.ResponseError(), nil)
+                        // To Do - Descriptive error responses
+                        return
+                }
+                taskCallback(nil, data)
+        }).resume()
+    }
+    
+    private func buildRequest(
+        _ path: String,
+        _ data: RequestData?,
+        _ session: Session?,
+        _ urlParameters: UrlParameters?,
+        _ method: HTTPMethod
+    ) throws -> URLRequest {
+        
+        /*
+        if session == nil && (
+            path != noSessionPath || method != noSessionMethod
+            ) {
+            print(method)
+            print(path)
+            throw AmatinoRequestError.SessionRequired(
+                description: self.missingSessionMessage
+            )
         }
+        */
         
         let fullURL: String
         if urlParameters != nil {
@@ -57,31 +130,34 @@ internal class AmatinoRequest {
         } else {
             fullURL = apiEndpoint + path
         }
-        
+        print("Full URL: " + fullURL)
         let targetURL = URL(string: fullURL)
-        guard targetURL != nil else {throw AmatinoRequestError.URLInitialisationFailure()}
+        guard targetURL != nil else {
+            throw AmatinoRequestError.URLInitialisationFailure()
+        }
         var request = URLRequest(url: targetURL!)
         request.httpMethod = method.rawValue
         request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
         
         if session != nil {
             let signature = try session!.signature(path: path, data: data)
-            guard session!.id != nil else {throw AmatinoRequestError.InvalidSession()}
-            let sessionId = String(describing: session!.id)
+            let sessionId = String(describing: session!.sessionId)
             request.setValue(signature, forHTTPHeaderField: signatureHeaderName)
             request.setValue(sessionId, forHTTPHeaderField: sessionIdHeaderName)
         }
         
-        let task = apiSession.dataTask(with: request, completionHandler: self.processCompletion)
-        task.resume()
-        
-        return
+        return request
     }
     
-    private func processCompletion(data: Data?, response: URLResponse?, error: Error?) -> Void {
+    private func processCompletion(
+        data: Data?,
+        response: URLResponse?,
+        error: Error?
+    ) -> Void {
         self.data = data
         self.response = response
         self.error = error
         return
     }
+    
 }

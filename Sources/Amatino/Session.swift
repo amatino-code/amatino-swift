@@ -12,69 +12,73 @@ internal class SessionError: ObjectError {}
 
 public class Session {
     
-    public var ready: Bool = false;
+    internal static let apiPath = "/session"
+
+    private let apiKey: String
+    private let userId: Int
+    internal let sessionId: Int
     
-    internal let core = ObjectCore()
-    internal let getPath = "/authorisation/session"
-
-    private var currentAction: HTTPMethod?
-    private var apiKey: String?
-    private var request: AmatinoRequest? = nil
-
-    internal private (set) var id: Int?
-    
-    private let readyCallback: ((_ session: Session) -> Void)?
-
-    public init (email: String, secret: String, readyCallback: @escaping (_ session: Session) -> Void) throws {
+    public static func create(
+        email: String,
+        secret: String,
+        callback: @escaping (Error?, Session?) -> Void
+        ) {
         
-        self.apiKey = nil
-        self.id = nil
-        self.readyCallback = readyCallback
-        try self.create(secret: secret, email: email)
-
+        let creationData = SessionCreateArguments(secret: secret, email: email)
+        let requestData: RequestData
+        do {
+            requestData = try RequestData(data: creationData)
+        } catch {
+            callback(error, nil)
+            return
+        }
+        
+        do {
+            let _ = try AmatinoRequest(
+                path: Session.apiPath,
+                data: requestData,
+                session: nil,
+                urlParameters: nil,
+                method: HTTPMethod.POST,
+                callback: {(error: Error?, data: Data?) -> Void in
+                    guard error == nil else {callback(error, nil); return}
+                    let decoder = JSONDecoder()
+                    let object: SessionAttributes
+                    do {
+                        object = try decoder.decode(
+                            SessionAttributes.self,
+                            from: data!
+                        )
+                    } catch {
+                        let error = SessionError(.badResponse)
+                        callback(error, nil)
+                        return
+                    }
+                    let session = Session(attributes: object)
+                    callback(nil, session)
+                    return
+                })
+        } catch {
+            callback(error, nil)
+        }
         return
     }
     
-    public init (apiKey: String, sessionId: Int) {
-
+    internal init (attributes: SessionAttributes) {
+        apiKey = attributes.apiKey
+        userId = attributes.userId
+        sessionId = attributes.sessionId
+        return
+    }
+    
+    public init (apiKey: String, sessionId: Int, userId: Int) {
         self.apiKey = apiKey
-        self.id = sessionId
-        self.readyCallback = nil
-        self.ready = true
+        self.sessionId = sessionId
+        self.userId = userId
+        return
+    }
 
-        return
-    }
-    
-    private func create(secret: String, email: String) throws -> Void {
-        let data = SessionCreateArguments(secret: secret, email: email)
-        let requestData = try RequestData(data: data)
-        self.request = try AmatinoRequest(
-            path: self.getPath,
-            data: requestData,
-            session: nil,
-            urlParameters: nil,
-            method: HTTPMethod.POST,
-            readyCallback: self.notifyReady
-        )
-
-        return
-    }
-    
-    private func notifyReady() -> Void {
-        self.ready = true
-        self.readyCallback!(self)
-    
-        return
-    }
-    
-    public func delete() -> Void {
-        return
-    }
-    
     internal func signature(path: String, data: RequestData?) throws -> String {
-
-        guard ready == true else {throw SessionError(.notReady)}
-        guard apiKey != nil else {throw InternalLibraryError.InconsistentState()}
         
         let dataString: String
         if data == nil {
@@ -84,13 +88,13 @@ public class Session {
         }
         
         let timestamp = String(describing: Int(Date().timeIntervalSince1970))
-
         let dataToHash = timestamp + path + dataString
 
-        let signature = AMSignature.sha512(apiKey!, data:dataToHash)
-        guard signature != nil else {throw InternalLibraryError.SignatureHashFailed()}
+        guard let signature = AMSignature.sha512(apiKey, data:dataToHash) else {
+            throw InternalLibraryError.SignatureHashFailed()
+        }
 
-        return signature!
+        return signature
     }
     
 }

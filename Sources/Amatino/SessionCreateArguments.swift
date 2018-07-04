@@ -7,9 +7,30 @@
 
 import Foundation
 
-struct SessionCreateArguments: Encodable {
+struct SessionCreateArguments: Codable {
 
-    let secret: String
-    let email: String
+    let secret: String?
+    let email: String?
+    let userId: Int?
+    
+    init (secret: String, email: String) {
+        self.email = email
+        self.secret = secret
+        userId = nil
+        return
+    }
+    
+    init (secret: String, userId: Int) {
+        self.secret = secret
+        self.userId = userId
+        email = nil
+        return
+    }
 
+    enum CodingKeys: String, CodingKey {
+        case userId = "user_id"
+        case email = "account_email"
+        case secret
+    }
+    
 }

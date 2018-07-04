@@ -208,8 +208,9 @@ public class Transaction: AmatinoObject, ApiFacing {
     private func execute (
         _ arguments: Encodable?,
         _ batch: Batch?,
-        _ action: HTTPMethod) throws {
-
+        _ action: HTTPMethod
+    ) throws {
+/*
         request = nil
         attributes = nil
         currentAction = action
@@ -226,6 +227,7 @@ public class Transaction: AmatinoObject, ApiFacing {
             readyCallback: self.requestComplete
         )
         return
+*/
     }
 
     private func requestComplete() {

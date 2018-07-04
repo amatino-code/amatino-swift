@@ -63,7 +63,7 @@ public class Batch {
     }
 
     public func execute() throws {
-        
+/*
         guard objects.count > 0 else {throw BatchError.Empty}
         guard method != nil else {throw InternalLibraryError.InconsistentState()}
         guard entity != nil else {throw InternalLibraryError.InconsistentState()}
@@ -94,6 +94,7 @@ public class Batch {
             readyCallback: ready
         )
         return
+ */
     }
     
     internal func ready() {

@@ -1,13 +1,13 @@
 //
 //  HTTPMethod.swift
-//  Amatino
+//  Amatino Swift
 //
-//  Created by Hugh Jeremy on 28/1/18.
+//  author: hugh@blinkybeach.com
 //
 
 import Foundation
 
-internal enum HTTPMethod: String {
+public enum HTTPMethod: String {
     case GET = "GET"
     case POST = "POST"
     case PUT = "PUT"

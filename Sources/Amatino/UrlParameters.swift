@@ -11,7 +11,7 @@ internal struct UrlParameters: CustomStringConvertible {
     
     let targets: [UrlTarget]
     let paramString: String
-    let entity: Entity
+    let entity: Entity?
     var description: String {
         return paramString
     }
@@ -34,10 +34,22 @@ internal struct UrlParameters: CustomStringConvertible {
         return
     }
     
-    static func merge(parameters: [UrlParameters], entity: Entity) throws -> UrlParameters{
+    init(fromRawQuery query: String) {
+        self.entity = nil
+        paramString = query
+        targets = [UrlTarget]()
+        return
+    }
+    
+    static func merge(
+        parameters: [UrlParameters],
+        entity: Entity
+    ) throws -> UrlParameters {
         var workingArray = Array<UrlTarget>()
         for parameter in parameters {
-            guard parameter.entity == entity else {throw InternalLibraryError.InconsistentState()}
+            guard parameter.entity == entity else {
+                throw InternalLibraryError.InconsistentState()
+            }
             workingArray += parameter.targets
         }
         let targetSet = Set(workingArray)
