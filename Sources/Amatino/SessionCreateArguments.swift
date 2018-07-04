@@ -34,4 +34,12 @@ struct SessionCreateArguments: Codable {
         case secret
     }
     
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(secret, forKey: .secret)
+        try container.encode(email, forKey: .email)
+        try container.encode(userId, forKey: .userId)
+        return
+    }
+    
 }
