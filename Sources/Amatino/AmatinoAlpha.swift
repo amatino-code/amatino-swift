@@ -45,7 +45,7 @@ public class AmatinoAlpha
         method: HTTPMethod,
         queryString: String?,
         body: Array<T>?,
-        readyCallback: @escaping (_: Error?, _: Data?) -> Void
+        callback: @escaping (_: Error?, _: Data?) -> Void
     ) throws -> Void {
 
         let requestData: RequestData?
@@ -68,7 +68,7 @@ public class AmatinoAlpha
             session: session,
             urlParameters: urlParameters,
             method: method,
-            callback: readyCallback
+            callback: callback
         )
     }
 }
