@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 struct SessionCreateArguments: Codable {
 
     let secret: String?

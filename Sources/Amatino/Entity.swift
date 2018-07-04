@@ -6,16 +6,12 @@
 //
 import Foundation
 
-public class Entity {
-    
-    let id = "placeholder"
-    
-}
+public class EntityError: AmatinoObjectError {}
 
-extension Entity: Equatable {
+internal  class Entity {
+    let id: String
     
-    public static func == (lhs: Entity, rhs: Entity) -> Bool {
-        return lhs.id == rhs.id
+    init (id: String) {
+        self.id = id
     }
-
 }

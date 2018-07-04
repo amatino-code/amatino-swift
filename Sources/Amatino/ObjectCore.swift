@@ -25,17 +25,17 @@ internal class ObjectCore {
     }
 
     internal func processResponse<objectForm: Codable>(
-        errorClass: ObjectError.Type,
+        errorClass: AmatinoObjectError.Type,
         request: AmatinoRequest?,
         outputType: objectForm.Type,
         requestIndex: Int?
         ) throws -> objectForm {
-        guard request != nil else {throw InternalLibraryError.RequestNilOnReady()}
+        guard request != nil else {throw InternalLibraryError(.RequestNilOnReady)}
         if request?.error != nil {
             throw request!.error!
         }
         let response = request?.response as? HTTPURLResponse
-        guard response != nil else {throw InternalLibraryError.ResponseCastFailed()}
+        guard response != nil else {throw InternalLibraryError(.ResponseCastFailed)}
         if response?.statusCode != 200 {
             if response?.statusCode == 400 {
                 throw errorClass.init(.badRequest)
@@ -53,16 +53,28 @@ internal class ObjectCore {
                 throw errorClass.init(.genericServerError)
             }
         }
+
         let data = request?.data
-        guard data != nil else {throw InternalLibraryError.InconsistentState()}
-        let decodedData = try self.decoder.decode([objectForm].self, from: data!)
-        let returnIndex: Int
-        if decodedData.count > 1 {
-            guard requestIndex != nil else {throw InternalLibraryError.InconsistentState()}
-            returnIndex = requestIndex!
-        } else {
-            returnIndex = 0
+        guard data != nil else {throw InternalLibraryError(.InconsistentState)}
+
+        do {
+            if let decodedData = try self.decoder.decode([objectForm]?.self, from: data!) {
+                let returnIndex: Int
+                if decodedData.count > 1 {
+                    guard requestIndex != nil else {throw InternalLibraryError(.InconsistentState)}
+                    returnIndex = requestIndex!
+                } else {
+                    returnIndex = 0
+                }
+                return decodedData[returnIndex]
+            }
+        } catch is DecodingError {
+            if let decodedData = try self.decoder.decode(objectForm?.self, from: data!) {
+                guard requestIndex == nil else {throw InternalLibraryError(.InconsistentState)}
+                return decodedData
+            }
         }
-        return decodedData[returnIndex]
+        
+        throw errorClass.init(.incomprehensibleResponse)
     }
 }

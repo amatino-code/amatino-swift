@@ -1,14 +1,14 @@
 //
 //  Amatino Swift
-//  ObjectError.swift
+//  AmatinoObjectError.swift
 //
 //  author: hugh@amatino.io
 //
 
 import Foundation
 
-internal class ObjectError: Error {
-    enum Kind {
+public class AmatinoObjectError: Error {
+    public enum Kind {
         case notFound
         case notAuthorised
         case notAuthenticated
@@ -18,11 +18,13 @@ internal class ObjectError: Error {
         case jsonParseFailed
         case badResponse
         case neverInitialized
+        case operationInProgress
+        case incomprehensibleResponse
     }
 
     let kind: Kind
     
-    required internal init(_ kind: Kind) {
+    public required init(_ kind: Kind) {
         self.kind = kind
     }
 }

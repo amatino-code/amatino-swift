@@ -12,7 +12,7 @@ enum TransactionUpdateArgumentError: Error {
 }
 
 internal struct TransactionUpdateArguments: Encodable {
-    
+
     private let id: Int
     private let transactionTime: Date?
     private let description: String?

@@ -8,10 +8,10 @@
 
 import Foundation
 
-internal class SessionError: ObjectError {}
+public class SessionError: AmatinoObjectError {}
 
 public class Session {
-    
+
     internal static let apiPath = "/session"
 
     private let apiKey: String
@@ -79,7 +79,7 @@ public class Session {
     }
 
     internal func signature(path: String, data: RequestData?) throws -> String {
-        
+
         let dataString: String
         if data == nil {
             dataString = ""
@@ -91,7 +91,7 @@ public class Session {
         let dataToHash = timestamp + path + dataString
 
         guard let signature = AMSignature.sha512(apiKey, data:dataToHash) else {
-            throw InternalLibraryError.SignatureHashFailed()
+            throw InternalLibraryError(.SignatureHashFailed)
         }
 
         return signature

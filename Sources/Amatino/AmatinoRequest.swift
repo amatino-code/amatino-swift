@@ -17,6 +17,8 @@ enum AmatinoRequestError: Error {
 }
 
 internal class AmatinoRequest {
+    
+    private let agent = "Amatino Swift"
 
     #if DEBUG
     private let apiEndpoint = "http://127.0.0.1:5000"
@@ -27,6 +29,7 @@ internal class AmatinoRequest {
         configuration: URLSessionConfiguration.ephemeral
     )
     private let noSessionPath = "session"
+
     private let noSessionMethod = HTTPMethod.POST
     private let missingSessionMessage = """
     A Session is required for all requests other than /authorisation/session +
@@ -138,8 +141,14 @@ internal class AmatinoRequest {
         var request = URLRequest(url: targetURL!)
         request.httpMethod = method.rawValue
         request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
+        request.setValue(agent, forHTTPHeaderField: "User-Agent")
+        if data != nil {
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = data!.encodedData
+        }
         
         if session != nil {
+            print(session!)
             let signature = try session!.signature(path: path, data: data)
             let sessionId = String(describing: session!.sessionId)
             request.setValue(signature, forHTTPHeaderField: signatureHeaderName)
@@ -148,16 +157,4 @@ internal class AmatinoRequest {
         
         return request
     }
-    
-    private func processCompletion(
-        data: Data?,
-        response: URLResponse?,
-        error: Error?
-    ) -> Void {
-        self.data = data
-        self.response = response
-        self.error = error
-        return
-    }
-    
 }
