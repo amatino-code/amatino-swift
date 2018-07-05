@@ -104,7 +104,7 @@ As Amatino Swift matures to Beta stage, encodable structs will become available 
 let _ = Entity.create(
     session: session,
     name: "My First Entity",
-    callback: {(error: Error?, entity: Entity?) in
+    callback: {(error, entity) in
         // Do stuff with entity
     })
 ````
