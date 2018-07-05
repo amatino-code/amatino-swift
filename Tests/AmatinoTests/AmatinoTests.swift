@@ -72,6 +72,34 @@ class AmatinoAlphaTests: XCTestCase {
         return
     }
     
+    private func dummyAccounts(
+        session: Session,
+        entity: Entity,
+        unit: GlobalUnit,
+        callback: @escaping (_: Error?, _: [Account]?) -> Void
+        ) throws {
+        let account1 = try AccountCreateArguments(
+            name: "Test Asset",
+            type: .asset,
+            description: "",
+            globalUnit: unit
+        )
+        let account2 = try AccountCreateArguments(
+            name: "Test Liability",
+            type: .liability,
+            description: "",
+            globalUnit: unit
+        )
+        let _ = try Account.create(
+            session: session,
+            entity: entity,
+            arguments: [account1, account2],
+            callback: callback
+        )
+        
+        return
+    }
+    
     func testInitialiseWithEmail() {
         
         let expectation = XCTestExpectation(
@@ -225,8 +253,145 @@ class AmatinoAlphaTests: XCTestCase {
         wait(for: [expectation], timeout: 8)
         
     }
+    
+    func testCreateTransaction() {
+        
+        let expectation = XCTestExpectation(description: "Create Transaction")
+        
+        func createTransaction(
+            alpha: AmatinoAlpha,
+            session: Session,
+            entity: Entity,
+            accounts: [Account]
+            ) {
+            do {
+                let transaction = try TransactionCreateArguments(
+                    transactionTime: Date(),
+                    description: "Test Transaction",
+                    globalUnitId: accounts[0].globalUnitId!,
+                    entries: [
+                        Entry(
+                            side: .debit,
+                            description: "Test debit entry",
+                            accountId: accounts[0].id,
+                            amount: Decimal(42.02)
+                        ),
+                        Entry(
+                            side: .credit,
+                            description: "Test credit entry",
+                            accountId: accounts[1].id,
+                            amount: Decimal(42.02)
+                        ),
+                    ]
+                )
+                let _ = try alpha.request(
+                    path: "/transactions",
+                    method: .POST,
+                    queryString: ("?entity_id=" + entity.id),
+                    body: [transaction],
+                    callback: { (error: Error?, responseData: Data?) in
+                        XCTAssertNil(error)
+                        XCTAssertNotNil(responseData)
+                        expectation.fulfill()
+                        return
+                })
+                
+            } catch {
+                XCTFail("Request init yielded: \(error)")
+                return
+            }
+        }
+        
+        func stageAccounts(
+            alpha: AmatinoAlpha,
+            unit: GlobalUnit,
+            entity: Entity,
+            session: Session
+            ) {
+            do {
+                let _ = try dummyAccounts(
+                    session: session,
+                    entity: entity,
+                    unit: unit,
+                    callback: {(error, accounts) in
+                        guard error == nil else {
+                            XCTFail("Account init yielded: \(error!)")
+                            return
+                        }
+                        let _ = createTransaction(
+                            alpha: alpha,
+                            session: session,
+                            entity: entity,
+                            accounts: accounts!
+                        )
+                        return
+                })
+            } catch {
+                XCTFail("Account init yielded: \(error)")
+                return
+            }
+        
+        }
+        
+        func stageTest(amatinoAlpha: AmatinoAlpha, session: Session) {
+            
+            let _ = self.dummyUnit(
+                session: session,
+                callback: { (error, globalUnit) in
+                    guard error == nil else {
+                        XCTFail("Unit init yielded: \(error!)")
+                        return
+                    }
+                    do {
+                        let _ = try self.dummyEntity(
+                            session: session,
+                            callback: { (error, entity) in
+                                guard error == nil else {
+                                    XCTFail("Entity init yielded: \(error!)")
+                                    return
+                                }
+                                let _ = stageAccounts(
+                                    alpha: amatinoAlpha,
+                                    unit: globalUnit!,
+                                    entity: entity!,
+                                    session: session
+                                )
+                                return
+                        })
+                    } catch {
+                        XCTFail("Dummy entity creation yielded \(error)")
+                        return
+                    }
+            })
+        }
+        
+        let _ = AmatinoAlpha.create(
+            email: testUserEmail(),
+            secret: testUserSecret(),
+            callback: {(error: Error?, amatinoAlpha: AmatinoAlpha?) in
+                guard error == nil else {
+                    XCTFail("AmatinoAlpha init yielded: \(error!)")
+                    return
+                }
+                let _ = self.dummySession(callback: { (error, session) in
+                    guard error == nil else {
+                        XCTFail("Session init yielded: \(error!)")
+                        return
+                    }
+                    let _ = stageTest(
+                        amatinoAlpha: amatinoAlpha!,
+                        session: session!
+                    )
+                })
+                return
+        })
+        
+        wait(for: [expectation], timeout: 8)
+    }
 
     static var allTests = [
         ("testInitialiseWithEmail", testInitialiseWithEmail),
+        ("testCreateEntity", testCreateEntity),
+        ("testCreateAccount", testCreateAccount)
     ]
 }
