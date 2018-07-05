@@ -142,7 +142,10 @@ internal class AmatinoRequest {
         request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
         request.setValue(agent, forHTTPHeaderField: "User-Agent")
         if data != nil {
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue(
+                "application/json",
+                forHTTPHeaderField: "Content-Type"
+            )
             request.httpBody = data!.encodedData
         }
         

@@ -19,7 +19,7 @@ public struct AccountCreateArguments: Encodable {
     private let customUnit: CustomUnit?
     private let counterPartyEntity: Entity?
     private let description: String
-    private let colourHexCode: String?
+    private let colour: Colour?
     
     public init(
         name: String,
@@ -35,7 +35,7 @@ public struct AccountCreateArguments: Encodable {
         self.customUnit = nil
         self.counterPartyEntity = nil
         self.parentAccount = nil
-        self.colourHexCode = nil
+        self.colour = nil
         
         try checkName(name: name)
         try checkDescription(description: description)
@@ -57,7 +57,7 @@ public struct AccountCreateArguments: Encodable {
         self.customUnit = customUnit
         self.counterPartyEntity = nil
         self.parentAccount = nil
-        self.colourHexCode = nil
+        self.colour = nil
         
         try checkName(name: name)
         try checkDescription(description: description)
@@ -80,7 +80,7 @@ public struct AccountCreateArguments: Encodable {
         self.customUnit = customUnit
         self.counterPartyEntity = nil
         self.parentAccount = parentAccount
-        self.colourHexCode = nil
+        self.colour = nil
         
         try checkName(name: name)
         try checkDescription(description: description)
@@ -103,7 +103,7 @@ public struct AccountCreateArguments: Encodable {
         self.customUnit = nil
         self.counterPartyEntity = nil
         self.parentAccount = parentAccount
-        self.colourHexCode = nil
+        self.colour = nil
         
         try checkName(name: name)
         try checkDescription(description: description)
@@ -141,14 +141,14 @@ public struct AccountCreateArguments: Encodable {
         try container.encode(name, forKey: .name)
         try container.encode(description, forKey: .description)
         try container.encode(type, forKey: .type)
-        try container.encode(parentAccount, forKey: .parentAccount)
+        try container.encode(parentAccount?.id, forKey: .parentAccount)
         try container.encode(globalUnit?.id, forKey: .globalUnitId)
         try container.encode(customUnit?.id, forKey: .customUnitId)
         try container.encode(
             counterPartyEntity?.id,
             forKey: .counterPartyEntity
         )
-        try container.encode(colourHexCode, forKey: .colourHexCode)
+        try container.encode(colour?.hexValue, forKey: .colourHexCode)
         return
     }
     

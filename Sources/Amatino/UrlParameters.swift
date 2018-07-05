@@ -16,7 +16,7 @@ internal struct UrlParameters: CustomStringConvertible {
         return paramString
     }
     
-    init(singleEntity entity: Entity) throws {
+    init(singleEntity entity: Entity) {
         self.entity = entity
         paramString = "?entity_id=" + entity.id
         targets = [UrlTarget]()

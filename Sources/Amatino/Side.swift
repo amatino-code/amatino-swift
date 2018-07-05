@@ -5,7 +5,7 @@
 //  author: hugh@amatino.io
 //
 
-enum Side: String, Codable {
-    case Debit = "debit"
-    case Credit = "credit"
+enum Side: Int, Codable {
+    case debit = 0
+    case credit = 1
 }
