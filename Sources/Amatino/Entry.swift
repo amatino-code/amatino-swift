@@ -14,6 +14,30 @@ public struct Entry : Codable {
     let accountId: Int
     let amount: Decimal
     
+    public init(
+        side: Side,
+        description: String,
+        account: Account,
+        amount: Decimal
+        ) {
+        self.side = side
+        self.description = description
+        self.amount = amount
+        self.accountId = account.id
+    }
+
+    public init(
+        side: Side,
+        description: String,
+        accountId: Int,
+        amount: Decimal
+        ) {
+        self.side = side
+        self.description = description
+        self.amount = amount
+        self.accountId = accountId
+    }
+    
     enum CodingKeys: String, CodingKey {
         case side
         case description
