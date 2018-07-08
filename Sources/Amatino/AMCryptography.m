@@ -21,7 +21,7 @@
     CCHmac(kCCHmacAlgSHA512, ckey, strlen(ckey), cdata, strlen(cdata), chmac);
 
     NSData *hmac = [[NSData alloc] initWithBytes:chmac length:sizeof(chmac)];
-    NSString *signature = [hmac base64EncodedStringWithOptions:nil];
+    NSString *signature = [hmac base64EncodedStringWithOptions:0];
 
     return signature;
 }
