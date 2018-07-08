@@ -132,3 +132,7 @@ Amatino libraries are also available in [Python](https://github.com/Amatino-Code
 - [Documentation](https://amatino.io/documentation)
 - [Billing and account management](https://amatino.io/billing)
 - [About Amatino Pty Ltd](https://amatino.io/about)
+
+## Get in contact
+
+To quickly speak to a human about Amatino, [email hugh@amatino.io](mailto:hugh@amatino.io) or [yell at him on Twitter (@hugh_jeremy)](https://twitter.com/hugh_jeremy).
