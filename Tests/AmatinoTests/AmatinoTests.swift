@@ -281,7 +281,7 @@ class AmatinoAlphaTests: XCTestCase {
                             description: "Test credit entry",
                             accountId: accounts[1].id,
                             amount: Decimal(42.02)
-                        ),
+                        )
                     ]
                 )
                 let _ = try alpha.request(
