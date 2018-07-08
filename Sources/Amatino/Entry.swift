@@ -38,6 +38,29 @@ public struct Entry : Codable {
         self.accountId = accountId
     }
     
+    public init(
+        side: Side,
+        account: Account,
+        amount: Decimal
+        ) {
+        self.side = side
+        self.description = ""
+        self.amount = amount
+        self.accountId = account.id
+    }
+    
+    public init(
+        side: Side,
+        accountId: Int,
+        amount: Decimal
+        ) {
+        self.side = side
+        self.description = ""
+        self.amount = amount
+        self.accountId = accountId
+    }
+
+    
     enum CodingKeys: String, CodingKey {
         case side
         case description
