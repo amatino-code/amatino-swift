@@ -3,4 +3,5 @@
 /Packages
 /*.xcodeproj
 /build
-.plist
+*.plist
+/Amatino

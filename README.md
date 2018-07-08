@@ -12,6 +12,12 @@ Amatino Swift will eventually offer expressive, object-oriented interfaces for a
 
 In the mean time, you may wish to review [Amatino's HTTP documentation](https://amatino.io/documentation) to see what capabilities you can expect from Amatino Swift in the future.
 
+## Installation
+
+We're still evaluating the best ways to distribute Amatino (your suggestions welcome). At the moment, we offer compiled Cocoa Frameworks for MacOS and iOS via [Amatino Swift's Releases page](https://github.com/amatino-code/amatino-swift/releases).
+
+You can drag and drop the appropriate .framework file into your MacOS or iOS Xcode project, then `import Amatino` to begin using Amatino's services.
+
 ## Example Usage
 
 The `AmatinoAlpha` object allows you to use the Amatino API without dealing with raw HTTP requests or HMACs. It lacks the expressive syntax, input validation, and error handling that Amatino Swift will have in the beta stage.
