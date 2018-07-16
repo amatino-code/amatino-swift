@@ -45,7 +45,7 @@ public class Entity: Decodable {
         entityId: String,
         callback: @escaping (_: Error?, _: Entity?) -> Void
         ) throws {
-        let target = UrlTarget(forEntity: entityId)
+        let target = UrlTarget(forEntityId: entityId)
         let _ = try AmatinoRequest(
             path: Entity.path,
             data: nil,

@@ -10,6 +10,7 @@ import Foundation
 public class Account: Decodable {
     
     private static let path = "/accounts"
+    private static let urlKey = "account_id"
     
     public let id: Int
     public let name: String
@@ -45,20 +46,7 @@ public class Account: Decodable {
             urlParameters: urlParameters,
             method: .POST,
             callback: { (error, data) in
-                guard error == nil else {callback(error, nil); return}
-                let decoder = JSONDecoder()
-                let account: Account
-                do {
-                    account = try decoder.decode(
-                        [Account].self,
-                        from: data!
-                    )[0]
-                } catch {
-                    callback(error, nil)
-                    return
-                }
-                callback(nil, account)
-                return
+                let _ = loadResponse(error, data, callback)
         })
         return
     }
@@ -78,22 +66,99 @@ public class Account: Decodable {
             urlParameters: urlParameters,
             method: .POST,
             callback: { (error, data) in
-                guard error == nil else {callback(error, nil); return}
-                let decoder = JSONDecoder()
-                let accounts: [Account]
-                do {
-                    accounts = try decoder.decode(
-                        [Account].self,
-                        from: data!
-                    )
-                    callback(nil, accounts)
-                    return
-                } catch {
-                    callback(error, nil)
-                    return
-                }
+                let _ = loadArrayResponse(error, data, callback)
         })
     }
+    
+    public static func retrieve(
+        session: Session,
+        entity: Entity,
+        accountId: Int,
+        callback: @escaping (Error?, Account?) -> Void
+        ) throws {
+        let target = UrlTarget(
+            stringValue: String(accountId),
+            key: Account.urlKey
+        )
+        let urlParameters = try UrlParameters(
+            entityWithTargets: entity,
+            targets: [target]
+        )
+        let _ = try AmatinoRequest(
+            path: path,
+            data: nil,
+            session: session,
+            urlParameters: urlParameters,
+            method: .GET,
+            callback: { (error, data) in
+                let _ = loadResponse(error, data, callback)
+        })
+    }
+    
+    public static func retrieve(
+        session: Session,
+        entity: Entity,
+        accountIds: [Int],
+        callback: @escaping (Error?, [Account]?) -> Void
+        ) throws {
+        let targets = UrlTarget.createSequence(key: urlKey, values: accountIds)
+        let urlParameters = try UrlParameters(
+            entityWithTargets: entity,
+            targets: targets
+        )
+        let _ = try AmatinoRequest(
+            path: path,
+            data: nil,
+            session: session,
+            urlParameters: urlParameters,
+            method: .GET,
+            callback: { (error, data) in
+                let _ = loadArrayResponse(error, data, callback)
+        })
+    }
+    
+    private static func loadResponse(
+        _ error: Error?,
+        _ data: Data?,
+        _ callback: (Error?, Account?) -> Void
+        ) {
+        guard error == nil else {callback(error, nil); return}
+        let decoder = JSONDecoder()
+        let accounts: Account
+        do {
+            accounts = try decoder.decode(
+                [Account].self,
+                from: data!
+            )[0]
+            callback(nil, accounts)
+            return
+        } catch {
+            callback(error, nil)
+            return
+        }
+    }
+    
+    private static func loadArrayResponse(
+        _ error: Error?,
+        _ data: Data?,
+        _ callback: (Error?, [Account]?) -> Void
+        ) {
+        guard error == nil else {callback(error, nil); return}
+        let decoder = JSONDecoder()
+        let accounts: [Account]
+        do {
+            accounts = try decoder.decode(
+                [Account].self,
+                from: data!
+            )
+            callback(nil, accounts)
+            return
+        } catch {
+            callback(error, nil)
+            return
+        }
+    }
+
     
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)

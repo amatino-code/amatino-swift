@@ -25,10 +25,26 @@ internal struct UrlTarget {
         return
     }
     
-    init(forEntity entityId: String) {
+    init(forEntityId entityId: String) {
         self.key = self.entityKey
         self.value = entityId
         return
+    }
+    
+    internal static func createSequence(
+        key: String,
+        values: [String]
+    ) -> [UrlTarget] {
+        let targets = values.map {UrlTarget(stringValue: $0, key: key)}
+        return targets
+    }
+    
+    internal static func createSequence(
+        key: String,
+        values: [Int]
+        ) -> [UrlTarget] {
+        let targets = values.map {UrlTarget(integerValue: $0, key: key)}
+        return targets
     }
 
 }
