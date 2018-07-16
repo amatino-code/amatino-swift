@@ -19,17 +19,11 @@ enum AmatinoRequestError: Error {
 internal class AmatinoRequest {
     
     private let agent = "Amatino Swift"
-
-    #if DEBUG
-    private let apiEndpoint = "http://127.0.0.1:5000"
-    #else
     private let apiEndpoint = "https://api.amatino.io"
-    #endif
     private static let apiSession = URLSession(
         configuration: URLSessionConfiguration.ephemeral
     )
     private let noSessionPath = "session"
-
     private let noSessionMethod = HTTPMethod.POST
     private let missingSessionMessage = """
     A Session is required for all requests other than /authorisation/session +
