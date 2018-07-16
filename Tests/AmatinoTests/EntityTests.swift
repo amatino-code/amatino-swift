@@ -47,6 +47,38 @@ class EntityTests: AmatinoTest {
         wait(for: [expectation], timeout: 5)
     }
     
-    //func testRetrieveEntity() {}
+    func testRetrieveEntity() {
+        XCTAssertNotNil(session)
+        let expectation = XCTestExpectation(description: "Retrieve Entity")
+        do {
+            let _ = try Entity.create(
+                session: session!,
+                name: "Amatino Swift test entity, retrieval",
+                callback: { (error, entity) in
+                    XCTAssertNotNil(entity)
+                    do {
+                        let _ = try Entity.retrieve(
+                            session: self.session!,
+                            entityId: entity!.id,
+                            callback: { (error, retrievedEntity) in
+                                XCTAssertNil(error)
+                                XCTAssertNotNil(retrievedEntity)
+                                expectation.fulfill()
+                        })
+                    } catch {
+                        XCTFail()
+                        expectation.fulfill()
+                        return
+                    }
+            })
+        } catch {
+            XCTFail()
+            expectation.fulfill()
+            return
+        }
+        wait(for: [expectation], timeout: 5)
+        return
+
+    }
     
 }
