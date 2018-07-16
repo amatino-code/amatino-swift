@@ -25,6 +25,12 @@ internal struct UrlTarget {
         return
     }
     
+    init(integerValue value: Int64, key: String) {
+        self.key = key
+        self.value = String(value)
+        return
+    }
+    
     init(forEntityId entityId: String) {
         self.key = self.entityKey
         self.value = entityId

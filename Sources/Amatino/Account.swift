@@ -80,7 +80,7 @@ public class Account: Decodable {
             stringValue: String(accountId),
             key: Account.urlKey
         )
-        let urlParameters = try UrlParameters(
+        let urlParameters = UrlParameters(
             entityWithTargets: entity,
             targets: [target]
         )
@@ -102,7 +102,7 @@ public class Account: Decodable {
         callback: @escaping (Error?, [Account]?) -> Void
         ) throws {
         let targets = UrlTarget.createSequence(key: urlKey, values: accountIds)
-        let urlParameters = try UrlParameters(
+        let urlParameters = UrlParameters(
             entityWithTargets: entity,
             targets: targets
         )

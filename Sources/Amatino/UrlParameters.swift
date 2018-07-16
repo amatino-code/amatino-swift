@@ -23,7 +23,7 @@ internal struct UrlParameters: CustomStringConvertible {
         return
     }
     
-    init(entityWithTargets entity: Entity, targets: [UrlTarget]) throws {
+    init(entityWithTargets entity: Entity, targets: [UrlTarget]) {
         self.entity = entity
         self.targets = targets
         var workingString = "?entity_id=" + entity.id

@@ -12,6 +12,7 @@ public class TransactionError: AmatinoObjectError {}
 public class Transaction: Decodable {
     
     private static let path = "/transactions"
+    private static let urlKey = "transaction_id"
     
     public let id: Int64
     public let transactionTime: Date
@@ -41,6 +42,40 @@ public class Transaction: Decodable {
             globalUnit: globalUnit,
             entries: entries
         )
+        let _ = try executeCreate(session, entity, arguments, callback)
+        return
+    }
+    
+    public static func retrieve(
+        session: Session,
+        entity: Entity,
+        transactionId: Int64,
+        callback: @escaping (_: Error?, _: Transaction?) -> Void
+        ) throws {
+        
+        let target = UrlTarget(integerValue: transactionId, key: urlKey)
+        let urlParameters = UrlParameters(
+            entityWithTargets: entity,
+            targets: [target]
+        )
+        let _ = try AmatinoRequest(
+            path: path,
+            data: nil,
+            session: session,
+            urlParameters: urlParameters,
+            method: .GET) { (error, data) in
+                let _ = loadResponse(error, data, callback)
+                return
+        }
+        
+    }
+    
+    private static func executeCreate(
+        _ session: Session,
+        _ entity: Entity,
+        _ arguments: TransactionCreateArguments,
+        _ callback: @escaping (_: Error?, _: Transaction?) -> Void
+        ) throws {
         let requestData = try RequestData(data: arguments)
         let _ = try AmatinoRequest(
             path: Transaction.path,
@@ -49,22 +84,30 @@ public class Transaction: Decodable {
             urlParameters: UrlParameters(singleEntity: entity),
             method: .POST,
             callback: { (error, data) in
-                guard error == nil else {callback(error, nil); return}
-                let decoder = JSONDecoder()
-                let transaction: Transaction
-                do {
-                    transaction = try decoder.decode(
-                        [Transaction].self,
-                        from: data!
-                    )[0]
-                    callback(nil, transaction)
-                    return
-                } catch {
-                    callback(error, nil)
-                    return
-                }
+                let _ = loadResponse(error, data, callback)
+                return
         })
-        
+    }
+    
+    private static func loadResponse(
+        _ error: Error?,
+        _ data: Data?,
+        _ callback: (Error?, Transaction?) -> Void
+        ) {
+            guard error == nil else {callback(error, nil); return}
+            let decoder = JSONDecoder()
+            let transaction: Transaction
+            do {
+                transaction = try decoder.decode(
+                    [Transaction].self,
+                    from: data!
+                    )[0]
+                callback(nil, transaction)
+                return
+            } catch {
+                callback(error, nil)
+                return
+            }
     }
     
     public required init(from decoder: Decoder) throws {
