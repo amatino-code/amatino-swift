@@ -9,12 +9,13 @@ import Foundation
 
 internal class RequestData {
     
+    internal static let dateStringFormat = "yyyy-MM-dd_HH:mm:ss.SSSSSS"
+    
     internal let encodedData: Data
     internal let rawData: Array<Encodable>
     internal let encodedDataString: String
     
     private let dateFormatter = DateFormatter()
-    private let dateStringFormat = "yyyy-MM-dd_HH:mm:ss.SSSSSS"
     private let encoder = JSONEncoder()
     
     internal init <T: Encodable>(
@@ -22,7 +23,7 @@ internal class RequestData {
         overrideListing: Bool = false
         ) throws {
         rawData = [data]
-        dateFormatter.dateFormat = dateStringFormat
+        dateFormatter.dateFormat = RequestData.dateStringFormat
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
         if overrideListing == true {
             encodedData = try encoder.encode(data)
@@ -38,7 +39,7 @@ internal class RequestData {
 
     internal init <T: Encodable>(arrayData: Array<T>) throws {
         rawData = arrayData as Array<T>
-        dateFormatter.dateFormat = dateStringFormat
+        dateFormatter.dateFormat = RequestData.dateStringFormat
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
         encodedData = try encoder.encode(arrayData)
         let dataString = String(data: encodedData, encoding: .utf8)
