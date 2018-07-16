@@ -8,7 +8,7 @@ import Foundation
 
 public class EntityError: AmatinoObjectError {}
 
-public class Entity: Encodable {
+public class Entity: Decodable {
 
     private static let path = "/entities"
     
@@ -46,25 +46,61 @@ public class Entity: Encodable {
             urlParameters: nil,
             method: .POST,
             callback: {(error, data) in
-                guard error == nil else {callback(error, nil); return}
-                let decoder = JSONDecoder()
-                let object: EntityAttributes
-                do {
-                    object = try decoder.decode(
-                        [EntityAttributes].self,
-                        from: data!
-                    )[0]
-                } catch {
-                    let error = EntityError(.badResponse)
-                    callback(error, nil)
-                    return
-                }
-                let entity = Entity(attributes: object)
-                callback(nil, entity)
-                return
+                let _ = Entity.loadResponse(error, data, callback)
         })
         
     }
+    
+    public static func retrieve(
+        session: Session,
+        entityId: String,
+        callback: @escaping (_: Error?, _: Entity?) -> Void
+        ) throws {
+        let target = UrlTarget(forEntity: entityId)
+        let _ = try AmatinoRequest(
+            path: Entity.path,
+            data: nil,
+            session: session,
+            urlParameters: UrlParameters(targetsOnly: [target]),
+            method: .GET,
+            callback: { (error, data) in
+                let _ = Entity.loadResponse(error, data, callback)
+        })
+    }
+    
+    private static func loadResponse(
+        _ error: Error?,
+        _ data: Data?,
+        _ callback: (Error?, Entity?) -> Void
+        ) {
+        guard error == nil else {callback(error, nil); return}
+        let decoder = JSONDecoder()
+        let entity: Entity
+        do {
+            entity = try decoder.decode(
+                [Entity].self,
+                from: data!
+            )[0]
+            callback(nil, entity)
+            return
+        } catch {
+            callback(error, nil)
+            return
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 
 }

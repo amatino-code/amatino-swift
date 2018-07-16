@@ -9,17 +9,26 @@ import Foundation
 
 internal struct UrlTarget {
 
+    private let entityKey = "entity_id"
     let key: String
     let value: String
 
     init(stringValue value: String, key: String) {
         self.key = key
         self.value = value
+        return
     }
     
     init(integerValue value: Int, key: String) {
         self.key = key
         self.value = String(value)
+        return
+    }
+    
+    init(forEntity entityId: String) {
+        self.key = self.entityKey
+        self.value = entityId
+        return
     }
 
 }
