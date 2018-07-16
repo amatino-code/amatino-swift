@@ -84,10 +84,10 @@ public class Entity: Decodable {
         ownerId = try container.decode(Int64.self, forKey: .ownerId)
         name = try container.decode(String.self, forKey: .name)
         permissionsGraph = try container.decode(
-            [String:[String:[String:Bool]]].self,
+            [String:[String:[String:Bool]]]?.self,
             forKey: .permissionsGraph
         )
-        description = try container.decode(String.self, forKey: .description)
+        description = try container.decode(String?.self, forKey: .description)
         regionId = try container.decode(Int.self, forKey: .regionId)
         active = try container.decode(Bool.self, forKey: .active)
         return
