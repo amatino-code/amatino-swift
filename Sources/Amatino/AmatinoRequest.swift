@@ -144,7 +144,6 @@ internal class AmatinoRequest {
         }
         
         if session != nil {
-            print(session!)
             let signature = try session!.signature(path: path, data: data)
             let sessionId = String(describing: session!.sessionId)
             request.setValue(signature, forHTTPHeaderField: signatureHeaderName)
