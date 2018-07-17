@@ -31,6 +31,8 @@ internal class AmatinoRequest {
     """
     private let signatureHeaderName = "X-Signature"
     private let sessionIdHeaderName = "X-Session-ID"
+
+    private let shouldEncodeDataInUrl: Bool
     
     internal private(set) var data: Data? = nil;
     internal private(set) var response: URLResponse? = nil;
@@ -45,6 +47,12 @@ internal class AmatinoRequest {
         callback: @escaping (Error?, Data?) -> Void
         ) throws {
         
+        if method == .GET && data != nil {
+            shouldEncodeDataInUrl = true
+        } else {
+            shouldEncodeDataInUrl = false
+        }
+        
         let request = try buildRequest(
             path,
             data,
@@ -52,7 +60,7 @@ internal class AmatinoRequest {
             urlParameters,
             method
         )
-        
+
         let _ = AmatinoRequest.apiSession.dataTask(
             with: request,
             completionHandler: {(
@@ -75,32 +83,6 @@ internal class AmatinoRequest {
         return
     }
     
-    private static func executeTask(
-        request: URLRequest,
-        taskCallback: @escaping (Error?, Data?) -> Void
-        ) {
-        
-        let _ = AmatinoRequest.apiSession.dataTask(
-            with: request,
-            completionHandler: {(
-                data: Data?,
-                response: URLResponse?,
-                error: Error?
-                ) in
-                if error != nil {
-                    taskCallback(error, nil)
-                    return
-                }
-                guard let httpResponse = response as? HTTPURLResponse,
-                    (200...299).contains(httpResponse.statusCode) else {
-                        taskCallback(AmatinoRequestError.ResponseError(), nil)
-                        // To Do - Descriptive error responses
-                        return
-                }
-                taskCallback(nil, data)
-        }).resume()
-    }
-    
     private func buildRequest(
         _ path: String,
         _ data: RequestData?,
@@ -108,34 +90,37 @@ internal class AmatinoRequest {
         _ urlParameters: UrlParameters?,
         _ method: HTTPMethod
     ) throws -> URLRequest {
-        
-        /*
-        if session == nil && (
-            path != noSessionPath || method != noSessionMethod
-            ) {
-            print(method)
-            print(path)
-            throw AmatinoRequestError.SessionRequired(
-                description: self.missingSessionMessage
-            )
-        }
-        */
+
         
         let fullURL: String
+        
         if urlParameters != nil {
             fullURL = apiEndpoint + path + urlParameters!.paramString
         } else {
             fullURL = apiEndpoint + path
         }
-        let targetURL = URL(string: fullURL)
+        
+        let targetURL: URL?
+
+        if shouldEncodeDataInUrl == true {
+            if urlParameters != nil {
+                targetURL = URL(string: (fullURL + "&" + data!.asUrlParameter()))
+            } else {
+                targetURL = URL(string: (fullURL + "?" + data!.asUrlParameter()))
+            }
+        } else {
+            targetURL = URL(string: fullURL)
+        }
+
         guard targetURL != nil else {
             throw AmatinoRequestError.URLInitialisationFailure()
         }
+
         var request = URLRequest(url: targetURL!)
         request.httpMethod = method.rawValue
         request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
         request.setValue(agent, forHTTPHeaderField: "User-Agent")
-        if data != nil {
+        if data != nil && shouldEncodeDataInUrl == false {
             request.setValue(
                 "application/json",
                 forHTTPHeaderField: "Content-Type"

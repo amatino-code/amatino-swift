@@ -50,14 +50,13 @@ internal class RequestData {
         return
     }
     
-    /*
-     static func merge(constituents: [RequestData]) throws -> RequestData {
-         var workingArray = Array<Encodable>()
-         for constituent in constituents {
-            workingArray += constituent.rawData
-         }
-         return try RequestData(arrayData: workingArray)
+    internal func asUrlParameter() -> String {
+        let b64data = encodedData.base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            //.replacingOccurrences(of: "=", with: "")
+        let urlParameter = "arguments=" + b64data
+        return urlParameter
     }
-    */
     
 }

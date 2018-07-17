@@ -7,6 +7,8 @@
 
 import Foundation
 
+public class EntryError: AmatinoObjectError {}
+
 public struct Entry : Codable {
 
     let side: Side
@@ -59,14 +61,6 @@ public struct Entry : Codable {
         self.amount = amount
         self.accountId = accountId
     }
-
-    
-    enum CodingKeys: String, CodingKey {
-        case side
-        case description
-        case accountId = "account_id"
-        case amount
-    }
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
@@ -76,6 +70,30 @@ public struct Entry : Codable {
         let stringAmount = String(describing: amount)
         try container.encode(stringAmount, forKey: .amount)
         return
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let rawSide = try container.decode(Int.self, forKey: .side)
+        guard let enumSide = Side(rawValue: rawSide) else {
+            throw EntryError(.incomprehensibleResponse)
+        }
+        side = enumSide
+        description = try container.decode(String.self, forKey: .description)
+        accountId = try container.decode(Int.self, forKey: .accountId)
+        let rawAmount = try container.decode(String.self, forKey: .amount)
+        guard let decimalAmount = Decimal(string: rawAmount) else {
+            throw EntryError(.incomprehensibleResponse)
+        }
+        amount = decimalAmount
+        return
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case side
+        case description
+        case accountId = "account_id"
+        case amount
     }
 
 }

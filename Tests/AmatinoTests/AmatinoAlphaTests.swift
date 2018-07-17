@@ -16,6 +16,11 @@ class AmatinoAlphaTests: XCTestCase {
     
     private let environment = ProcessInfo.processInfo.environment
     
+    override func setUp() {
+        self.continueAfterFailure = false
+        return
+    }
+    
     private func testUserId() -> Int {
         guard let testUserId = Int(environment[testUserKey] ?? "") else {
             XCTFail("Environment missing \(testUserKey) key")
@@ -117,6 +122,7 @@ class AmatinoAlphaTests: XCTestCase {
             secret: testUserSecret(),
             callback: {(error: Error?, amatinoAlpha: AmatinoAlpha?) in
                 XCTAssertNil(error, "Initialisation yielded an error")
+                guard (error == nil) else {XCTFail(); return}
                 XCTAssertNotNil(amatinoAlpha, "amatinoAlpha is nil")
                 expectation.fulfill()
                 return
@@ -144,6 +150,7 @@ class AmatinoAlphaTests: XCTestCase {
                     body: [body],
                     callback: {(error: Error?, responseData: Data?) in
                         XCTAssertNil(error)
+                guard (error == nil) else {XCTFail(); return}
                         XCTAssertNotNil(responseData)
                         expectation.fulfill()
                         return
@@ -194,6 +201,7 @@ class AmatinoAlphaTests: XCTestCase {
                     body: [account1, account2],
                     callback: { (error: Error?, responseData: Data?) in
                         XCTAssertNil(error)
+                        guard (error == nil) else {self.testRun!.stop(); return}
                         XCTAssertNotNil(responseData)
                         expectation.fulfill()
                         return

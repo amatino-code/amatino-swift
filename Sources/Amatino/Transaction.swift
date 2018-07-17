@@ -53,20 +53,22 @@ public class Transaction: Decodable {
         callback: @escaping (_: Error?, _: Transaction?) -> Void
         ) throws {
         
-        let target = UrlTarget(integerValue: transactionId, key: urlKey)
-        let urlParameters = UrlParameters(
-            entityWithTargets: entity,
-            targets: [target]
+        let arguments = TransactionRetrieveArguments(
+            transactionId: transactionId
         )
+        let urlParameters = UrlParameters(singleEntity: entity)
+        let requestData = try RequestData(data: arguments)
         let _ = try AmatinoRequest(
             path: path,
-            data: nil,
+            data: requestData,
             session: session,
             urlParameters: urlParameters,
-            method: .GET) { (error, data) in
+            method: .GET,
+            callback: { (error, data) in
+                print("Load transaction response")
                 let _ = loadResponse(error, data, callback)
                 return
-        }
+        })
         
     }
     
@@ -90,11 +92,14 @@ public class Transaction: Decodable {
     }
     
     private static func loadResponse(
-        _ error: Error?,
+        _ responseError: Error?,
         _ data: Data?,
         _ callback: (Error?, Transaction?) -> Void
         ) {
-            guard error == nil else {callback(error, nil); return}
+            guard responseError == nil else {
+                callback(responseError, nil)
+                return
+            }
             let decoder = JSONDecoder()
             let transaction: Transaction
             do {
