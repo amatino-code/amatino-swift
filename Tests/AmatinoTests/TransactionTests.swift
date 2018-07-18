@@ -80,7 +80,6 @@ class TransactionTests: AmatinoTest {
                     XCTAssertNotNil(globalUnit)
                     self.unit = globalUnit!
                     unitExpectation.fulfill()
-                    print("Unit Retrieved")
                     createAccounts(self.session!, self.entity!, self.unit!)
                     return
             })
@@ -95,7 +94,6 @@ class TransactionTests: AmatinoTest {
                         XCTAssertNotNil(entity)
                         self.entity = entity
                         entityExpectation.fulfill()
-                        print("Entity created")
                         retrieveUnit(self.session!, self.entity!)
                 }
             } catch {
@@ -141,7 +139,6 @@ class TransactionTests: AmatinoTest {
                 callback: { (error, transaction) in
                     XCTAssertNil(error)
                     XCTAssertNotNil(transaction)
-                    print(transaction!.description)
                     expectation.fulfill()
                     return
             })
@@ -161,16 +158,13 @@ class TransactionTests: AmatinoTest {
         
         func retrieveTransaction(_ transactionId: Int64) {
             do {
-                print("Begin retrieval")
                 let _ = try Transaction.retrieve(
                     session: session!,
                     entity: entity!,
                     transactionId: transactionId,
                     callback: { (error, transaction) in
-                        print("Callback")
                         XCTAssertNil(error)
                         XCTAssertNotNil(transaction)
-                        print(transaction!.description)
                         expectation.fulfill()
                         return
                 })
