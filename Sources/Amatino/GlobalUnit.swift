@@ -22,17 +22,6 @@ public class GlobalUnit: Decodable  {
     public let description: String
     public let exponent: Int
     
-    internal init(attributes: GlobalUnitAttributes) {
-        
-        code = attributes.code
-        id = attributes.unitId
-        name = attributes.name
-        priority = attributes.priority
-        description = attributes.description
-        exponent = attributes.exponent
-        return
-    }
-    
     public static func retrieve(
         unitId: Int,
         session: Session,
