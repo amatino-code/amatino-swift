@@ -12,9 +12,11 @@ class GlobalUnitList {
     private static let path = "/units/list"
     
     public let units: [GlobalUnit]
+    public let count: Int
     
     private init (units: [GlobalUnit]) {
         self.units = units
+        count = units.count
         return
     }
     
@@ -49,4 +51,13 @@ class GlobalUnitList {
         
     }
     
+    public func unitWith(code: String) -> GlobalUnit? {
+        for unit in units {
+            if unit.code == code {
+                return unit
+            }
+        }
+        return nil
+    }
+
 }
