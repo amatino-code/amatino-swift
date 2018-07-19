@@ -16,8 +16,8 @@ internal struct TransactionUpdateArguments: Encodable {
     private let id: Int
     private let transactionTime: Date?
     private let description: String?
-    private let globalUnit: GlobalUnit?
-    private let customUnit: CustomUnit?
+    private let globalUnitId: Int?
+    private let customUnitId: Int?
     private let entries: Array<Entry>?
 
     init (
@@ -31,8 +31,8 @@ internal struct TransactionUpdateArguments: Encodable {
         self.id = transactionId
         self.description = String(describing: description)
         self.transactionTime = transactionTime
-        self.globalUnit = globalUnit
-        self.customUnit = nil
+        self.globalUnitId = globalUnit?.id
+        self.customUnitId = nil
         self.entries = entries
         
         return
@@ -49,8 +49,8 @@ internal struct TransactionUpdateArguments: Encodable {
         self.id = transactionId
         self.description = String(describing: description)
         self.transactionTime = transactionTime
-        self.globalUnit = nil
-        self.customUnit = customUnit
+        self.globalUnitId = nil
+        self.customUnitId = customUnit?.id
         self.entries = entries
         
         return
@@ -60,8 +60,8 @@ internal struct TransactionUpdateArguments: Encodable {
         case id = "transaction_id"
         case transactionTime = "transaction_time"
         case description
-        case globalUnit = "global_unit_denomination"
-        case customUnit = "custom_unit_denomination"
+        case globalUnitId = "global_unit_denomination"
+        case customUnitId = "custom_unit_denomination"
         case entries
     }
 

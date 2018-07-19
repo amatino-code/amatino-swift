@@ -10,7 +10,7 @@ import Foundation
 
 public class GlobalUnitError: AmatinoObjectError {}
 
-public class GlobalUnit: Encodable  {
+public class GlobalUnit: Decodable  {
     
     private static let urlKey = "global_unit_id"
     private static let path = "/units"
@@ -21,17 +21,6 @@ public class GlobalUnit: Encodable  {
     public let priority: Int
     public let description: String
     public let exponent: Int
-    
-    internal init(attributes: GlobalUnitAttributes) {
-        
-        code = attributes.code
-        id = attributes.unitId
-        name = attributes.name
-        priority = attributes.priority
-        description = attributes.description
-        exponent = attributes.exponent
-        return
-    }
     
     public static func retrieve(
         unitId: Int,
@@ -52,10 +41,10 @@ public class GlobalUnit: Encodable  {
                 callback: {(error: Error?, data: Data?) in
                     guard error == nil else {callback(error, nil); return}
                     let decoder = JSONDecoder()
-                    let object: GlobalUnitAttributes
+                    let globalUnit: GlobalUnit
                     do {
-                        object = try decoder.decode(
-                            [GlobalUnitAttributes].self,
+                        globalUnit = try decoder.decode(
+                            [GlobalUnit].self,
                             from: data!
                         )[0]
                     } catch {
@@ -63,7 +52,6 @@ public class GlobalUnit: Encodable  {
                         callback(error, nil)
                         return
                     }
-                    let globalUnit = GlobalUnit(attributes: object)
                     callback(nil, globalUnit)
                     return
             })
@@ -73,8 +61,24 @@ public class GlobalUnit: Encodable  {
 
     }
     
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Int.self, forKey: .id)
+        code = try container.decode(String.self, forKey: .code)
+        name = try container.decode(String.self, forKey: .name)
+        priority = try container.decode(Int.self, forKey: .priority)
+        description = try container.decode(String.self, forKey: .description)
+        exponent = try container.decode(Int.self, forKey: .exponent)
+        return
+    }
+    
     enum CodingKeys: String, CodingKey {
         case id = "global_unit_id"
+        case code
+        case name
+        case priority
+        case description
+        case exponent
     }
 }
 

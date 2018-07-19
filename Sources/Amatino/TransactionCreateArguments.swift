@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal struct TransactionCreateArguments: Encodable {
+public struct TransactionCreateArguments: Encodable {
     
     public let maxDescriptionLength: Int = 1024
 

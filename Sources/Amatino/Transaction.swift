@@ -13,6 +13,7 @@ public class Transaction: Decodable {
     
     private static let path = "/transactions"
     private static let urlKey = "transaction_id"
+    private static let maxArguments = 10
     
     public let id: Int64
     public let transactionTime: Date
@@ -46,6 +47,30 @@ public class Transaction: Decodable {
         return
     }
     
+    public static func createMany(
+        session: Session,
+        entity: Entity,
+        arguments: [TransactionCreateArguments],
+        callback: @escaping (_: Error?, _: [Transaction]?) -> Void
+        ) throws {
+        
+        guard arguments.count <= maxArguments else {
+            throw TransactionError(.badRequest)
+        }
+        let urlParameters = UrlParameters(singleEntity: entity)
+        let requestData = try RequestData(arrayData: arguments)
+        let _ = try AmatinoRequest(
+            path: path,
+            data: requestData,
+            session: session,
+            urlParameters: urlParameters,
+            method: .POST,
+            callback: { (error, data) in
+                let _ = loadManyResponse(error, data, callback)
+                return
+        })
+    }
+    
     public static func retrieve(
         session: Session,
         entity: Entity,
@@ -65,7 +90,6 @@ public class Transaction: Decodable {
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
-                print("Load transaction response")
                 let _ = loadResponse(error, data, callback)
                 return
         })
@@ -96,23 +120,47 @@ public class Transaction: Decodable {
         _ data: Data?,
         _ callback: (Error?, Transaction?) -> Void
         ) {
-            guard responseError == nil else {
-                callback(responseError, nil)
-                return
-            }
-            let decoder = JSONDecoder()
-            let transaction: Transaction
-            do {
-                transaction = try decoder.decode(
-                    [Transaction].self,
-                    from: data!
-                    )[0]
-                callback(nil, transaction)
-                return
-            } catch {
-                callback(error, nil)
-                return
-            }
+        guard responseError == nil else {
+            callback(responseError, nil)
+            return
+        }
+        let decoder = JSONDecoder()
+        let transaction: Transaction
+        do {
+            transaction = try decoder.decode(
+                [Transaction].self,
+                from: data!
+                )[0]
+            callback(nil, transaction)
+            return
+        } catch {
+            callback(error, nil)
+            return
+        }
+    }
+    
+    private static func loadManyResponse(
+        _ responseError: Error?,
+        _ data: Data?,
+        _ callback: (Error?, [Transaction]?) -> Void
+        ) {
+        guard responseError == nil else {
+            callback(responseError, nil)
+            return
+        }
+        let decoder = JSONDecoder()
+        let transactions: [Transaction]
+        do {
+            transactions = try decoder.decode(
+                [Transaction].self,
+                from: data!
+                )
+            callback(nil, transactions)
+            return
+        } catch {
+            callback(error, nil)
+            return
+        }
     }
     
     public required init(from decoder: Decoder) throws {
