@@ -34,4 +34,27 @@ class BalanceTests: DerivedObjectTest {
         return
     }
     
+    func testRetrieveRecursiveBalance() {
+        let expectation = XCTestExpectation(description: "Retrieve R. Balance")
+        
+        do {
+            let _ = try RecursiveBalance.retrieve(
+                session: session!,
+                entity: entity!,
+                account: cashAccount!) { (error, balance) in
+                    XCTAssertNil(error)
+                    XCTAssertNotNil(balance)
+                    expectation.fulfill()
+                    return
+            }
+        } catch {
+            XCTFail()
+            expectation.fulfill()
+            return
+        }
+        
+        wait(for: [expectation], timeout: 5)
+        return
+    }
+    
 }
