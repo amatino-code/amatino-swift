@@ -1,5 +1,5 @@
 //
-//  Balance.swift
+//  RecursiveBalance.swift
 //  Amatino
 //
 //  Created by Hugh Jeremy on 18/7/18.
@@ -7,19 +7,19 @@
 
 import Foundation
 
-class Balance: BalanceCore {
+class RecursiveBalance: BalanceCore {
     
-    private static let path = "/accounts/balance"
+    private static let path = "/accounts/balance/recursive"
     
     public static func retrieve(
         session: Session,
         entity: Entity,
         account: Account,
-        callback: @escaping (Error?, Balance?) -> Void
+        callback: @escaping (Error?, RecursiveBalance?) -> Void
         ) throws {
         
         let arguments = BalanceRetrieveArguments(account: account)
-        let _ = try Balance.retrieve(
+        let _ = try RecursiveBalance.retrieve(
             session: session,
             entity: entity,
             arguments: arguments,
@@ -33,14 +33,14 @@ class Balance: BalanceCore {
         entity: Entity,
         account: Account,
         balanceTime: Date,
-        callback: @escaping (Error?, Balance?) -> Void
+        callback: @escaping (Error?, RecursiveBalance?) -> Void
         ) throws {
         
         let arguments = BalanceRetrieveArguments(
             account: account,
             balanceTime: balanceTime
         )
-        let _ = try Balance.retrieve(
+        let _ = try RecursiveBalance.retrieve(
             session: session,
             entity: entity,
             arguments: arguments,
@@ -53,9 +53,9 @@ class Balance: BalanceCore {
         session: Session,
         entity: Entity,
         arguments: BalanceRetrieveArguments,
-        callback: @escaping (Error?, Balance?) -> Void
+        callback: @escaping (Error?, RecursiveBalance?) -> Void
         ) throws {
-
+        
         let urlParameters = UrlParameters(singleEntity: entity)
         let requestData = try RequestData(data: arguments)
         let _ = try AmatinoRequest(
@@ -74,16 +74,16 @@ class Balance: BalanceCore {
     private static func loadResponse(
         _ responseError: Error?,
         _ data: Data?,
-        _ callback: (Error?, Balance?) -> Void
+        _ callback: (Error?, RecursiveBalance?) -> Void
         ) {
         guard responseError == nil else {callback(responseError, nil); return}
         let decoder = JSONDecoder()
-        let balance: Balance
+        let balance: RecursiveBalance
         do {
             balance = try decoder.decode(
-                [Balance].self,
+                [RecursiveBalance].self,
                 from: data!
-            )[0]
+                )[0]
             callback(nil, balance)
             return
         } catch {
