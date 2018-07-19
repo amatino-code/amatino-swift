@@ -52,8 +52,9 @@ class GlobalUnitList {
     }
     
     public func unitWith(code: String) -> GlobalUnit? {
+        let searchTerm = code.uppercased()
         for unit in units {
-            if unit.code == code {
+            if unit.code == searchTerm {
                 return unit
             }
         }
