@@ -20,6 +20,7 @@ public class AmatinoObjectError: Error {
         case neverInitialized
         case operationInProgress
         case incomprehensibleResponse
+        case inconsistentInternalState
     }
 
     let kind: Kind

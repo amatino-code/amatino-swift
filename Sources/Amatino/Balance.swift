@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Balance: BalanceCore {
+class Balance: AccountBalance {
     
     private static let path = "/accounts/balance"
     

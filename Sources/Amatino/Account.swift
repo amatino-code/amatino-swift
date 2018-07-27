@@ -7,8 +7,12 @@
 
 import Foundation
 
-public class Account: Decodable {
-    
+public class AccountError: AmatinoObjectError {}
+
+public class Account: AmatinoObject {
+
+    internal static let errorType: AmatinoObjectError.Type = AccountError.self
+
     private static let path = "/accounts"
     private static let urlKey = "account_id"
     
@@ -46,7 +50,7 @@ public class Account: Decodable {
             urlParameters: urlParameters,
             method: .POST,
             callback: { (error, data) in
-                let _ = loadResponse(error, data, callback)
+                let _ = loadResponse(error, data, callback, Account.self)
         })
         return
     }
@@ -66,7 +70,7 @@ public class Account: Decodable {
             urlParameters: urlParameters,
             method: .POST,
             callback: { (error, data) in
-                let _ = loadArrayResponse(error, data, callback)
+                let _ = loadArrayResponse(error, data, callback, Account.self)
         })
     }
     
@@ -91,7 +95,7 @@ public class Account: Decodable {
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
-                let _ = loadResponse(error, data, callback)
+                let _ = loadResponse(error, data, callback, Account.self)
         })
     }
     
@@ -113,53 +117,10 @@ public class Account: Decodable {
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
-                let _ = loadArrayResponse(error, data, callback)
+                let _ = loadArrayResponse(error, data, callback, Account.self)
         })
     }
-    
-    private static func loadResponse(
-        _ error: Error?,
-        _ data: Data?,
-        _ callback: (Error?, Account?) -> Void
-        ) {
-        guard error == nil else {callback(error, nil); return}
-        let decoder = JSONDecoder()
-        let accounts: Account
-        do {
-            accounts = try decoder.decode(
-                [Account].self,
-                from: data!
-            )[0]
-            callback(nil, accounts)
-            return
-        } catch {
-            callback(error, nil)
-            return
-        }
-    }
-    
-    private static func loadArrayResponse(
-        _ error: Error?,
-        _ data: Data?,
-        _ callback: (Error?, [Account]?) -> Void
-        ) {
-        guard error == nil else {callback(error, nil); return}
-        let decoder = JSONDecoder()
-        let accounts: [Account]
-        do {
-            accounts = try decoder.decode(
-                [Account].self,
-                from: data!
-            )
-            callback(nil, accounts)
-            return
-        } catch {
-            callback(error, nil)
-            return
-        }
-    }
 
-    
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)
