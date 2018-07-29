@@ -16,7 +16,7 @@ public enum LedgerOrder {
 
 public class Ledger: Sequence {
     
-    private static let path = "/accounts/ledger"
+    internal static let path = "/accounts/ledger"
 
     internal var loadedRows: [LedgerRow]
     private var latestLoadedPage: Int
@@ -25,8 +25,9 @@ public class Ledger: Sequence {
     private let entity: Entity
 
     public let accountId: Int
-    public let startTime: Date
-    public let endTime: Date
+    public let start: Date
+    public let end: Date
+    public let generated: Date
     public let recursive: Bool
     public let globalUnitDenominationId: Int?
     public let customUnitDenominationId: Int?
@@ -43,7 +44,7 @@ public class Ledger: Sequence {
     ) throws {
         
         let targetPage = latestLoadedPage + 1
-        let arguments = Ledger.RetrievalArguments(
+        let arguments = LedgerPage.RetrievalArguments(
             accountId: accountId,
             page: targetPage
         )
@@ -82,7 +83,7 @@ public class Ledger: Sequence {
         callback: @escaping (Error?, Ledger?) -> Void
         ) throws {
     
-        let arguments = Ledger.RetrievalArguments(account: account)
+        let arguments = LedgerPage.RetrievalArguments(account: account)
         let urlParameters = UrlParameters(singleEntity: entity)
         let requestData = try RequestData(data: arguments)
         let _ = try AmatinoRequest(
@@ -126,149 +127,39 @@ public class Ledger: Sequence {
             throw LedgerError(.inconsistentInternalState)
         }
         let decoder = JSONDecoder()
-        let allAttributes = try decoder.decode(
-            [Ledger.Attributes].self,
+        let ledgerPage = try decoder.decode(
+            LedgerPage.self,
             from: dataToDecode
         )
-        guard allAttributes.count > 0 else {
-            throw LedgerError(.inconsistentInternalState)
-        }
-        let attributes = allAttributes[0]
-        let ledger = Ledger(session, entity, attributes)
+        let ledger = Ledger(session, entity, ledgerPage)
         return ledger
     }
     
     internal init (
         _ session: Session,
         _ entity: Entity,
-        _ attributes: Ledger.Attributes
+        _ attributes: LedgerPage
         ) {
         accountId = attributes.accountId
-        startTime = attributes.startTime
-        endTime = attributes.endTime
+        start = attributes.start
+        end = attributes.end
+        generated = attributes.generated
         recursive = attributes.recursive
         globalUnitDenominationId = attributes.globalUnitDenominationId
         customUnitDenominationId = attributes.customUnitDenominationId
         loadedRows = attributes.rows
+        latestLoadedPage = attributes.page
+        order = attributes.order
         self.session = session
         self.entity = entity
-        latestLoadedPage = 1
-        order = .youngestFirst
         return
     }
-
-    internal enum CodingKeys: String, CodingKey {
-        case accountId = "account_id"
-        case startTime = "start_time"
-        case endTime = "end_time"
-        case recursive
-        case globalUnitDenominationId = "global_unit_denomination"
-        case customUnitDenominationId = "custom_unit_denomination"
-        case ledgerRows = "ledger_rows"
+    
+    public func makeIterator() -> Iterator {
+        return Iterator(loadedRows)
     }
     
-    internal struct Attributes: Decodable {
-        
-        let accountId: Int
-        let startTime: Date
-        let endTime: Date
-        let recursive: Bool
-        let globalUnitDenominationId: Int?
-        let customUnitDenominationId: Int?
-        let rows: [LedgerRow]
-        
-        init (from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            accountId = try container.decode(Int.self, forKey: .accountId)
-            let rawStartTime = try container.decode(
-                String.self,
-                forKey: .startTime
-            )
-            startTime = try AmatinoDate(
-                fromString: rawStartTime,
-                withError: LedgerError.self
-                ).decodedDate
-            let rawEndTime = try container.decode(String.self, forKey: .endTime)
-            endTime = try AmatinoDate(
-                fromString: rawEndTime,
-                withError: LedgerError.self
-                ).decodedDate
-            recursive = try container.decode(Bool.self, forKey: .recursive)
-            globalUnitDenominationId = try container.decode(
-                Int?.self,
-                forKey: .globalUnitDenominationId
-            )
-            customUnitDenominationId = try container.decode(
-                Int?.self,
-                forKey: .customUnitDenominationId
-            )
-            rows = try container.decode([LedgerRow].self, forKey: .ledgerRows)
-            return
-        }
-        
-    }
-    
-    public struct RetrievalArguments: Encodable {
-
-        let accountId: Int
-        let startTime: Date?
-        let endTime: Date?
-        let page: Int?
-        let globalUnitDenominationId: Int?
-        let customUnitDenominationId: Int?
-        
-        public init (account: Account) {
-            accountId = account.id
-            startTime = nil
-            endTime = nil
-            page = nil
-            globalUnitDenominationId = nil
-            customUnitDenominationId = nil
-            return
-        }
-        
-        public init (accountId: Int, page: Int) {
-            self.page = page
-            self.accountId = accountId
-            endTime = nil
-            startTime = nil
-            globalUnitDenominationId = nil
-            customUnitDenominationId = nil
-            return
-        }
-        
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(accountId, forKey: .accountId)
-            try container.encode(startTime, forKey: .startTime)
-            try container.encode(endTime, forKey: .endTime)
-            try container.encode(page, forKey: .page)
-            try container.encode(
-                globalUnitDenominationId,
-                forKey: .globalUnitDenominationId
-            )
-            try container.encode(
-                customUnitDenominationId,
-                forKey: .customUnitDenominationId
-            )
-            return
-        }
-        
-        enum CodingKeys: String, CodingKey {
-            case accountId = "account_id"
-            case startTime = "start_time"
-            case endTime = "end_time"
-            case page
-            case globalUnitDenominationId = "global_unit_denomination"
-            case customUnitDenominationId = "custom_unit_denomination"
-        }
-    }
-    
-    public func makeIterator() -> LedgerIterator {
-        return LedgerIterator(loadedRows)
-    }
-    
-    public struct LedgerIterator: IteratorProtocol {
+    public struct Iterator: IteratorProtocol {
         let rowSource: [LedgerRow]
         var rowsProvided = 0
         

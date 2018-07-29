@@ -105,6 +105,9 @@
 		1E58D5B320F2283700069961 /* Colour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7B837A20EDA07800867B30 /* Colour.swift */; };
 		1E7B837B20EDA07800867B30 /* Colour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7B837A20EDA07800867B30 /* Colour.swift */; };
 		1E84780D202D1AF5005A4529 /* TransactionDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84780C202D1AF5005A4529 /* TransactionDescription.swift */; };
+		1E84DF71210BDEE300EA399D /* LedgerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84DF70210BDEE300EA399D /* LedgerPage.swift */; };
+		1E84DF72210BDEE300EA399D /* LedgerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84DF70210BDEE300EA399D /* LedgerPage.swift */; };
+		1E84DF73210BDEE300EA399D /* LedgerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84DF70210BDEE300EA399D /* LedgerPage.swift */; };
 		1E97CDE2210096B400C149A6 /* LedgerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E97CDE1210096B400C149A6 /* LedgerRow.swift */; };
 		1E97CDE3210096B400C149A6 /* LedgerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E97CDE1210096B400C149A6 /* LedgerRow.swift */; };
 		1E97CDE4210096B400C149A6 /* LedgerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E97CDE1210096B400C149A6 /* LedgerRow.swift */; };
@@ -190,6 +193,7 @@
 		1E58D55520F2254D00069961 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1E7B837A20EDA07800867B30 /* Colour.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colour.swift; sourceTree = "<group>"; };
 		1E84780C202D1AF5005A4529 /* TransactionDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDescription.swift; sourceTree = "<group>"; };
+		1E84DF70210BDEE300EA399D /* LedgerPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerPage.swift; sourceTree = "<group>"; };
 		1E97CDD92100947000C149A6 /* Ledger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger.swift; sourceTree = "<group>"; };
 		1E97CDE1210096B400C149A6 /* LedgerRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerRow.swift; sourceTree = "<group>"; };
 		1EA28D2E20286B9D00E576FD /* TransactionUpdateArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionUpdateArguments.swift; sourceTree = "<group>"; };
@@ -316,18 +320,18 @@
 			isa = PBXGroup;
 			children = (
 				1EEA82AC20ECE0BC00C406FE /* Account.swift */,
+				1E22B8CF20FF7ACF00D60340 /* AccountBalance.swift */,
 				1EEA82A820ECD79C00C406FE /* AccountCreateArguments.swift */,
 				1EEA82AA20ECDD0500C406FE /* AccountType.swift */,
 				1E54D29D202D9D42004E8599 /* Amatino.h */,
 				1E20CFD820DB259400C129D0 /* AmatinoAlpha.swift */,
+				1E16F5E3210AF196002F1B81 /* AmatinoDate.swift */,
 				1E20CD9D2027F7EB00EA3D73 /* AmatinoObject.swift */,
 				1EEA828B20EC655800C406FE /* AmatinoObjectError.swift */,
 				1EADC8812022B289005F94DF /* AmatinoRequest.swift */,
 				1E54D29A202D9B8D004E8599 /* AMCryptography.h */,
 				1E54D29B202D9C97004E8599 /* AMCryptography.m */,
-				1E16F5DF210AC71C002F1B81 /* Magnitude.swift */,
 				1E2B420820FF023400537C17 /* Balance.swift */,
-				1E22B8CF20FF7ACF00D60340 /* AccountBalance.swift */,
 				1E2B420B20FF07FD00537C17 /* BalanceRetrieveArguments.swift */,
 				1E7B837A20EDA07800867B30 /* Colour.swift */,
 				1EEA82A620ECCC9B00C406FE /* ConstraintError.swift */,
@@ -343,6 +347,7 @@
 				1E0E6F4320259822006AF115 /* InternalLibraryError.swift */,
 				1E97CDD92100947000C149A6 /* Ledger.swift */,
 				1E97CDE1210096B400C149A6 /* LedgerRow.swift */,
+				1E16F5DF210AC71C002F1B81 /* Magnitude.swift */,
 				1E20CD972026A88700EA3D73 /* ObjectCore.swift */,
 				1EEA82B020ED045200C406FE /* PermissionsGraph.swift */,
 				1E22B8C920FF79CE00D60340 /* RecursiveBalance.swift */,
@@ -365,7 +370,7 @@
 				1E38BB4B202AE27F00E055A4 /* UrlTargetable.swift */,
 				1EEA829920ECCB2D00C406FE /* User.swift */,
 				1EEA829620ECCB2C00C406FE /* UserAttributes.swift */,
-				1E16F5E3210AF196002F1B81 /* AmatinoDate.swift */,
+				1E84DF70210BDEE300EA399D /* LedgerPage.swift */,
 			);
 			name = Amatino;
 			path = Sources/Amatino;
@@ -547,6 +552,7 @@
 				1E58D5AB20F2283700069961 /* TransactionUpdateArguments.swift in Sources */,
 				1E58D59220F2283700069961 /* Entity.swift in Sources */,
 				1E16F5E6210AF196002F1B81 /* AmatinoDate.swift in Sources */,
+				1E84DF73210BDEE300EA399D /* LedgerPage.swift in Sources */,
 				1E58D5A320F2283700069961 /* SessionAttributes.swift in Sources */,
 				1E58D5AF20F2283700069961 /* UrlTargetable.swift in Sources */,
 				1E58D58F20F2283700069961 /* AMCryptography.m in Sources */,
@@ -575,6 +581,7 @@
 				1E16F5E4210AF196002F1B81 /* AmatinoDate.swift in Sources */,
 				1E16F5DC210AC60C002F1B81 /* Ledger.swift in Sources */,
 				1E97CDE2210096B400C149A6 /* LedgerRow.swift in Sources */,
+				1E84DF71210BDEE300EA399D /* LedgerPage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -630,6 +637,7 @@
 				1EADC87A2022A864005F94DF /* CustomUnit.swift in Sources */,
 				1E20CFD920DB259400C129D0 /* AmatinoAlpha.swift in Sources */,
 				1E16F5E5210AF196002F1B81 /* AmatinoDate.swift in Sources */,
+				1E84DF72210BDEE300EA399D /* LedgerPage.swift in Sources */,
 				1ED27CAD202B9D2900F098B0 /* SessionCreateArguments.swift in Sources */,
 				1EB1A54720EC4DD000D9C3B4 /* SessionAttributes.swift in Sources */,
 				1EEA82A520ECCB2D00C406FE /* User.swift in Sources */,
