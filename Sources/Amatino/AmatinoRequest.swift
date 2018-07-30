@@ -18,9 +18,8 @@ enum AmatinoRequestError: Error {
 
 internal class AmatinoRequest {
     
-    private let agent = "Amatino Swift 0.0.2"
-    //private let apiEndpoint = "https://api.amatino.io"
-    private let apiEndpoint = "http://127.0.0.1:5000"
+    private let agent = "Amatino Swift 0.0.5"
+    private let apiEndpoint = "https://api.amatino.io"
     private static let apiSession = URLSession(
         configuration: URLSessionConfiguration.ephemeral
     )
