@@ -9,7 +9,7 @@ import Foundation
 
 class RecursiveBalance: AccountBalance {
     
-    private static let path = "/accounts/balance/recursive"
+    internal static let path = "/accounts/balance/recursive"
     
     public static func retrieve(
         session: Session,

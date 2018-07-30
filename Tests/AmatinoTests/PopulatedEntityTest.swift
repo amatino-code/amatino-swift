@@ -239,17 +239,151 @@ class PopulatedEntityTest: DerivedObjectTest {
                         ledgerExpectation.fulfill()
                         return
                     }
-                    guard ledger.count == 7 else {
+                    guard ledger.count == 6 else {
                         XCTFail()
                         ledgerExpectation.fulfill()
                         return
                     }
+                    ledgerExpectation.fulfill()
+                    return
             })
         } catch {
             XCTFail()
             ledgerExpectation.fulfill()
             return
         }
+
+        wait(for: [ledgerExpectation], timeout: 5)
+        return
     }
+
+    func testRetrieveRecursiveLedgerPage() {
+        
+        let pageExpectation = XCTestExpectation(description: "Ledger Page")
+        
+        do {
+            let _ = try RecursiveLedgerPage.retrieve(
+                session: session!,
+                entity: entity!,
+                account: cashAccount!) { (error, newPage) in
+                    guard error == nil else {
+                        XCTFail()
+                        pageExpectation.fulfill()
+                        return
+                    }
+                    guard let page: RecursiveLedgerPage = newPage else {
+                        XCTFail()
+                        pageExpectation.fulfill()
+                        return
+                    }
+                    guard page.latest?.balance == self.recurseCashBalance else {
+                        XCTFail()
+                        pageExpectation.fulfill()
+                        return
+                    }
+                    pageExpectation.fulfill()
+                    return
+            }
+        } catch {
+            XCTFail()
+            pageExpectation.fulfill()
+            return
+        }
+        wait(for: [pageExpectation], timeout: 5)
+        return
+    }
+    
+    func testRetrieveRecursiveLedger() {
+        
+        let ledgerExpectation = XCTestExpectation(description: "R. Ledger")
+        
+        do {
+            let _ = try RecursiveLedger.retrieve(
+                session: session!,
+                entity: entity!,
+                account: cashAccount!,
+                callback: { (error, newLedger) in
+                    XCTAssertNil(error)
+                    XCTAssertNotNil(newLedger)
+                    guard error == nil else {
+                        XCTFail()
+                        ledgerExpectation.fulfill()
+                        return
+                    }
+                    guard let ledger: RecursiveLedger = newLedger else {
+                        XCTFail()
+                        ledgerExpectation.fulfill()
+                        return
+                    }
+                    let balance = ledger.latest?.balance
+                    guard balance == self.recurseCashBalance else {
+                        XCTFail()
+                        ledgerExpectation.fulfill()
+                        return
+                    }
+                    guard ledger.count == 7 else {
+                        XCTFail()
+                        ledgerExpectation.fulfill()
+                        return
+                    }
+                    ledgerExpectation.fulfill()
+                    return
+            })
+        } catch {
+            XCTFail()
+            ledgerExpectation.fulfill()
+            return
+        }
+        wait(for: [ledgerExpectation], timeout: 5)
+        return
+    }
+    
+    func testRetrieveNextLedgerPage() {
+        
+        let ledgerExpectation = XCTestExpectation(description: "Ledger")
+        
+        do {
+            let _ = try Ledger.retrieve(
+                session: session!,
+                entity: entity!,
+                account: cashAccount!,
+                callback: { (error, newLedger) in
+                    guard error == nil else {
+                        XCTFail()
+                        ledgerExpectation.fulfill()
+                        return
+                    }
+                    guard let ledger: Ledger = newLedger else {
+                        XCTFail()
+                        ledgerExpectation.fulfill()
+                        return
+                    }
+                    do {
+                        let _ = try ledger.nextPage(
+                            callback: { (error, rows) in
+                                guard error == nil else {
+                                    XCTFail()
+                                    ledgerExpectation.fulfill()
+                                    return
+                                }
+                        })
+                    } catch {
+                        XCTFail()
+                        ledgerExpectation.fulfill()
+                        return
+                    }
+                    ledgerExpectation.fulfill()
+                    return
+            })
+        } catch {
+            XCTFail()
+            ledgerExpectation.fulfill()
+            return
+        }
+        
+        wait(for: [ledgerExpectation], timeout: 5)
+        return
+    }
+    
     
 }

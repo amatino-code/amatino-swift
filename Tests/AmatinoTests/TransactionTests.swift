@@ -206,5 +206,5 @@ class TransactionTests: AmatinoTest {
         wait(for: [expectation], timeout: 25)
         return
     }
-    
+
 }

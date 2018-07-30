@@ -1,4 +1,13 @@
 //
+//  RecursiveLedgerPage.swift
+//  Amatino
+//
+//  Created by Hugh Jeremy on 30/7/18.
+//
+
+import Foundation
+
+//
 //  LedgerPage.swift
 //  Amatino
 //
@@ -7,9 +16,9 @@
 
 import Foundation
 
-public class LedgerPage: AmatinoObject, Sequence {
-
-    internal static let path = "/accounts/ledger"
+public class RecursiveLedgerPage: AmatinoObject, Sequence {
+    
+    internal static let path = "/accounts/ledger/recursive"
     internal static let errorType: AmatinoObjectError.Type = LedgerError.self
     
     public let accountId: Int
@@ -60,10 +69,10 @@ public class LedgerPage: AmatinoObject, Sequence {
         session: Session,
         entity: Entity,
         account: Account,
-        callback: @escaping (Error?, LedgerPage?) -> Void
+        callback: @escaping (Error?, RecursiveLedgerPage?) -> Void
         ) throws {
         let arguments = RetrievalArguments(account: account)
-        let _ = try LedgerPage.retrieve(
+        let _ = try RecursiveLedgerPage.retrieve(
             session: session,
             entity: entity,
             arguments: arguments,
@@ -77,26 +86,26 @@ public class LedgerPage: AmatinoObject, Sequence {
         entity: Entity,
         account: Account,
         page: Int,
-        callback: @escaping (Error?, LedgerPage?) -> Void
+        callback: @escaping (Error?, RecursiveLedgerPage?) -> Void
         ) throws {
         let arguments = RetrievalArguments(
             account: account,
             page: page
         )
-        let _ = try LedgerPage.retrieve(
+        let _ = try RecursiveLedgerPage.retrieve(
             session: session,
             entity: entity,
             arguments: arguments,
             callback: callback
         )
     }
-
+    
     public static func retrieve(
         session: Session,
         entity: Entity,
         arguments: RetrievalArguments,
-        callback: @escaping (Error?, LedgerPage?) -> Void
-    ) throws {
+        callback: @escaping (Error?, RecursiveLedgerPage?) -> Void
+        ) throws {
         
         let urlParameters = UrlParameters(singleEntity: entity)
         let requestData = try RequestData(
@@ -104,7 +113,7 @@ public class LedgerPage: AmatinoObject, Sequence {
             overrideListing: true
         )
         let _ = try AmatinoRequest(
-            path: LedgerPage.path,
+            path: RecursiveLedgerPage.path,
             data: requestData,
             session: session,
             urlParameters: urlParameters,
@@ -114,7 +123,7 @@ public class LedgerPage: AmatinoObject, Sequence {
                     error,
                     data,
                     callback,
-                    LedgerPage.self
+                    RecursiveLedgerPage.self
                 )
         })
     }
@@ -169,11 +178,11 @@ public class LedgerPage: AmatinoObject, Sequence {
         }
         return
     }
-
+    
     public func makeIterator() -> Ledger.Iterator {
         return Ledger.Iterator(rows)
     }
-
+    
     internal enum CodingKeys: String, CodingKey {
         case accountId = "account_id"
         case start = "start_time"
@@ -187,7 +196,7 @@ public class LedgerPage: AmatinoObject, Sequence {
         case page
         case oldestFirst = "ordered_oldest_first"
     }
-
+    
     public struct RetrievalArguments: Encodable {
         
         let accountId: Int
@@ -229,7 +238,7 @@ public class LedgerPage: AmatinoObject, Sequence {
             customUnitDenominationId = nil
             order = .oldestFirst
         }
-
+        
         public init(account: Account, page: Int, globalUnit: GlobalUnit) {
             self.page = page
             accountId = account.id

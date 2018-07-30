@@ -1,30 +1,22 @@
 //
-//  Ledger.swift
+//  RecursiveLedger.swift
 //  Amatino
 //
-//  Created by Hugh Jeremy on 19/7/18.
+//  Created by Hugh Jeremy on 30/7/18.
 //
-
 import Foundation
 
-public class LedgerError: AmatinoObjectError {}
-
-public enum LedgerOrder {
-    case youngestFirst
-    case oldestFirst
-}
-
-public class Ledger: Sequence {
+public class RecursiveLedger: Sequence {
     
-    internal static let path: String = "/accounts/ledger"
-
+    internal static let path: String = "/accounts/ledger/recursive"
+    
     private var loadedRows: [LedgerRow]
     private var latestLoadedPage: Int
-
+    
     private let session: Session
     private let entity: Entity
     private let account: Account
-
+    
     public let start: Date
     public let end: Date
     public let generated: Date
@@ -67,10 +59,10 @@ public class Ledger: Sequence {
     
     public func nextPage(
         callback: @escaping (Error?, [LedgerRow]?) -> Void
-    ) throws {
+        ) throws {
         
         let targetPage = latestLoadedPage + 1
-        let arguments = LedgerPage.RetrievalArguments(
+        let arguments = RecursiveLedgerPage.RetrievalArguments(
             account: account,
             page: targetPage
         )
@@ -80,7 +72,7 @@ public class Ledger: Sequence {
         )
         let urlParameters = UrlParameters(singleEntity: entity)
         let _ = try AmatinoRequest(
-            path: Ledger.path,
+            path: RecursiveLedger.path,
             data: requestData,
             session: session,
             urlParameters: urlParameters,
@@ -91,7 +83,7 @@ public class Ledger: Sequence {
                     return
                 }
                 let decoder = JSONDecoder()
-                let ledger: LedgerPage
+                let ledger: RecursiveLedgerPage
                 guard let dataToDecode: Data = data else {
                     let state = AmatinoObjectError(.inconsistentInternalState)
                     callback(state, nil)
@@ -99,7 +91,7 @@ public class Ledger: Sequence {
                 }
                 do {
                     ledger = try decoder.decode(
-                        LedgerPage.self,
+                        RecursiveLedgerPage.self,
                         from: dataToDecode
                     )
                 } catch {
@@ -117,10 +109,10 @@ public class Ledger: Sequence {
         session: Session,
         entity: Entity,
         account: Account,
-        callback: @escaping (Error?, Ledger?) -> Void
+        callback: @escaping (Error?, RecursiveLedger?) -> Void
         ) throws {
-    
-        let arguments = LedgerPage.RetrievalArguments(account: account)
+        
+        let arguments = RecursiveLedgerPage.RetrievalArguments(account: account)
         let urlParameters = UrlParameters(singleEntity: entity)
         let requestData = try RequestData(
             data: arguments,
@@ -133,7 +125,7 @@ public class Ledger: Sequence {
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
-                let _ = Ledger.asyncInit(
+                let _ = RecursiveLedger.asyncInit(
                     session,
                     entity,
                     account,
@@ -149,10 +141,10 @@ public class Ledger: Sequence {
         entity: Entity,
         account: Account,
         denomination: GlobalUnit,
-        callback: @escaping (Error?, Ledger?) -> Void
+        callback: @escaping (Error?, RecursiveLedger?) -> Void
         ) throws {
         
-        let arguments = LedgerPage.RetrievalArguments(
+        let arguments = RecursiveLedgerPage.RetrievalArguments(
             account: account,
             globalUnit: denomination
         )
@@ -165,7 +157,7 @@ public class Ledger: Sequence {
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
-                let _ = Ledger.asyncInit(
+                let _ = RecursiveLedger.asyncInit(
                     session,
                     entity,
                     account,
@@ -182,12 +174,12 @@ public class Ledger: Sequence {
         _ account: Account,
         _ error: Error?,
         _ data: Data?,
-        _ callback: @escaping (Error?, Ledger?) -> Void
+        _ callback: @escaping (Error?, RecursiveLedger?) -> Void
         ) {
         
-        let ledger: Ledger
+        let ledger: RecursiveLedger
         do {
-            ledger = try Ledger.decodeInit(
+            ledger = try RecursiveLedger.decodeInit(
                 session,
                 entity,
                 account,
@@ -208,17 +200,17 @@ public class Ledger: Sequence {
         _ account: Account,
         _ error: Error?,
         _ data: Data?
-        ) throws -> Ledger {
+        ) throws -> RecursiveLedger {
         guard error == nil else { throw error! }
         guard let dataToDecode: Data = data else {
             throw LedgerError(.inconsistentInternalState)
         }
         let decoder = JSONDecoder()
         let ledgerPage = try decoder.decode(
-            LedgerPage.self,
+            RecursiveLedgerPage.self,
             from: dataToDecode
         )
-        let ledger = Ledger(session, entity, account, ledgerPage)
+        let ledger = RecursiveLedger(session, entity, account, ledgerPage)
         return ledger
     }
     
@@ -226,7 +218,7 @@ public class Ledger: Sequence {
         _ session: Session,
         _ entity: Entity,
         _ account: Account,
-        _ attributes: LedgerPage
+        _ attributes: RecursiveLedgerPage
         ) {
         start = attributes.start
         end = attributes.end

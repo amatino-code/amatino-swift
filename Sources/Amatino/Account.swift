@@ -11,9 +11,9 @@ public class AccountError: AmatinoObjectError {}
 
 public class Account: AmatinoObject {
 
+    internal static let path = "/accounts"
     internal static let errorType: AmatinoObjectError.Type = AccountError.self
 
-    private static let path = "/accounts"
     private static let urlKey = "account_id"
     
     public let id: Int
