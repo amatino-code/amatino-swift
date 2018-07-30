@@ -117,31 +117,19 @@ public class Ledger: Sequence {
         session: Session,
         entity: Entity,
         account: Account,
+        start: Date? = nil,
+        end: Date? = nil,
+        order: LedgerOrder = .oldestFirst,
         callback: @escaping (Error?, Ledger?) -> Void
         ) throws {
     
-        let arguments = LedgerPage.RetrievalArguments(account: account)
-        let urlParameters = UrlParameters(singleEntity: entity)
-        let requestData = try RequestData(
-            data: arguments,
-            overrideListing: true
+        let arguments = LedgerPage.RetrievalArguments(
+            account: account,
+            start: start,
+            end: end,
+            order: order
         )
-        let _ = try AmatinoRequest(
-            path: path,
-            data: requestData,
-            session: session,
-            urlParameters: urlParameters,
-            method: .GET,
-            callback: { (error, data) in
-                let _ = Ledger.asyncInit(
-                    session,
-                    entity,
-                    account,
-                    error,
-                    data,
-                    callback
-                )
-        })
+        try Ledger.retrieve(session, entity, account, arguments, callback)
     }
     
     public static func retrieve(
@@ -149,15 +137,55 @@ public class Ledger: Sequence {
         entity: Entity,
         account: Account,
         denomination: GlobalUnit,
+        start: Date? = nil,
+        end: Date? = nil,
+        order: LedgerOrder = .oldestFirst,
         callback: @escaping (Error?, Ledger?) -> Void
         ) throws {
         
         let arguments = LedgerPage.RetrievalArguments(
             account: account,
-            globalUnit: denomination
+            globalUnit: denomination,
+            start: start,
+            end: end,
+            order: order
         )
+        try Ledger.retrieve(session, entity, account, arguments, callback)
+    }
+    
+    public static func retrieve(
+        session: Session,
+        entity: Entity,
+        account: Account,
+        denomination: CustomUnit,
+        start: Date? = nil,
+        end: Date? = nil,
+        order: LedgerOrder = .oldestFirst,
+        callback: @escaping (Error?, Ledger?) -> Void
+        ) throws {
+        
+        let arguments = LedgerPage.RetrievalArguments(
+            account: account,
+            customUnit: denomination,
+            start: start,
+            end: end,
+            order: order
+        )
+        try Ledger.retrieve(session, entity, account, arguments, callback)
+    }
+
+    private static func retrieve(
+        _ session: Session,
+        _ entity: Entity,
+        _ account: Account,
+        _ arguments: LedgerPage.RetrievalArguments,
+        _ callback: @escaping (Error?, Ledger?) -> Void
+        ) throws {
         let urlParameters = UrlParameters(singleEntity: entity)
-        let requestData = try RequestData(data: arguments)
+        let requestData = try RequestData(
+            data: arguments,
+            overrideListing: true
+        )
         let _ = try AmatinoRequest(
             path: path,
             data: requestData,

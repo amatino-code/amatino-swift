@@ -68,42 +68,7 @@ public class RecursiveLedgerPage: AmatinoObject, Sequence {
     public static func retrieve(
         session: Session,
         entity: Entity,
-        account: Account,
-        callback: @escaping (Error?, RecursiveLedgerPage?) -> Void
-        ) throws {
-        let arguments = RetrievalArguments(account: account)
-        let _ = try RecursiveLedgerPage.retrieve(
-            session: session,
-            entity: entity,
-            arguments: arguments,
-            callback: callback
-        )
-        return
-    }
-    
-    public static func retrieve(
-        session: Session,
-        entity: Entity,
-        account: Account,
-        page: Int,
-        callback: @escaping (Error?, RecursiveLedgerPage?) -> Void
-        ) throws {
-        let arguments = RetrievalArguments(
-            account: account,
-            page: page
-        )
-        let _ = try RecursiveLedgerPage.retrieve(
-            session: session,
-            entity: entity,
-            arguments: arguments,
-            callback: callback
-        )
-    }
-    
-    public static func retrieve(
-        session: Session,
-        entity: Entity,
-        arguments: RetrievalArguments,
+        arguments: LedgerPage.RetrievalArguments,
         callback: @escaping (Error?, RecursiveLedgerPage?) -> Void
         ) throws {
         
@@ -129,7 +94,9 @@ public class RecursiveLedgerPage: AmatinoObject, Sequence {
     }
     
     required public init (from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(
+            keyedBy: LedgerPage.CodingKeys.self
+        )
         accountId = try container.decode(Int.self, forKey: .accountId)
         let rawstart = try container.decode(
             String.self,
@@ -181,105 +148,6 @@ public class RecursiveLedgerPage: AmatinoObject, Sequence {
     
     public func makeIterator() -> Ledger.Iterator {
         return Ledger.Iterator(rows)
-    }
-    
-    internal enum CodingKeys: String, CodingKey {
-        case accountId = "account_id"
-        case start = "start_time"
-        case end = "end_time"
-        case generated = "generated_time"
-        case recursive
-        case globalUnitDenominationId = "global_unit_denomination"
-        case customUnitDenominationId = "custom_unit_denomination"
-        case ledgerRows = "ledger_rows"
-        case numberOfPages = "number_of_pages"
-        case page
-        case oldestFirst = "ordered_oldest_first"
-    }
-    
-    public struct RetrievalArguments: Encodable {
-        
-        let accountId: Int
-        let start: Date?
-        let end: Date?
-        let page: Int?
-        let globalUnitDenominationId: Int?
-        let customUnitDenominationId: Int?
-        let order: LedgerOrder
-        
-        public init (account: Account) {
-            accountId = account.id
-            start = nil
-            end = nil
-            page = nil
-            globalUnitDenominationId = account.globalUnitId
-            customUnitDenominationId = account.customUnitId
-            order = .oldestFirst
-            return
-        }
-        
-        public init (account: Account, page: Int) {
-            self.page = page
-            self.accountId = account.id
-            end = nil
-            start = nil
-            globalUnitDenominationId = account.globalUnitId
-            customUnitDenominationId = account.customUnitId
-            order = .oldestFirst
-            return
-        }
-        
-        public init(account: Account, globalUnit: GlobalUnit) {
-            page = nil
-            accountId = account.id
-            end = nil
-            start = nil
-            globalUnitDenominationId = globalUnit.id
-            customUnitDenominationId = nil
-            order = .oldestFirst
-        }
-        
-        public init(account: Account, page: Int, globalUnit: GlobalUnit) {
-            self.page = page
-            accountId = account.id
-            end = nil
-            start = nil
-            globalUnitDenominationId = globalUnit.id
-            customUnitDenominationId = nil
-            order = .oldestFirst
-        }
-        
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(accountId, forKey: .accountId)
-            try container.encode(start, forKey: .start)
-            try container.encode(end, forKey: .end)
-            try container.encode(page, forKey: .page)
-            try container.encode(
-                globalUnitDenominationId,
-                forKey: .globalUnitDenominationId
-            )
-            try container.encode(
-                customUnitDenominationId,
-                forKey: .customUnitDenominationId
-            )
-            if order == .oldestFirst {
-                try container.encode(true, forKey: .order)
-            } else {
-                try container.encode(false, forKey: .order)
-            }
-            return
-        }
-        
-        enum CodingKeys: String, CodingKey {
-            case accountId = "account_id"
-            case start = "start_time"
-            case end = "end_time"
-            case page
-            case globalUnitDenominationId = "global_unit_denomination"
-            case customUnitDenominationId = "custom_unit_denomination"
-            case order = "order_oldest_first"
-        }
     }
     
 }

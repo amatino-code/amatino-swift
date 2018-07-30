@@ -55,46 +55,11 @@ public class LedgerPage: AmatinoObject, Sequence {
             }
         }
     }
-    
-    public static func retrieve(
-        session: Session,
-        entity: Entity,
-        account: Account,
-        callback: @escaping (Error?, LedgerPage?) -> Void
-        ) throws {
-        let arguments = RetrievalArguments(account: account)
-        let _ = try LedgerPage.retrieve(
-            session: session,
-            entity: entity,
-            arguments: arguments,
-            callback: callback
-        )
-        return
-    }
-    
-    public static func retrieve(
-        session: Session,
-        entity: Entity,
-        account: Account,
-        page: Int,
-        callback: @escaping (Error?, LedgerPage?) -> Void
-        ) throws {
-        let arguments = RetrievalArguments(
-            account: account,
-            page: page
-        )
-        let _ = try LedgerPage.retrieve(
-            session: session,
-            entity: entity,
-            arguments: arguments,
-            callback: callback
-        )
-    }
 
     public static func retrieve(
         session: Session,
         entity: Entity,
-        arguments: RetrievalArguments,
+        arguments: LedgerPage.RetrievalArguments,
         callback: @escaping (Error?, LedgerPage?) -> Void
     ) throws {
         
@@ -198,48 +163,59 @@ public class LedgerPage: AmatinoObject, Sequence {
         let customUnitDenominationId: Int?
         let order: LedgerOrder
         
-        public init (account: Account) {
+        public init (
+            account: Account,
+            start: Date? = nil,
+            end: Date? = nil,
+            page: Int? = nil,
+            order: LedgerOrder = .oldestFirst
+        ) {
             accountId = account.id
-            start = nil
-            end = nil
-            page = nil
-            globalUnitDenominationId = account.globalUnitId
-            customUnitDenominationId = account.customUnitId
-            order = .oldestFirst
-            return
-        }
-        
-        public init (account: Account, page: Int) {
+            self.start = start
+            self.end = end
             self.page = page
-            self.accountId = account.id
-            end = nil
-            start = nil
             globalUnitDenominationId = account.globalUnitId
             customUnitDenominationId = account.customUnitId
-            order = .oldestFirst
+            self.order = order
             return
-        }
-        
-        public init(account: Account, globalUnit: GlobalUnit) {
-            page = nil
-            accountId = account.id
-            end = nil
-            start = nil
-            globalUnitDenominationId = globalUnit.id
-            customUnitDenominationId = nil
-            order = .oldestFirst
         }
 
-        public init(account: Account, page: Int, globalUnit: GlobalUnit) {
-            self.page = page
+        public init(
+            account: Account,
+            globalUnit: GlobalUnit,
+            start: Date? = nil,
+            end: Date? = nil,
+            page: Int? = nil,
+            order: LedgerOrder = .oldestFirst
+            ) {
             accountId = account.id
-            end = nil
-            start = nil
+            self.start = start
+            self.end = end
+            self.page = page
+            self.order = order
             globalUnitDenominationId = globalUnit.id
             customUnitDenominationId = nil
-            order = .oldestFirst
+            return
         }
         
+        public init(
+            account: Account,
+            customUnit: CustomUnit,
+            start: Date? = nil,
+            end: Date? = nil,
+            page: Int? = nil,
+            order: LedgerOrder = .oldestFirst
+            ) {
+            accountId = account.id
+            self.start = start
+            self.end = end
+            self.page = page
+            self.order = order
+            globalUnitDenominationId = nil
+            customUnitDenominationId = customUnit.id
+            return
+        }
+
         public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(accountId, forKey: .accountId)

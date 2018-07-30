@@ -184,10 +184,11 @@ class PopulatedEntityTest: DerivedObjectTest {
         let pageExpectation = XCTestExpectation(description: "Ledger Page")
         
         do {
+            let arguments = LedgerPage.RetrievalArguments(account: cashAccount!)
             let _ = try LedgerPage.retrieve(
                 session: session!,
                 entity: entity!,
-                account: cashAccount!) { (error, newPage) in
+                arguments: arguments) { (error, newPage) in
                     guard error == nil else {
                         XCTFail()
                         pageExpectation.fulfill()
@@ -262,10 +263,11 @@ class PopulatedEntityTest: DerivedObjectTest {
         let pageExpectation = XCTestExpectation(description: "Ledger Page")
         
         do {
+            let arguments = LedgerPage.RetrievalArguments(account: cashAccount!)
             let _ = try RecursiveLedgerPage.retrieve(
                 session: session!,
                 entity: entity!,
-                account: cashAccount!) { (error, newPage) in
+                arguments: arguments) { (error, newPage) in
                     guard error == nil else {
                         XCTFail()
                         pageExpectation.fulfill()
@@ -359,6 +361,9 @@ class PopulatedEntityTest: DerivedObjectTest {
                         return
                     }
                     do {
+                        let _ = try ledger.nextPage() { (error, rows) in
+                        
+                        }
                         let _ = try ledger.nextPage(
                             callback: { (error, rows) in
                                 guard error == nil else {
@@ -383,6 +388,62 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         wait(for: [ledgerExpectation], timeout: 5)
         return
+    }
+    
+    func testRetrieveLedgerTimeframe() {
+        let ledgerExpectation = XCTestExpectation(description: "Ledger")
+        
+        do {
+            let _ = try Ledger.retrieve(
+                session: session!,
+                entity: entity!,
+                account: cashAccount!,
+                start: Date(timeIntervalSinceNow: (-3600*24*2)),
+                end: Date(timeIntervalSinceNow: (-3600*24*1)),
+                callback: { (error, newLedger) in
+                    guard error == nil else {
+                        XCTFail()
+                        ledgerExpectation.fulfill()
+                        return
+                    }
+                    guard let ledger: Ledger = newLedger else {
+                        XCTFail()
+                        ledgerExpectation.fulfill()
+                        return
+                    }
+                    guard ledger.count == 3 else {
+                        XCTFail()
+                        ledgerExpectation.fulfill()
+                        return
+                    }
+                    ledgerExpectation.fulfill()
+                    return
+            })
+        } catch {
+            XCTFail()
+            ledgerExpectation.fulfill()
+            return
+        }
+        
+        wait(for: [ledgerExpectation], timeout: 5)
+        return
+    }
+    
+    func boop(session: Session, starkIndustries: Entity, suitSales: Account) throws {
+        
+                                                                                                                        try Ledger.retrieve(
+                                                                                                                            session: session,
+                                                                                                                            entity: starkIndustries,
+                                                                                                                            account: suitSales,
+                                                                                                                            callback: { (error, ledger) in
+                                                                                                                                for line in ledger! {
+                                                                                                                                    print("Running balance: \(line.balance)")
+                                                                                                                                }
+                                                                                                                        })
+        
+        
+        
+        
     }
     
     
