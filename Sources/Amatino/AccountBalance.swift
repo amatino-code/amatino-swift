@@ -1,5 +1,5 @@
 //
-//  BalanceCore.swift
+//  AccountBalance.swift
 //  Amatino
 //
 //  Created by Hugh Jeremy on 18/7/18.
@@ -9,7 +9,7 @@ import Foundation
 
 class BalanceError: AmatinoObjectError {}
 
-internal class BalanceCore: Decodable {
+internal class AccountBalance: Decodable {
     
     public let accountId: Int
     public let balanceTime: Date
@@ -49,20 +49,10 @@ internal class BalanceCore: Decodable {
             forKey: .customUnitDenomination
         )
         let rawMagnitude = try container.decode(String.self, forKey: .balance)
-        let negative: Bool = rawMagnitude.contains("(")
-        let parseMagnitude: String
-        if negative == true {
-            var magnitudeToStrip = rawMagnitude
-            magnitudeToStrip.removeFirst()
-            magnitudeToStrip.removeLast()
-            parseMagnitude = "-" + magnitudeToStrip
-        } else {
-            parseMagnitude = rawMagnitude
-        }
-        guard let decimalMagnitude = Decimal(string: parseMagnitude) else {
-            throw BalanceError(.incomprehensibleResponse)
-        }
-        magnitude = decimalMagnitude
+        magnitude = try Magnitude(
+            fromString: rawMagnitude,
+            withError: BalanceError.self
+            ).decimal
         recursive = try container.decode(Bool.self, forKey: .recursive)
         return
     }

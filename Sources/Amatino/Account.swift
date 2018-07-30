@@ -7,9 +7,13 @@
 
 import Foundation
 
-public class Account: Decodable {
-    
-    private static let path = "/accounts"
+public class AccountError: AmatinoObjectError {}
+
+public class Account: AmatinoObject {
+
+    internal static let path = "/accounts"
+    internal static let errorType: AmatinoObjectError.Type = AccountError.self
+
     private static let urlKey = "account_id"
     
     public let id: Int
@@ -37,6 +41,35 @@ public class Account: Decodable {
             description: description,
             globalUnit: globalUnit
         )
+        let _ = try Account.create(session, entity, arguments, callback)
+        return
+    }
+    
+    public static func create(
+        session: Session,
+        entity: Entity,
+        name: String,
+        description: String,
+        globalUnit: GlobalUnit,
+        parent: Account,
+        callback: @escaping (Error?, Account?) -> Void
+        ) throws {
+        let arguments = try AccountCreateArguments(
+            name: name,
+            description: description,
+            globalUnit: globalUnit,
+            parent: parent
+        )
+        let _ = try Account.create(session, entity, arguments, callback)
+        return
+    }
+    
+    private static func create(
+        _ session: Session,
+        _ entity: Entity,
+        _ arguments: AccountCreateArguments,
+        _ callback: @escaping (Error?, Account?) -> Void
+        ) throws {
         let requestData = try RequestData(data: arguments)
         let urlParameters = UrlParameters(singleEntity: entity)
         let _ = try AmatinoRequest(
@@ -46,9 +79,8 @@ public class Account: Decodable {
             urlParameters: urlParameters,
             method: .POST,
             callback: { (error, data) in
-                let _ = loadResponse(error, data, callback)
+                let _ = loadResponse(error, data, callback, Account.self)
         })
-        return
     }
     
     public static func create(
@@ -66,7 +98,7 @@ public class Account: Decodable {
             urlParameters: urlParameters,
             method: .POST,
             callback: { (error, data) in
-                let _ = loadArrayResponse(error, data, callback)
+                let _ = loadArrayResponse(error, data, callback, Account.self)
         })
     }
     
@@ -91,7 +123,7 @@ public class Account: Decodable {
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
-                let _ = loadResponse(error, data, callback)
+                let _ = loadResponse(error, data, callback, Account.self)
         })
     }
     
@@ -113,53 +145,10 @@ public class Account: Decodable {
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
-                let _ = loadArrayResponse(error, data, callback)
+                let _ = loadArrayResponse(error, data, callback, Account.self)
         })
     }
-    
-    private static func loadResponse(
-        _ error: Error?,
-        _ data: Data?,
-        _ callback: (Error?, Account?) -> Void
-        ) {
-        guard error == nil else {callback(error, nil); return}
-        let decoder = JSONDecoder()
-        let accounts: Account
-        do {
-            accounts = try decoder.decode(
-                [Account].self,
-                from: data!
-            )[0]
-            callback(nil, accounts)
-            return
-        } catch {
-            callback(error, nil)
-            return
-        }
-    }
-    
-    private static func loadArrayResponse(
-        _ error: Error?,
-        _ data: Data?,
-        _ callback: (Error?, [Account]?) -> Void
-        ) {
-        guard error == nil else {callback(error, nil); return}
-        let decoder = JSONDecoder()
-        let accounts: [Account]
-        do {
-            accounts = try decoder.decode(
-                [Account].self,
-                from: data!
-            )
-            callback(nil, accounts)
-            return
-        } catch {
-            callback(error, nil)
-            return
-        }
-    }
 
-    
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)

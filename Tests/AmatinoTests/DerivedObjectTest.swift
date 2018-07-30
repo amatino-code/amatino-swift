@@ -70,29 +70,29 @@ class DerivedObjectTest: AmatinoTest {
                         Entry(
                             side: .debit,
                             account: cashAccount,
-                            amount: Decimal(356.12)
+                            amount: Decimal(10)
                         ),
                         Entry(
                             side: .credit,
                             account: revenueAccount,
-                            amount: Decimal(356.12)
+                            amount: Decimal(10)
                         )
                     ]
                 )
                 let tx3Arguments = try TransactionCreateArguments(
                     transactionTime: Date(),
-                    description: "Test transaction 2",
+                    description: "Test transaction 3",
                     globalUnit: usd,
                     entries: [
                         Entry(
                             side: .debit,
                             account: cashAccount,
-                            amount: Decimal(356.12)
+                            amount: Decimal(5)
                         ),
                         Entry(
                             side: .credit,
                             account: revenueAccount,
-                            amount: Decimal(356.12)
+                            amount: Decimal(5)
                         )
                     ]
                 )
@@ -129,19 +129,19 @@ class DerivedObjectTest: AmatinoTest {
             ) {
             do {
                 let cashAccountArguments = try AccountCreateArguments(
-                    name: "Cash",
+                    name: "T1 Cash",
                     type: .asset,
                     description: "Test asset account",
                     globalUnit: unit
                 )
                 let revenueAccountArguments = try AccountCreateArguments(
-                    name: "Revenue",
+                    name: "T4 Revenue",
                     type: .income,
                     description: "Test income account",
                     globalUnit: unit
                 )
                 let liabilityAccountArguments = try AccountCreateArguments(
-                    name: "Liability",
+                    name: "T2 Liability",
                     type: .liability,
                     description: "Test liability account",
                     globalUnit: unit
@@ -158,8 +158,9 @@ class DerivedObjectTest: AmatinoTest {
                     callback: { (error, accounts) in
                         XCTAssertNil(error)
                         XCTAssertNotNil(accounts)
-                        self.cashAccount = accounts![0]
-                        self.revenueAccount = accounts![1]
+                        self.revenueAccount = accounts![0]
+                        self.cashAccount = accounts![1]
+                        self.liabilityAccount = accounts![2]
                         accountExpectation.fulfill()
                         createTransactions(
                             session,
