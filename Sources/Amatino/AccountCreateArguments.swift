@@ -67,19 +67,18 @@ public struct AccountCreateArguments: Encodable {
     
     public init(
         name: String,
-        type: AccountType,
         description: String,
         customUnit: CustomUnit,
-        parentAccount: Account
+        parent: Account
         ) throws {
         
         self.name = name
         self.description = description
         self.globalUnit = nil
-        self.type = type
+        self.type = parent.type
         self.customUnit = customUnit
         self.counterPartyEntity = nil
-        self.parentAccount = parentAccount
+        self.parentAccount = parent
         self.colour = nil
         
         try checkName(name: name)
@@ -90,19 +89,18 @@ public struct AccountCreateArguments: Encodable {
     
     public init(
         name: String,
-        type: AccountType,
         description: String,
         globalUnit: GlobalUnit,
-        parentAccount: Account
+        parent: Account
         ) throws {
         
         self.name = name
         self.description = description
         self.globalUnit = globalUnit
-        self.type = type
+        self.type = parent.type
         self.customUnit = nil
         self.counterPartyEntity = nil
-        self.parentAccount = parentAccount
+        self.parentAccount = parent
         self.colour = nil
         
         try checkName(name: name)

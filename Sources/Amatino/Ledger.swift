@@ -18,13 +18,13 @@ public class Ledger: Sequence {
     
     internal static let path = "/accounts/ledger"
 
-    internal var loadedRows: [LedgerRow]
+    private var loadedRows: [LedgerRow]
     private var latestLoadedPage: Int
 
     private let session: Session
     private let entity: Entity
+    private let account: Account
 
-    public let accountId: Int
     public let start: Date
     public let end: Date
     public let generated: Date
@@ -33,10 +33,36 @@ public class Ledger: Sequence {
     public let customUnitDenominationId: Int?
     public let order: LedgerOrder
 
-    public var totalRows: Int {
+    public var count: Int {
         get {
             return loadedRows.count
         }
+    }
+    
+    public var earliest: LedgerRow? {
+        get {
+            switch order {
+            case .oldestFirst:
+                return loadedRows.first
+            case .youngestFirst:
+                return loadedRows.last
+            }
+        }
+    }
+    
+    public var latest: LedgerRow? {
+        get {
+            switch order {
+            case .oldestFirst:
+                return loadedRows.last
+            case .youngestFirst:
+                return loadedRows.first
+            }
+        }
+    }
+    
+    subscript(index: Int) -> LedgerRow {
+        return loadedRows[index]
     }
     
     public func nextPage(
@@ -45,7 +71,7 @@ public class Ledger: Sequence {
         
         let targetPage = latestLoadedPage + 1
         let arguments = LedgerPage.RetrievalArguments(
-            accountId: accountId,
+            account: account,
             page: targetPage
         )
         let requestData = try RequestData(data: arguments)
@@ -62,6 +88,7 @@ public class Ledger: Sequence {
                     ledger = try Ledger.decodeInit(
                         self.session,
                         self.entity,
+                        self.account,
                         error,
                         data
                     )
@@ -93,13 +120,53 @@ public class Ledger: Sequence {
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
-                let _ = Ledger.asyncInit(session, entity, error, data, callback)
+                let _ = Ledger.asyncInit(
+                    session,
+                    entity,
+                    account,
+                    error,
+                    data,
+                    callback
+                )
+        })
+    }
+    
+    public static func retrieve(
+        session: Session,
+        entity: Entity,
+        account: Account,
+        denomination: GlobalUnit,
+        callback: @escaping (Error?, Ledger?) -> Void
+        ) throws {
+        
+        let arguments = LedgerPage.RetrievalArguments(
+            account: account,
+            globalUnit: denomination
+        )
+        let urlParameters = UrlParameters(singleEntity: entity)
+        let requestData = try RequestData(data: arguments)
+        let _ = try AmatinoRequest(
+            path: path,
+            data: requestData,
+            session: session,
+            urlParameters: urlParameters,
+            method: .GET,
+            callback: { (error, data) in
+                let _ = Ledger.asyncInit(
+                    session,
+                    entity,
+                    account,
+                    error,
+                    data,
+                    callback
+                )
         })
     }
     
     private static func asyncInit(
         _ session: Session,
         _ entity: Entity,
+        _ account: Account,
         _ error: Error?,
         _ data: Data?,
         _ callback: @escaping (Error?, Ledger?) -> Void
@@ -107,7 +174,13 @@ public class Ledger: Sequence {
         
         let ledger: Ledger
         do {
-            ledger = try Ledger.decodeInit(session, entity, error, data)
+            ledger = try Ledger.decodeInit(
+                session,
+                entity,
+                account,
+                error,
+                data
+            )
         } catch {
             callback(error, nil)
             return
@@ -119,6 +192,7 @@ public class Ledger: Sequence {
     private static func decodeInit(
         _ session: Session,
         _ entity: Entity,
+        _ account: Account,
         _ error: Error?,
         _ data: Data?
         ) throws -> Ledger {
@@ -131,16 +205,16 @@ public class Ledger: Sequence {
             LedgerPage.self,
             from: dataToDecode
         )
-        let ledger = Ledger(session, entity, ledgerPage)
+        let ledger = Ledger(session, entity, account, ledgerPage)
         return ledger
     }
     
     internal init (
         _ session: Session,
         _ entity: Entity,
+        _ account: Account,
         _ attributes: LedgerPage
         ) {
-        accountId = attributes.accountId
         start = attributes.start
         end = attributes.end
         generated = attributes.generated
@@ -152,6 +226,7 @@ public class Ledger: Sequence {
         order = attributes.order
         self.session = session
         self.entity = entity
+        self.account = account
         return
     }
     

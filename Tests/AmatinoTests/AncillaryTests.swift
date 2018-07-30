@@ -51,7 +51,6 @@ class AncillaryTests: AmatinoTest {
                             return
                         }
                         expectation.fulfill()
-                        print(units?.unitWith(code: "usd")?.name ?? "None found")
                         return
                 })
             } catch {

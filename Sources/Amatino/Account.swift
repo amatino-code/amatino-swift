@@ -41,6 +41,35 @@ public class Account: AmatinoObject {
             description: description,
             globalUnit: globalUnit
         )
+        let _ = try Account.create(session, entity, arguments, callback)
+        return
+    }
+    
+    public static func create(
+        session: Session,
+        entity: Entity,
+        name: String,
+        description: String,
+        globalUnit: GlobalUnit,
+        parent: Account,
+        callback: @escaping (Error?, Account?) -> Void
+        ) throws {
+        let arguments = try AccountCreateArguments(
+            name: name,
+            description: description,
+            globalUnit: globalUnit,
+            parent: parent
+        )
+        let _ = try Account.create(session, entity, arguments, callback)
+        return
+    }
+    
+    private static func create(
+        _ session: Session,
+        _ entity: Entity,
+        _ arguments: AccountCreateArguments,
+        _ callback: @escaping (Error?, Account?) -> Void
+        ) throws {
         let requestData = try RequestData(data: arguments)
         let urlParameters = UrlParameters(singleEntity: entity)
         let _ = try AmatinoRequest(
@@ -52,7 +81,6 @@ public class Account: AmatinoObject {
             callback: { (error, data) in
                 let _ = loadResponse(error, data, callback, Account.self)
         })
-        return
     }
     
     public static func create(

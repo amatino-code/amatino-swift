@@ -103,6 +103,7 @@
 		1E58D5B120F2283700069961 /* UserAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829620ECCB2C00C406FE /* UserAttributes.swift */; };
 		1E58D5B220F2283700069961 /* PermissionsGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82B020ED045200C406FE /* PermissionsGraph.swift */; };
 		1E58D5B320F2283700069961 /* Colour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7B837A20EDA07800867B30 /* Colour.swift */; };
+		1E59D9F6210E8C010080C4CD /* PopulatedEntityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E59D9F5210E8C010080C4CD /* PopulatedEntityTest.swift */; };
 		1E7B837B20EDA07800867B30 /* Colour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7B837A20EDA07800867B30 /* Colour.swift */; };
 		1E84780D202D1AF5005A4529 /* TransactionDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84780C202D1AF5005A4529 /* TransactionDescription.swift */; };
 		1E84DF71210BDEE300EA399D /* LedgerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84DF70210BDEE300EA399D /* LedgerPage.swift */; };
@@ -191,6 +192,7 @@
 		1E58D55220F2254D00069961 /* AmatinoIOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AmatinoIOS.framework; path = Amatino.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E58D55420F2254D00069961 /* Amatino.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Amatino.h; sourceTree = "<group>"; };
 		1E58D55520F2254D00069961 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1E59D9F5210E8C010080C4CD /* PopulatedEntityTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopulatedEntityTest.swift; sourceTree = "<group>"; };
 		1E7B837A20EDA07800867B30 /* Colour.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colour.swift; sourceTree = "<group>"; };
 		1E84780C202D1AF5005A4529 /* TransactionDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDescription.swift; sourceTree = "<group>"; };
 		1E84DF70210BDEE300EA399D /* LedgerPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerPage.swift; sourceTree = "<group>"; };
@@ -282,6 +284,7 @@
 				1E15311920FCB25900EB8CC6 /* TransactionTests.swift */,
 				1E2B420E20FF11EA00537C17 /* BalanceTests.swift */,
 				1E2B421020FF124B00537C17 /* DerivedObjectTest.swift */,
+				1E59D9F5210E8C010080C4CD /* PopulatedEntityTest.swift */,
 			);
 			name = AmatinoTests;
 			path = Tests/AmatinoTests;
@@ -591,6 +594,7 @@
 			files = (
 				1E15311620FC95FE00EB8CC6 /* EntityTests.swift in Sources */,
 				1E2B420F20FF11EA00537C17 /* BalanceTests.swift in Sources */,
+				1E59D9F6210E8C010080C4CD /* PopulatedEntityTest.swift in Sources */,
 				1E15311020FC7C3100EB8CC6 /* AmatinoAlphaTests.swift in Sources */,
 				1E15311420FC801B00EB8CC6 /* AmatinoTest.swift in Sources */,
 				1E2B421120FF124B00537C17 /* DerivedObjectTest.swift in Sources */,

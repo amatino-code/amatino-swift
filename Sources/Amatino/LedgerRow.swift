@@ -24,30 +24,21 @@ public struct LedgerRow: Decodable {
     let presentationBalance: String
     
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        transactionId = try container.decode(Int64.self, forKey: .transactionId)
+        var container = try decoder.unkeyedContainer()
+        transactionId = try container.decode(Int64.self)
         let formatter = DateFormatter()
         formatter.dateFormat = RequestData.dateStringFormat
-        let rawTransactionTime = try container.decode(
-            String.self,
-            forKey: .transactionTime
-        )
+        let rawTransactionTime = try container.decode(String.self)
         guard let txTime: Date = formatter.date(from: rawTransactionTime) else {
             throw LedgerRowError(.incomprehensibleResponse)
         }
         transactionTime = txTime
-        description = try container.decode(String.self, forKey: .description)
-        opposingAccountId = try container.decode(
-            Int?.self,
-            forKey: .opposingAccountId
-        )
-        opposingAccountName = try container.decode(
-            String.self,
-            forKey: .opposingAccountName
-        )
-        let rawDebit = try container.decode(String.self, forKey: .debit)
-        let rawCredit = try container.decode(String.self, forKey: .credit)
-        let rawBalance = try container.decode(String.self, forKey: .balance)
+        description = try container.decode(String.self)
+        opposingAccountId = try container.decode(Int?.self)
+        opposingAccountName = try container.decode(String.self)
+        let rawDebit = try container.decode(String.self)
+        let rawCredit = try container.decode(String.self)
+        let rawBalance = try container.decode(String.self)
         guard let decimalDebit = Decimal(string: rawDebit) else {
             throw LedgerRowError(.incomprehensibleResponse)
         }

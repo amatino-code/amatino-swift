@@ -30,7 +30,7 @@ public struct TransactionCreateArguments: Encodable {
         self.customUnitId = nil
         self.entries = entries
         let _ = try checkDescription(description: description)
-
+        let _ = try checkEntries(entries: entries)
         return
     }
     
@@ -47,6 +47,7 @@ public struct TransactionCreateArguments: Encodable {
         self.customUnitId = customUnit.id
         self.entries = entries
         let _ = try checkDescription(description: description)
+        let _ = try checkEntries(entries: entries)
         
         return
     }
@@ -64,7 +65,7 @@ public struct TransactionCreateArguments: Encodable {
         self.customUnitId = customUnitId
         self.entries = entries
         let _ = try checkDescription(description: description)
-        
+        let _ = try checkEntries(entries: entries)
         return
     }
     
@@ -81,7 +82,7 @@ public struct TransactionCreateArguments: Encodable {
         self.customUnitId = nil
         self.entries = entries
         let _ = try checkDescription(description: description)
-        
+        let _ = try checkEntries(entries: entries)
         return
     }
     
@@ -91,6 +92,22 @@ public struct TransactionCreateArguments: Encodable {
                 Max description length \(maxDescriptionLength) characters
                 """)
         }
+    }
+    
+    private func checkEntries(entries: Array<Entry>) throws -> Void {
+        var runningBalance: Decimal = 0
+        for entry in entries {
+            switch entry.side {
+            case .debit:
+                runningBalance += entry.amount
+            case .credit:
+                runningBalance -= entry.amount
+            }
+        }
+        guard runningBalance == 0 else {
+            throw ConstraintError("Total debits must equal total credits")
+        }
+        return
     }
     
     enum CodingKeys: String, CodingKey {

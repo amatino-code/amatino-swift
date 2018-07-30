@@ -29,6 +29,32 @@ public class LedgerPage: AmatinoObject, Sequence {
         }
     }
     
+    subscript(index: Int) -> LedgerRow {
+        return rows[index]
+    }
+    
+    public var earliest: LedgerRow? {
+        get {
+            switch order {
+            case .oldestFirst:
+                return rows.first
+            case .youngestFirst:
+                return rows.last
+            }
+        }
+    }
+    
+    public var latest: LedgerRow? {
+        get {
+            switch order {
+            case .oldestFirst:
+                return rows.last
+            case .youngestFirst:
+                return rows.first
+            }
+        }
+    }
+    
     public static func retrieve(
         session: Session,
         entity: Entity,
@@ -53,7 +79,7 @@ public class LedgerPage: AmatinoObject, Sequence {
         callback: @escaping (Error?, LedgerPage?) -> Void
         ) throws {
         let arguments = RetrievalArguments(
-            accountId: account.id,
+            account: account,
             page: page
         )
         let _ = try LedgerPage.retrieve(
@@ -83,7 +109,12 @@ public class LedgerPage: AmatinoObject, Sequence {
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
-                let _ = loadResponse(error, data, callback, LedgerPage.self)
+                let _ = loadObjectResponse(
+                    error,
+                    data,
+                    callback,
+                    LedgerPage.self
+                )
         })
     }
     
@@ -171,21 +202,41 @@ public class LedgerPage: AmatinoObject, Sequence {
             start = nil
             end = nil
             page = nil
-            globalUnitDenominationId = nil
-            customUnitDenominationId = nil
+            globalUnitDenominationId = account.globalUnitId
+            customUnitDenominationId = account.customUnitId
             order = .oldestFirst
             return
         }
         
-        public init (accountId: Int, page: Int) {
+        public init (account: Account, page: Int) {
             self.page = page
-            self.accountId = accountId
+            self.accountId = account.id
             end = nil
             start = nil
-            globalUnitDenominationId = nil
-            customUnitDenominationId = nil
+            globalUnitDenominationId = account.globalUnitId
+            customUnitDenominationId = account.customUnitId
             order = .oldestFirst
             return
+        }
+        
+        public init(account: Account, globalUnit: GlobalUnit) {
+            page = nil
+            accountId = account.id
+            end = nil
+            start = nil
+            globalUnitDenominationId = globalUnit.id
+            customUnitDenominationId = nil
+            order = .oldestFirst
+        }
+
+        public init(account: Account, page: Int, globalUnit: GlobalUnit) {
+            self.page = page
+            accountId = account.id
+            end = nil
+            start = nil
+            globalUnitDenominationId = globalUnit.id
+            customUnitDenominationId = nil
+            order = .oldestFirst
         }
         
         public func encode(to encoder: Encoder) throws {
@@ -203,7 +254,9 @@ public class LedgerPage: AmatinoObject, Sequence {
                 forKey: .customUnitDenominationId
             )
             if order == .oldestFirst {
-                
+                try container.encode(true, forKey: .order)
+            } else {
+                try container.encode(false, forKey: .order)
             }
             return
         }

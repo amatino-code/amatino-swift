@@ -24,6 +24,7 @@ internal class RequestData {
         ) throws {
         rawData = [data]
         dateFormatter.dateFormat = RequestData.dateStringFormat
+        dateFormatter.timeZone = TimeZone(identifier: "UTC")
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
         if overrideListing == true {
             encodedData = try encoder.encode(data)
@@ -40,6 +41,7 @@ internal class RequestData {
     internal init <T: Encodable>(arrayData: Array<T>) throws {
         rawData = arrayData as Array<T>
         dateFormatter.dateFormat = RequestData.dateStringFormat
+        dateFormatter.timeZone = TimeZone(identifier: "UTC")
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
         encodedData = try encoder.encode(arrayData)
         let dataString = String(data: encodedData, encoding: .utf8)

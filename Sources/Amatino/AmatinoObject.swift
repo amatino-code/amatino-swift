@@ -73,4 +73,30 @@ extension AmatinoObject {
         }
     }
     
+    static func loadObjectResponse<ObjectType: AmatinoObject>(
+        _ error: Error?,
+        _ data: Data?,
+        _ callback: (Error?, ObjectType?) -> Void,
+        _ object: ObjectType.Type
+        ) {
+        guard error == nil else {callback(error, nil); return}
+        let decoder = JSONDecoder()
+        let object: ObjectType
+        guard let dataToDecode: Data = data else {
+            callback(errorType.init(.inconsistentInternalState), nil)
+            return
+        }
+        do {
+            object = try decoder.decode(
+                ObjectType.self,
+                from: dataToDecode
+            )
+            callback(nil, object)
+            return
+        } catch {
+            callback(error, nil)
+            return
+        }
+    }
+    
 }
