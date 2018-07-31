@@ -9,8 +9,8 @@ import Foundation
 
 public class TransactionError: AmatinoObjectError {}
 
-public class Transaction: AmatinoObject {
-
+public class Transaction: EntityObject {
+    
     static var errorType: AmatinoObjectError.Type = TransactionError.self
     
     private static let path = "/transactions"
@@ -27,7 +27,8 @@ public class Transaction: AmatinoObject {
     public let authorId: Int64
     public let active: Bool
     public let entries: [Entry]
-    
+    public let entity: Entity
+    public let session: Session
     
     public static func create (
         session: Session,
@@ -68,11 +69,13 @@ public class Transaction: AmatinoObject {
             urlParameters: urlParameters,
             method: .POST,
             callback: { (error, data) in
-                let _ = loadArrayResponse(
-                    error,
-                    data,
+                let _ = asyncInitMany(
+                    session,
+                    entity,
                     callback,
-                    Transaction.self
+                    Transaction.self,
+                    error,
+                    data
                 )
                 return
         })
@@ -97,10 +100,27 @@ public class Transaction: AmatinoObject {
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
-                let _ = loadResponse(error, data, callback, Transaction.self)
+                let _ = asyncInit(
+                    session,
+                    entity,
+                    callback,
+                    Transaction.self,
+                    error,
+                    data
+                )
                 return
         })
         
+    }
+    
+    public func update(
+        session: Session,
+        transactionTime: Date,
+        description: String,
+        globalUnit: GlobalUnit,
+        entries: [Entry]
+        ) throws {
+        return
     }
     
     private static func executeCreate(
@@ -117,57 +137,123 @@ public class Transaction: AmatinoObject {
             urlParameters: UrlParameters(singleEntity: entity),
             method: .POST,
             callback: { (error, data) in
-                let _ = loadResponse(error, data, callback, Transaction.self)
+                let _ = asyncInit(
+                    session,
+                    entity,
+                    callback,
+                    Transaction.self,
+                    error,
+                    data
+                )
                 return
         })
     }
-
-
-    public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(Int64.self, forKey: .id)
-        let rawTransactionTime = try container.decode(
-            String.self,
-            forKey: .transactionTime
-        )
-        let formatter = DateFormatter()
-        formatter.dateFormat = RequestData.dateStringFormat
-        guard let tTime: Date = formatter.date(from: rawTransactionTime) else {
+    
+    static func responseInit<ObjectType>(
+        _ session: Session,
+        _ entity: Entity,
+        _ data: Data
+        ) throws -> ObjectType where ObjectType : EntityObject {
+        let attributes = try JSONDecoder().decode([Attributes].self, from: data)
+        guard attributes.count > 0 else {
             throw TransactionError(.incomprehensibleResponse)
         }
-        transactionTime = tTime
-        let rawVersionTime = try container.decode(
-            String.self,
-            forKey: .versionTime
-        )
-        guard let vTime: Date = formatter.date(from: rawVersionTime) else {
-            throw TransactionError(.incomprehensibleResponse)
+        let transaction = Transaction(session, entity, attributes[0])
+        return transaction as! ObjectType
+    }
+    
+    static func responseInitMany<ObjectType>(
+        _ session: Session,
+        _ entity: Entity,
+        _ data: Data
+        ) throws -> [ObjectType] where ObjectType : EntityObject {
+        let attributes = try JSONDecoder().decode([Attributes].self, from: data)
+        var transactions = [Transaction]()
+        for attribute in attributes {
+            transactions.append(Transaction(session, entity, attribute))
         }
-        versionTime = vTime
-        description = try container.decode(String.self, forKey: .description)
-        version = try container.decode(Int64.self, forKey: .version)
-        globalUnitId = try container.decode(Int64?.self, forKey: .globalUnitId)
-        customUnitId = try container.decode(Int64?.self, forKey: .customUnitId)
-        authorId = try container.decode(Int64.self, forKey: .authorId)
-        active = try container.decode(Bool.self, forKey: .active)
-        entries = try container.decode([Entry].self, forKey: .entries)
+        return transactions as! [ObjectType]
+    }
+
+    internal init (
+        _ session: Session,
+        _ entity: Entity,
+        _ attributes: Attributes
+        ) {
+        self.session = session
+        self.entity = entity
+        id = attributes.id
+        transactionTime = attributes.transactionTime
+        versionTime = attributes.versionTime
+        description = attributes.description
+        version = attributes.version
+        globalUnitId = attributes.globalUnitId
+        customUnitId = attributes.customUnitId
+        authorId = attributes.authorId
+        active = attributes.active
+        entries = attributes.entries
         return
     }
     
-    enum CodingKeys: String, CodingKey {
-        case id = "transaction_id"
-        case transactionTime = "transaction_time"
-        case description
-        case versionTime = "version_time"
-        case version
-        case globalUnitId = "global_unit_denomination"
-        case customUnitId = "custom_unit_denomination"
-        case authorId = "author"
-        case active
-        case entries
+    internal struct Attributes: Decodable {
+        
+        let id: Int64
+        let transactionTime: Date
+        let versionTime: Date
+        let description: String
+        let version: Int64
+        let globalUnitId: Int64?
+        let customUnitId: Int64?
+        let authorId: Int64
+        let active: Bool
+        let entries: [Entry]
+
+        internal init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            id = try container.decode(Int64.self, forKey: .id)
+            let rawTransactionTime = try container.decode(
+                String.self,
+                forKey: .transactionTime
+            )
+            let formatter = DateFormatter()
+            formatter.dateFormat = RequestData.dateStringFormat
+            guard let tTime: Date = formatter.date(from: rawTransactionTime) else {
+                throw TransactionError(.incomprehensibleResponse)
+            }
+            transactionTime = tTime
+            let rawVersionTime = try container.decode(
+                String.self,
+                forKey: .versionTime
+            )
+            guard let vTime: Date = formatter.date(from: rawVersionTime) else {
+                throw TransactionError(.incomprehensibleResponse)
+            }
+            versionTime = vTime
+            description = try container.decode(String.self, forKey: .description)
+            version = try container.decode(Int64.self, forKey: .version)
+            globalUnitId = try container.decode(Int64?.self, forKey: .globalUnitId)
+            customUnitId = try container.decode(Int64?.self, forKey: .customUnitId)
+            authorId = try container.decode(Int64.self, forKey: .authorId)
+            active = try container.decode(Bool.self, forKey: .active)
+            entries = try container.decode([Entry].self, forKey: .entries)
+            return
+        }
+        
+        enum CodingKeys: String, CodingKey {
+            case id = "transaction_id"
+            case transactionTime = "transaction_time"
+            case description
+            case versionTime = "version_time"
+            case version
+            case globalUnitId = "global_unit_denomination"
+            case customUnitId = "custom_unit_denomination"
+            case authorId = "author"
+            case active
+            case entries
+        }
     }
     
-    internal struct TransactionUpdateArguments: Encodable {
+    internal struct UpdateArguments: Encodable {
         
         private let id: Int64
         private let transactionTime: Date?

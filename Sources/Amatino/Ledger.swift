@@ -244,7 +244,7 @@ public class Ledger: Sequence {
         let decoder = JSONDecoder()
         let ledgerPage = try decoder.decode(
             LedgerPage.self,
-            from: dataToDecode
+            from:dataToDecode
         )
         let ledger = Ledger(session, entity, account, ledgerPage)
         return ledger
