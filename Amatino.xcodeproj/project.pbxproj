@@ -56,7 +56,6 @@
 		1E2B420D20FF07FD00537C17 /* BalanceRetrieveArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2B420B20FF07FD00537C17 /* BalanceRetrieveArguments.swift */; };
 		1E2B420F20FF11EA00537C17 /* BalanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2B420E20FF11EA00537C17 /* BalanceTests.swift */; };
 		1E2B421120FF124B00537C17 /* DerivedObjectTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2B421020FF124B00537C17 /* DerivedObjectTest.swift */; };
-		1E38BB48202AC6DC00E055A4 /* TransactionRetrieveArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E38BB47202AC6DC00E055A4 /* TransactionRetrieveArguments.swift */; };
 		1E38BB4C202AE27F00E055A4 /* UrlTargetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E38BB4B202AE27F00E055A4 /* UrlTargetable.swift */; };
 		1E54D29C202D9C97004E8599 /* AMCryptography.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E54D29B202D9C97004E8599 /* AMCryptography.m */; };
 		1E54D29F202D9EE9004E8599 /* Amatino.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E54D29D202D9D42004E8599 /* Amatino.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -91,10 +90,6 @@
 		1E58D5A420F2283700069961 /* SessionCreateArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED27CAC202B9D2900F098B0 /* SessionCreateArguments.swift */; };
 		1E58D5A520F2283700069961 /* Side.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E0E6F4920268C01006AF115 /* Side.swift */; };
 		1E58D5A620F2283700069961 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2356D5201D6A200008E123 /* Transaction.swift */; };
-		1E58D5A820F2283700069961 /* TransactionCreateArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8802022B289005F94DF /* TransactionCreateArguments.swift */; };
-		1E58D5A920F2283700069961 /* TransactionDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84780C202D1AF5005A4529 /* TransactionDescription.swift */; };
-		1E58D5AA20F2283700069961 /* TransactionRetrieveArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E38BB47202AC6DC00E055A4 /* TransactionRetrieveArguments.swift */; };
-		1E58D5AB20F2283700069961 /* TransactionUpdateArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA28D2E20286B9D00E576FD /* TransactionUpdateArguments.swift */; };
 		1E58D5AC20F2283700069961 /* UnitCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA28D332028FA3E00E576FD /* UnitCode.swift */; };
 		1E58D5AD20F2283700069961 /* UrlParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8872022B402005F94DF /* UrlParameters.swift */; };
 		1E58D5AE20F2283700069961 /* UrlTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED09749202A9EEA005D9732 /* UrlTarget.swift */; };
@@ -111,7 +106,6 @@
 		1E59DA01210EEECD0080C4CD /* RecursiveLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E59D9FF210EEECD0080C4CD /* RecursiveLedger.swift */; };
 		1E59DA02210EEECD0080C4CD /* RecursiveLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E59D9FF210EEECD0080C4CD /* RecursiveLedger.swift */; };
 		1E7B837B20EDA07800867B30 /* Colour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7B837A20EDA07800867B30 /* Colour.swift */; };
-		1E84780D202D1AF5005A4529 /* TransactionDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84780C202D1AF5005A4529 /* TransactionDescription.swift */; };
 		1E84DF71210BDEE300EA399D /* LedgerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84DF70210BDEE300EA399D /* LedgerPage.swift */; };
 		1E84DF72210BDEE300EA399D /* LedgerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84DF70210BDEE300EA399D /* LedgerPage.swift */; };
 		1E84DF73210BDEE300EA399D /* LedgerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84DF70210BDEE300EA399D /* LedgerPage.swift */; };
@@ -119,11 +113,9 @@
 		1E97CDE3210096B400C149A6 /* LedgerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E97CDE1210096B400C149A6 /* LedgerRow.swift */; };
 		1E97CDE4210096B400C149A6 /* LedgerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E97CDE1210096B400C149A6 /* LedgerRow.swift */; };
 		1EA28D342028FA3E00E576FD /* UnitCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA28D332028FA3E00E576FD /* UnitCode.swift */; };
-		1EA28D352028FFCD00E576FD /* TransactionUpdateArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA28D2E20286B9D00E576FD /* TransactionUpdateArguments.swift */; };
 		1EADC87A2022A864005F94DF /* CustomUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8792022A864005F94DF /* CustomUnit.swift */; };
 		1EADC87C2022A8E2005F94DF /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC87B2022A8E2005F94DF /* Entity.swift */; };
 		1EADC8832022B289005F94DF /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC87F2022B289005F94DF /* HTTPMethod.swift */; };
-		1EADC8842022B289005F94DF /* TransactionCreateArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8802022B289005F94DF /* TransactionCreateArguments.swift */; };
 		1EADC8852022B289005F94DF /* AmatinoRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8812022B289005F94DF /* AmatinoRequest.swift */; };
 		1EADC8862022B289005F94DF /* RequestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8822022B289005F94DF /* RequestData.swift */; };
 		1EADC8882022B402005F94DF /* UrlParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8872022B402005F94DF /* UrlParameters.swift */; };
@@ -190,7 +182,6 @@
 		1E2B420B20FF07FD00537C17 /* BalanceRetrieveArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRetrieveArguments.swift; sourceTree = "<group>"; };
 		1E2B420E20FF11EA00537C17 /* BalanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceTests.swift; sourceTree = "<group>"; };
 		1E2B421020FF124B00537C17 /* DerivedObjectTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivedObjectTest.swift; sourceTree = "<group>"; };
-		1E38BB47202AC6DC00E055A4 /* TransactionRetrieveArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRetrieveArguments.swift; sourceTree = "<group>"; };
 		1E38BB4B202AE27F00E055A4 /* UrlTargetable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlTargetable.swift; sourceTree = "<group>"; };
 		1E54D29A202D9B8D004E8599 /* AMCryptography.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AMCryptography.h; sourceTree = "<group>"; };
 		1E54D29B202D9C97004E8599 /* AMCryptography.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AMCryptography.m; sourceTree = "<group>"; };
@@ -202,16 +193,13 @@
 		1E59D9FB210EEE090080C4CD /* RecursiveLedgerPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecursiveLedgerPage.swift; sourceTree = "<group>"; };
 		1E59D9FF210EEECD0080C4CD /* RecursiveLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecursiveLedger.swift; sourceTree = "<group>"; };
 		1E7B837A20EDA07800867B30 /* Colour.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colour.swift; sourceTree = "<group>"; };
-		1E84780C202D1AF5005A4529 /* TransactionDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDescription.swift; sourceTree = "<group>"; };
 		1E84DF70210BDEE300EA399D /* LedgerPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerPage.swift; sourceTree = "<group>"; };
 		1E97CDD92100947000C149A6 /* Ledger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger.swift; sourceTree = "<group>"; };
 		1E97CDE1210096B400C149A6 /* LedgerRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerRow.swift; sourceTree = "<group>"; };
-		1EA28D2E20286B9D00E576FD /* TransactionUpdateArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionUpdateArguments.swift; sourceTree = "<group>"; };
 		1EA28D332028FA3E00E576FD /* UnitCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitCode.swift; sourceTree = "<group>"; };
 		1EADC8792022A864005F94DF /* CustomUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomUnit.swift; sourceTree = "<group>"; };
 		1EADC87B2022A8E2005F94DF /* Entity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entity.swift; sourceTree = "<group>"; };
 		1EADC87F2022B289005F94DF /* HTTPMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
-		1EADC8802022B289005F94DF /* TransactionCreateArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionCreateArguments.swift; sourceTree = "<group>"; };
 		1EADC8812022B289005F94DF /* AmatinoRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmatinoRequest.swift; sourceTree = "<group>"; };
 		1EADC8822022B289005F94DF /* RequestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestData.swift; sourceTree = "<group>"; };
 		1EADC8872022B402005F94DF /* UrlParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlParameters.swift; sourceTree = "<group>"; };
@@ -371,10 +359,6 @@
 				1ED27CAC202B9D2900F098B0 /* SessionCreateArguments.swift */,
 				1E0E6F4920268C01006AF115 /* Side.swift */,
 				1E2356D5201D6A200008E123 /* Transaction.swift */,
-				1EADC8802022B289005F94DF /* TransactionCreateArguments.swift */,
-				1E84780C202D1AF5005A4529 /* TransactionDescription.swift */,
-				1E38BB47202AC6DC00E055A4 /* TransactionRetrieveArguments.swift */,
-				1EA28D2E20286B9D00E576FD /* TransactionUpdateArguments.swift */,
 				1EA28D332028FA3E00E576FD /* UnitCode.swift */,
 				1EADC8872022B402005F94DF /* UrlParameters.swift */,
 				1ED09749202A9EEA005D9732 /* UrlTarget.swift */,
@@ -535,7 +519,6 @@
 				1E58D59E20F2283700069961 /* Region.swift in Sources */,
 				1E58D59520F2283700069961 /* EntityList.swift in Sources */,
 				1E58D5A520F2283700069961 /* Side.swift in Sources */,
-				1E58D5AA20F2283700069961 /* TransactionRetrieveArguments.swift in Sources */,
 				1E2B420720FED2F100537C17 /* GlobalUnitList.swift in Sources */,
 				1E58D59C20F2283700069961 /* InternalLibraryError.swift in Sources */,
 				1E58D5B320F2283700069961 /* Colour.swift in Sources */,
@@ -564,14 +547,12 @@
 				1E59D9FE210EEE090080C4CD /* RecursiveLedgerPage.swift in Sources */,
 				1E58D59620F2283700069961 /* EntityListAttributes.swift in Sources */,
 				1E58D5A620F2283700069961 /* Transaction.swift in Sources */,
-				1E58D5AB20F2283700069961 /* TransactionUpdateArguments.swift in Sources */,
 				1E58D59220F2283700069961 /* Entity.swift in Sources */,
 				1E16F5E6210AF196002F1B81 /* AmatinoDate.swift in Sources */,
 				1E84DF73210BDEE300EA399D /* LedgerPage.swift in Sources */,
 				1E58D5A320F2283700069961 /* SessionAttributes.swift in Sources */,
 				1E58D5AF20F2283700069961 /* UrlTargetable.swift in Sources */,
 				1E58D58F20F2283700069961 /* AMCryptography.m in Sources */,
-				1E58D5A820F2283700069961 /* TransactionCreateArguments.swift in Sources */,
 				1E16F5E2210AC71C002F1B81 /* Magnitude.swift in Sources */,
 				1E58D59F20F2283700069961 /* RegionList.swift in Sources */,
 				1E58D5AC20F2283700069961 /* UnitCode.swift in Sources */,
@@ -583,7 +564,6 @@
 				1E58D5AD20F2283700069961 /* UrlParameters.swift in Sources */,
 				1E58D59D20F2283700069961 /* ObjectCore.swift in Sources */,
 				1E2B420A20FF023400537C17 /* Balance.swift in Sources */,
-				1E58D5A920F2283700069961 /* TransactionDescription.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -623,13 +603,11 @@
 			buildActionMask = 0;
 			files = (
 				1ED0974A202A9EEA005D9732 /* UrlTarget.swift in Sources */,
-				1EA28D352028FFCD00E576FD /* TransactionUpdateArguments.swift in Sources */,
 				1EADC8852022B289005F94DF /* AmatinoRequest.swift in Sources */,
 				1EA28D342028FA3E00E576FD /* UnitCode.swift in Sources */,
 				1E2B420620FED2F100537C17 /* GlobalUnitList.swift in Sources */,
 				1EEA82A720ECCC9B00C406FE /* ConstraintError.swift in Sources */,
 				1EEA82A220ECCB2D00C406FE /* UserAttributes.swift in Sources */,
-				1EADC8842022B289005F94DF /* TransactionCreateArguments.swift in Sources */,
 				1E0E6F4420259822006AF115 /* InternalLibraryError.swift in Sources */,
 				1E20CD982026A88700EA3D73 /* ObjectCore.swift in Sources */,
 				1EEA82A420ECCB2D00C406FE /* RegionList.swift in Sources */,
@@ -637,7 +615,6 @@
 				1E0E6F4A20268C01006AF115 /* Side.swift in Sources */,
 				1EEA82AD20ECE0BC00C406FE /* Account.swift in Sources */,
 				1EADC87C2022A8E2005F94DF /* Entity.swift in Sources */,
-				1E38BB48202AC6DC00E055A4 /* TransactionRetrieveArguments.swift in Sources */,
 				1E2356DC201E21430008E123 /* Session.swift in Sources */,
 				1EEA82B120ED045200C406FE /* PermissionsGraph.swift in Sources */,
 				1EEA829C20ECCB2D00C406FE /* RegionListAttributes.swift in Sources */,
@@ -663,7 +640,6 @@
 				1EEA82A520ECCB2D00C406FE /* User.swift in Sources */,
 				1E38BB4C202AE27F00E055A4 /* UrlTargetable.swift in Sources */,
 				1E16F5E1210AC71C002F1B81 /* Magnitude.swift in Sources */,
-				1E84780D202D1AF5005A4529 /* TransactionDescription.swift in Sources */,
 				1E20CD9E2027F7EB00EA3D73 /* AmatinoObject.swift in Sources */,
 				1EEA829B20ECCB2D00C406FE /* Region.swift in Sources */,
 				1EADC8882022B402005F94DF /* UrlParameters.swift in Sources */,

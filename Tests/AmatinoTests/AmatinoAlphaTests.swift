@@ -280,7 +280,7 @@ class AmatinoAlphaTests: XCTestCase {
             accounts: [Account]
             ) {
             do {
-                let transaction = try TransactionCreateArguments(
+                let transaction = try Transaction.CreateArguments(
                     transactionTime: Date(),
                     description: "Test Transaction",
                     globalUnitId: accounts[0].globalUnitId!,

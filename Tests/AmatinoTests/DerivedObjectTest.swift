@@ -45,7 +45,7 @@ class DerivedObjectTest: AmatinoTest {
             _ usd: GlobalUnit
             ) {
             do {
-                let tx1Arguments = try TransactionCreateArguments(
+                let tx1Arguments = try Transaction.CreateArguments(
                     transactionTime: Date(timeIntervalSinceNow: (-3600*24*2)),
                     description: "Test transaction 1",
                     globalUnit: usd,
@@ -62,7 +62,7 @@ class DerivedObjectTest: AmatinoTest {
                         )
                     ]
                 )
-                let tx2Arguments = try TransactionCreateArguments(
+                let tx2Arguments = try Transaction.CreateArguments(
                     transactionTime: Date(timeIntervalSinceNow: (-3600*24)),
                     description: "Test transaction 2",
                     globalUnit: usd,
@@ -79,7 +79,7 @@ class DerivedObjectTest: AmatinoTest {
                         )
                     ]
                 )
-                let tx3Arguments = try TransactionCreateArguments(
+                let tx3Arguments = try Transaction.CreateArguments(
                     transactionTime: Date(),
                     description: "Test transaction 3",
                     globalUnit: usd,
