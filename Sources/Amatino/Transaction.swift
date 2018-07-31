@@ -80,6 +80,32 @@ public class Transaction: EntityObject {
                 return
         })
     }
+
+    private static func executeCreate(
+        _ session: Session,
+        _ entity: Entity,
+        _ arguments: Transaction.CreateArguments,
+        _ callback: @escaping (_: Error?, _: Transaction?) -> Void
+        ) throws {
+        let requestData = try RequestData(data: arguments)
+        let _ = try AmatinoRequest(
+            path: Transaction.path,
+            data: requestData,
+            session: session,
+            urlParameters: UrlParameters(singleEntity: entity),
+            method: .POST,
+            callback: { (error, data) in
+                let _ = asyncInit(
+                    session,
+                    entity,
+                    callback,
+                    Transaction.self,
+                    error,
+                    data
+                )
+                return
+        })
+    }
     
     public static func retrieve(
         session: Session,
@@ -114,32 +140,56 @@ public class Transaction: EntityObject {
     }
     
     public func update(
-        session: Session,
         transactionTime: Date,
         description: String,
         globalUnit: GlobalUnit,
-        entries: [Entry]
+        entries: [Entry],
+        callback: @escaping(_: Error?, _: Transaction?) -> Void
         ) throws {
+        let arguments = try UpdateArguments(
+            transaction: self,
+            transactionTime: transactionTime,
+            description: description,
+            globalUnit: globalUnit,
+            entries: entries
+        )
+        let _ = try executeUpdate(arguments: arguments, callback: callback)
         return
     }
     
-    private static func executeCreate(
-        _ session: Session,
-        _ entity: Entity,
-        _ arguments: Transaction.CreateArguments,
-        _ callback: @escaping (_: Error?, _: Transaction?) -> Void
+    public func update(
+        transactionTime: Date,
+        description: String,
+        customUnit: CustomUnit,
+        entries: [Entry],
+        callback: @escaping(_: Error?, _: Transaction?) -> Void
         ) throws {
-        let requestData = try RequestData(data: arguments)
+        let arguments = try UpdateArguments(
+            transaction: self,
+            transactionTime: transactionTime,
+            description: description,
+            customUnit: customUnit,
+            entries: entries
+        )
+        let _ = try executeUpdate(arguments: arguments, callback: callback)
+        return
+    }
+    
+    
+    private func executeUpdate(
+        arguments: UpdateArguments,
+        callback: @escaping(_: Error?, _: Transaction?) -> Void
+        ) throws {
         let _ = try AmatinoRequest(
             path: Transaction.path,
-            data: requestData,
+            data: try RequestData(data: arguments),
             session: session,
             urlParameters: UrlParameters(singleEntity: entity),
-            method: .POST,
+            method: .PUT,
             callback: { (error, data) in
-                let _ = asyncInit(
-                    session,
-                    entity,
+                let _ = Transaction.asyncInit(
+                    self.session,
+                    self.entity,
                     callback,
                     Transaction.self,
                     error,
