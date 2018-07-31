@@ -64,7 +64,6 @@
 		1E54D29F202D9EE9004E8599 /* Amatino.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E54D29D202D9D42004E8599 /* Amatino.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1E54D2A0202D9FB1004E8599 /* AMCryptography.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E54D29A202D9B8D004E8599 /* AMCryptography.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1E58D58620F2283700069961 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82AC20ECE0BC00C406FE /* Account.swift */; };
-		1E58D58720F2283700069961 /* AccountCreateArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82A820ECD79C00C406FE /* AccountCreateArguments.swift */; };
 		1E58D58820F2283700069961 /* AccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82AA20ECDD0500C406FE /* AccountType.swift */; };
 		1E58D58920F2283700069961 /* Amatino.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E54D29D202D9D42004E8599 /* Amatino.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1E58D58A20F2283700069961 /* AmatinoAlpha.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20CFD820DB259400C129D0 /* AmatinoAlpha.swift */; };
@@ -135,7 +134,6 @@
 		1EEA82A420ECCB2D00C406FE /* RegionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829820ECCB2C00C406FE /* RegionList.swift */; };
 		1EEA82A520ECCB2D00C406FE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829920ECCB2D00C406FE /* User.swift */; };
 		1EEA82A720ECCC9B00C406FE /* ConstraintError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82A620ECCC9B00C406FE /* ConstraintError.swift */; };
-		1EEA82A920ECD79C00C406FE /* AccountCreateArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82A820ECD79C00C406FE /* AccountCreateArguments.swift */; };
 		1EEA82AB20ECDD0500C406FE /* AccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82AA20ECDD0500C406FE /* AccountType.swift */; };
 		1EEA82AD20ECE0BC00C406FE /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82AC20ECE0BC00C406FE /* Account.swift */; };
 		1EEA82B120ED045200C406FE /* PermissionsGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82B020ED045200C406FE /* PermissionsGraph.swift */; };
@@ -220,7 +218,6 @@
 		1EEA829820ECCB2C00C406FE /* RegionList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegionList.swift; sourceTree = "<group>"; };
 		1EEA829920ECCB2D00C406FE /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		1EEA82A620ECCC9B00C406FE /* ConstraintError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstraintError.swift; sourceTree = "<group>"; };
-		1EEA82A820ECD79C00C406FE /* AccountCreateArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateArguments.swift; sourceTree = "<group>"; };
 		1EEA82AA20ECDD0500C406FE /* AccountType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountType.swift; sourceTree = "<group>"; };
 		1EEA82AC20ECE0BC00C406FE /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		1EEA82B020ED045200C406FE /* PermissionsGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsGraph.swift; sourceTree = "<group>"; };
@@ -324,7 +321,6 @@
 			children = (
 				1EEA82AC20ECE0BC00C406FE /* Account.swift */,
 				1E22B8CF20FF7ACF00D60340 /* AccountBalance.swift */,
-				1EEA82A820ECD79C00C406FE /* AccountCreateArguments.swift */,
 				1EEA82AA20ECDD0500C406FE /* AccountType.swift */,
 				1E54D29D202D9D42004E8599 /* Amatino.h */,
 				1E20CFD820DB259400C129D0 /* AmatinoAlpha.swift */,
@@ -549,7 +545,6 @@
 				1E58D5A220F2283700069961 /* Session.swift in Sources */,
 				1E16F5DE210AC60E002F1B81 /* Ledger.swift in Sources */,
 				1E59DA02210EEECD0080C4CD /* RecursiveLedger.swift in Sources */,
-				1E58D58720F2283700069961 /* AccountCreateArguments.swift in Sources */,
 				1E59D9FE210EEE090080C4CD /* RecursiveLedgerPage.swift in Sources */,
 				1E58D59620F2283700069961 /* EntityListAttributes.swift in Sources */,
 				1E58D5A620F2283700069961 /* Transaction.swift in Sources */,
@@ -631,7 +626,6 @@
 				1E97CDE3210096B400C149A6 /* LedgerRow.swift in Sources */,
 				1EADC8832022B289005F94DF /* HTTPMethod.swift in Sources */,
 				1E0E6F3E20258654006AF115 /* Entry.swift in Sources */,
-				1EEA82A920ECD79C00C406FE /* AccountCreateArguments.swift in Sources */,
 				1E15CD2E2023BD4B0031CB2B /* GlobalUnit.swift in Sources */,
 				1E16F5DD210AC60D002F1B81 /* Ledger.swift in Sources */,
 				1E59DA01210EEECD0080C4CD /* RecursiveLedger.swift in Sources */,

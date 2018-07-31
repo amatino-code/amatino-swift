@@ -90,19 +90,19 @@ class AmatinoAlphaTests: XCTestCase {
         unit: GlobalUnit,
         callback: @escaping (_: Error?, _: [Account]?) -> Void
         ) throws {
-        let account1 = try AccountCreateArguments(
+        let account1 = try Account.CreateArguments(
             name: "Test Asset",
             type: .asset,
             description: "",
             globalUnit: unit
         )
-        let account2 = try AccountCreateArguments(
+        let account2 = try Account.CreateArguments(
             name: "Test Liability",
             type: .liability,
             description: "",
             globalUnit: unit
         )
-        let _ = try Account.create(
+        let _ = try Account.createMany(
             session: session,
             entity: entity,
             arguments: [account1, account2],
@@ -182,13 +182,13 @@ class AmatinoAlphaTests: XCTestCase {
             entity: Entity
             ) {
             do {
-                let account1 = try AccountCreateArguments(
+                let account1 = try Account.CreateArguments(
                     name: "Test Asset",
                     type: .asset,
                     description: "",
                     globalUnit: unit
                 )
-                let account2 = try AccountCreateArguments(
+                let account2 = try Account.CreateArguments(
                     name: "Test Liability",
                     type: .liability,
                     description: "",

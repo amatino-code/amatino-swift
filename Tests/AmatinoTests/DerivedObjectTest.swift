@@ -128,19 +128,19 @@ class DerivedObjectTest: AmatinoTest {
             _ unit: GlobalUnit
             ) {
             do {
-                let cashAccountArguments = try AccountCreateArguments(
+                let cashAccountArguments = try Account.CreateArguments(
                     name: "T1 Cash",
                     type: .asset,
                     description: "Test asset account",
                     globalUnit: unit
                 )
-                let revenueAccountArguments = try AccountCreateArguments(
+                let revenueAccountArguments = try Account.CreateArguments(
                     name: "T4 Revenue",
                     type: .income,
                     description: "Test income account",
                     globalUnit: unit
                 )
-                let liabilityAccountArguments = try AccountCreateArguments(
+                let liabilityAccountArguments = try Account.CreateArguments(
                     name: "T2 Liability",
                     type: .liability,
                     description: "Test liability account",

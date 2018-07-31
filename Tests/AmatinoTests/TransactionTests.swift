@@ -36,20 +36,20 @@ class TransactionTests: AmatinoTest {
             _ unit: GlobalUnit
         ) {
             do {
-                let cashAccountArguments = try AccountCreateArguments(
+                let cashAccountArguments = try Account.CreateArguments(
                     name: "Cash",
                     type: .asset,
                     description: "Test asset account",
                     globalUnit: unit
                 )
-                let revenueAccountArguments = try AccountCreateArguments(
+                let revenueAccountArguments = try Account.CreateArguments(
                     name: "Revenue",
                     type: .income,
                     description: "Test income account",
                     globalUnit: unit
                 )
                 let arguments = [revenueAccountArguments, cashAccountArguments]
-                let _ = try Account.create(
+                let _ = try Account.createMany(
                     session: session,
                     entity: entity,
                     arguments: arguments,
