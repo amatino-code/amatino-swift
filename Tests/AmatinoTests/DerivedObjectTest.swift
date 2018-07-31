@@ -151,7 +151,7 @@ class DerivedObjectTest: AmatinoTest {
                     cashAccountArguments,
                     liabilityAccountArguments
                 ]
-                let _ = try Account.create(
+                let _ = try Account.createMany(
                     session: session,
                     entity: entity,
                     arguments: arguments,

@@ -83,7 +83,7 @@ public class Account: AmatinoObject {
         })
     }
     
-    public static func create(
+    public static func createMany(
         session: Session,
         entity: Entity,
         arguments: [AccountCreateArguments],
@@ -124,7 +124,7 @@ public class Account: AmatinoObject {
         })
     }
     
-    public static func retrieve(
+    public static func retrieveMany(
         session: Session,
         entity: Entity,
         accountIds: [Int],
