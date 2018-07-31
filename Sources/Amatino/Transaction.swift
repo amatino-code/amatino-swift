@@ -175,7 +175,6 @@ public class Transaction: EntityObject {
         return
     }
     
-    
     private func executeUpdate(
         arguments: UpdateArguments,
         callback: @escaping(_: Error?, _: Transaction?) -> Void
@@ -196,6 +195,29 @@ public class Transaction: EntityObject {
                     data
                 )
                 return
+        })
+    }
+
+    public func delete(
+        callback: @escaping(_: Error?, _: Transaction?) -> Void
+        ) throws {
+        let target = UrlTarget(integerValue: id, key: Transaction.urlKey)
+        let urlParameters = UrlParameters(entity: entity, targets: [target])
+        let _ = try AmatinoRequest(
+            path: Transaction.path,
+            data: nil,
+            session: session,
+            urlParameters: urlParameters,
+            method: .DELETE,
+            callback: { (error, data) in
+                let _ = Transaction.asyncInit(
+                    self.session,
+                    self.entity,
+                    callback,
+                    Transaction.self,
+                    error,
+                    data
+                )
         })
     }
     

@@ -112,10 +112,7 @@ public class Account: AmatinoObject {
             stringValue: String(accountId),
             key: Account.urlKey
         )
-        let urlParameters = UrlParameters(
-            entityWithTargets: entity,
-            targets: [target]
-        )
+        let urlParameters = UrlParameters(entity: entity, targets: [target])
         let _ = try AmatinoRequest(
             path: path,
             data: nil,
@@ -134,10 +131,7 @@ public class Account: AmatinoObject {
         callback: @escaping (Error?, [Account]?) -> Void
         ) throws {
         let targets = UrlTarget.createSequence(key: urlKey, values: accountIds)
-        let urlParameters = UrlParameters(
-            entityWithTargets: entity,
-            targets: targets
-        )
+        let urlParameters = UrlParameters(entity: entity, targets: targets)
         let _ = try AmatinoRequest(
             path: path,
             data: nil,
