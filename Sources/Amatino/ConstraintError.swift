@@ -7,12 +7,30 @@
 
 import Foundation
 
-public class ConstraintError: Error, CustomStringConvertible {
+public class ConstraintError: AmatinoError {
     
-    public private(set) var description: String
+    public let constraint: Constraint
+    public let constraintDescription: String
     
-    init (_ cause: String) {
-        description = cause
+    internal init (_ cause: Constraint, _ description: String? = nil) {
+        constraint = cause
+        if description != nil {
+            constraintDescription = description!
+        } else {
+            constraintDescription = cause.rawValue
+        }
+        super.init(.constraintViolated)
+        return
+    }
+    
+    public enum Constraint: String {
+        case descriptionLength = """
+                                 A supplied description exceeded character
+                                 limits
+                                 """
+        case debitCreditBalance = """
+                                  Total debits must equal total credits
+                                  """
     }
     
 }
