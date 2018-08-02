@@ -71,7 +71,6 @@
 		1E58D58F20F2283700069961 /* AMCryptography.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E54D29B202D9C97004E8599 /* AMCryptography.m */; };
 		1E58D59120F2283700069961 /* CustomUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8792022A864005F94DF /* CustomUnit.swift */; };
 		1E58D59220F2283700069961 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC87B2022A8E2005F94DF /* Entity.swift */; };
-		1E58D59420F2283700069961 /* EntityCreateArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829220ECCB2B00C406FE /* EntityCreateArguments.swift */; };
 		1E58D59520F2283700069961 /* EntityList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829320ECCB2B00C406FE /* EntityList.swift */; };
 		1E58D59620F2283700069961 /* EntityListAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829120ECCB2B00C406FE /* EntityListAttributes.swift */; };
 		1E58D59820F2283700069961 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E0E6F3D20258654006AF115 /* Entry.swift */; };
@@ -124,7 +123,6 @@
 		1EEA829B20ECCB2D00C406FE /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA828F20ECCB2B00C406FE /* Region.swift */; };
 		1EEA829C20ECCB2D00C406FE /* RegionListAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829020ECCB2B00C406FE /* RegionListAttributes.swift */; };
 		1EEA829D20ECCB2D00C406FE /* EntityListAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829120ECCB2B00C406FE /* EntityListAttributes.swift */; };
-		1EEA829E20ECCB2D00C406FE /* EntityCreateArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829220ECCB2B00C406FE /* EntityCreateArguments.swift */; };
 		1EEA829F20ECCB2D00C406FE /* EntityList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829320ECCB2B00C406FE /* EntityList.swift */; };
 		1EEA82A220ECCB2D00C406FE /* UserAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829620ECCB2C00C406FE /* UserAttributes.swift */; };
 		1EEA82A420ECCB2D00C406FE /* RegionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829820ECCB2C00C406FE /* RegionList.swift */; };
@@ -205,7 +203,6 @@
 		1EEA828F20ECCB2B00C406FE /* Region.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Region.swift; sourceTree = "<group>"; };
 		1EEA829020ECCB2B00C406FE /* RegionListAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegionListAttributes.swift; sourceTree = "<group>"; };
 		1EEA829120ECCB2B00C406FE /* EntityListAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityListAttributes.swift; sourceTree = "<group>"; };
-		1EEA829220ECCB2B00C406FE /* EntityCreateArguments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityCreateArguments.swift; sourceTree = "<group>"; };
 		1EEA829320ECCB2B00C406FE /* EntityList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityList.swift; sourceTree = "<group>"; };
 		1EEA829620ECCB2C00C406FE /* UserAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAttributes.swift; sourceTree = "<group>"; };
 		1EEA829820ECCB2C00C406FE /* RegionList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegionList.swift; sourceTree = "<group>"; };
@@ -326,7 +323,6 @@
 				1E7B837A20EDA07800867B30 /* Colour.swift */,
 				1EADC8792022A864005F94DF /* CustomUnit.swift */,
 				1EADC87B2022A8E2005F94DF /* Entity.swift */,
-				1EEA829220ECCB2B00C406FE /* EntityCreateArguments.swift */,
 				1EEA829320ECCB2B00C406FE /* EntityList.swift */,
 				1EEA829120ECCB2B00C406FE /* EntityListAttributes.swift */,
 				1E4D5E33210FFC6400303BD2 /* EntityObject.swift */,
@@ -519,7 +515,6 @@
 				1E58D58D20F2283700069961 /* AmatinoRequest.swift in Sources */,
 				1E58D58A20F2283700069961 /* AmatinoAlpha.swift in Sources */,
 				1E58D5AE20F2283700069961 /* UrlTarget.swift in Sources */,
-				1E58D59420F2283700069961 /* EntityCreateArguments.swift in Sources */,
 				1E58D59B20F2283700069961 /* HTTPMethod.swift in Sources */,
 				1E4D5E36210FFC6400303BD2 /* EntityObject.swift in Sources */,
 				1E58D5B220F2283700069961 /* PermissionsGraph.swift in Sources */,
@@ -632,7 +627,6 @@
 				1EEA829D20ECCB2D00C406FE /* EntityListAttributes.swift in Sources */,
 				1EEA829F20ECCB2D00C406FE /* EntityList.swift in Sources */,
 				1E2B420C20FF07FD00537C17 /* BalanceRetrieveArguments.swift in Sources */,
-				1EEA829E20ECCB2D00C406FE /* EntityCreateArguments.swift in Sources */,
 				1E54D29C202D9C97004E8599 /* AMCryptography.m in Sources */,
 				1E2B420920FF023400537C17 /* Balance.swift in Sources */,
 				1EADC8862022B289005F94DF /* RequestData.swift in Sources */,
