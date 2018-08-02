@@ -94,7 +94,7 @@ public class Session {
         let dataToHash = timestamp + path + dataString
 
         guard let signature = AMSignature.sha512(apiKey, data:dataToHash) else {
-            throw InternalLibraryError(.SignatureHashFailed)
+            throw AmatinoError(.inconsistentInternalState)
         }
 
         return signature

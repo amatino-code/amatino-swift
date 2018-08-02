@@ -22,7 +22,6 @@
 
 /* Begin PBXBuildFile section */
 		1E0E6F3E20258654006AF115 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E0E6F3D20258654006AF115 /* Entry.swift */; };
-		1E0E6F4420259822006AF115 /* InternalLibraryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E0E6F4320259822006AF115 /* InternalLibraryError.swift */; };
 		1E0E6F4A20268C01006AF115 /* Side.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E0E6F4920268C01006AF115 /* Side.swift */; };
 		1E15311020FC7C3100EB8CC6 /* AmatinoAlphaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15310F20FC7C3100EB8CC6 /* AmatinoAlphaTests.swift */; };
 		1E15311420FC801B00EB8CC6 /* AmatinoTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15311320FC801B00EB8CC6 /* AmatinoTest.swift */; };
@@ -78,7 +77,6 @@
 		1E58D59820F2283700069961 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E0E6F3D20258654006AF115 /* Entry.swift */; };
 		1E58D59920F2283700069961 /* GlobalUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CD2D2023BD4B0031CB2B /* GlobalUnit.swift */; };
 		1E58D59B20F2283700069961 /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC87F2022B289005F94DF /* HTTPMethod.swift */; };
-		1E58D59C20F2283700069961 /* InternalLibraryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E0E6F4320259822006AF115 /* InternalLibraryError.swift */; };
 		1E58D59E20F2283700069961 /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA828F20ECCB2B00C406FE /* Region.swift */; };
 		1E58D59F20F2283700069961 /* RegionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829820ECCB2C00C406FE /* RegionList.swift */; };
 		1E58D5A020F2283700069961 /* RegionListAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829020ECCB2B00C406FE /* RegionListAttributes.swift */; };
@@ -158,7 +156,6 @@
 
 /* Begin PBXFileReference section */
 		1E0E6F3D20258654006AF115 /* Entry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entry.swift; sourceTree = "<group>"; };
-		1E0E6F4320259822006AF115 /* InternalLibraryError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalLibraryError.swift; sourceTree = "<group>"; };
 		1E0E6F4920268C01006AF115 /* Side.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Side.swift; sourceTree = "<group>"; };
 		1E15310F20FC7C3100EB8CC6 /* AmatinoAlphaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmatinoAlphaTests.swift; sourceTree = "<group>"; };
 		1E15311320FC801B00EB8CC6 /* AmatinoTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmatinoTest.swift; sourceTree = "<group>"; };
@@ -337,7 +334,6 @@
 				1E15CD2D2023BD4B0031CB2B /* GlobalUnit.swift */,
 				1E2B420520FED2F100537C17 /* GlobalUnitList.swift */,
 				1EADC87F2022B289005F94DF /* HTTPMethod.swift */,
-				1E0E6F4320259822006AF115 /* InternalLibraryError.swift */,
 				1E97CDD92100947000C149A6 /* Ledger.swift */,
 				1E84DF70210BDEE300EA399D /* LedgerPage.swift */,
 				1E97CDE1210096B400C149A6 /* LedgerRow.swift */,
@@ -514,7 +510,6 @@
 				1E58D59520F2283700069961 /* EntityList.swift in Sources */,
 				1E58D5A520F2283700069961 /* Side.swift in Sources */,
 				1E2B420720FED2F100537C17 /* GlobalUnitList.swift in Sources */,
-				1E58D59C20F2283700069961 /* InternalLibraryError.swift in Sources */,
 				1E58D5B320F2283700069961 /* Colour.swift in Sources */,
 				1E794684211187060006E971 /* AmatinoError.swift in Sources */,
 				1E58D59820F2283700069961 /* Entry.swift in Sources */,
@@ -602,7 +597,6 @@
 				1E2B420620FED2F100537C17 /* GlobalUnitList.swift in Sources */,
 				1EEA82A220ECCB2D00C406FE /* UserAttributes.swift in Sources */,
 				1E794683211187060006E971 /* AmatinoError.swift in Sources */,
-				1E0E6F4420259822006AF115 /* InternalLibraryError.swift in Sources */,
 				1EEA82A420ECCB2D00C406FE /* RegionList.swift in Sources */,
 				1E22B8CA20FF79CE00D60340 /* RecursiveBalance.swift in Sources */,
 				1E0E6F4A20268C01006AF115 /* Side.swift in Sources */,
