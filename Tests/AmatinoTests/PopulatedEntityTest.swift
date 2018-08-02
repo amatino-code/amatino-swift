@@ -22,12 +22,12 @@ class PopulatedEntityTest: DerivedObjectTest {
         let cashChildExpectation = XCTestExpectation(description: "Cash child")
         let extraTxExpectation = XCTestExpectation(description: "Extra TX")
         
-        let tx1: TransactionCreateArguments
-        let tx2: TransactionCreateArguments
-        let tx3: TransactionCreateArguments
+        let tx1: Transaction.CreateArguments
+        let tx2: Transaction.CreateArguments
+        let tx3: Transaction.CreateArguments
         
         do {
-            tx1 = try TransactionCreateArguments(
+            tx1 = try Transaction.CreateArguments(
                 transactionTime: Date(timeIntervalSinceNow: (-3600*25*3)),
                 description: "Test transaction 4",
                 globalUnit: unit!,
@@ -44,7 +44,7 @@ class PopulatedEntityTest: DerivedObjectTest {
                     )
                 ]
             )
-            tx2 = try TransactionCreateArguments(
+            tx2 = try Transaction.CreateArguments(
                 transactionTime: Date(timeIntervalSinceNow: (-3600*24*1)),
                 description: "Test transaction 5",
                 globalUnit: unit!,
@@ -61,7 +61,7 @@ class PopulatedEntityTest: DerivedObjectTest {
                     )
                 ]
             )
-            tx3 = try TransactionCreateArguments(
+            tx3 = try Transaction.CreateArguments(
                 transactionTime: Date(timeIntervalSinceNow: (-3600*24*1)),
                 description: "Test transaction 6",
                 globalUnit: unit!,
@@ -99,7 +99,7 @@ class PopulatedEntityTest: DerivedObjectTest {
                     extraTxExpectation.fulfill()
                     return
                 }
-                let tx4 = try TransactionCreateArguments(
+                let tx4 = try Transaction.CreateArguments(
                     transactionTime: Date(timeIntervalSinceNow: (-3600*24*1)),
                     description: "Test transaction 7",
                     globalUnit: unit!,

@@ -7,8 +7,6 @@
 
 import Foundation
 
-public class LedgerRowError: AmatinoObjectError {}
-
 public struct LedgerRow: Decodable {
     
     let transactionId: Int64
@@ -30,7 +28,7 @@ public struct LedgerRow: Decodable {
         formatter.dateFormat = RequestData.dateStringFormat
         let rawTransactionTime = try container.decode(String.self)
         guard let txTime: Date = formatter.date(from: rawTransactionTime) else {
-            throw LedgerRowError(.incomprehensibleResponse)
+            throw AmatinoError(.badResponse)
         }
         transactionTime = txTime
         description = try container.decode(String.self)
@@ -40,15 +38,12 @@ public struct LedgerRow: Decodable {
         let rawCredit = try container.decode(String.self)
         let rawBalance = try container.decode(String.self)
         guard let decimalDebit = Decimal(string: rawDebit) else {
-            throw LedgerRowError(.incomprehensibleResponse)
+            throw AmatinoError(.badResponse)
         }
         guard let decimalCredit = Decimal(string: rawCredit) else {
-            throw LedgerRowError(.incomprehensibleResponse)
+            throw AmatinoError(.badResponse)
         }
-        let magnitude = try Magnitude(
-            fromString: rawBalance,
-            withError: LedgerRowError.self
-        )
+        let magnitude = try Magnitude(fromString: rawBalance)
         presentationDebit = rawDebit
         presentationCredit = rawCredit
         presentationBalance = rawBalance
@@ -58,7 +53,7 @@ public struct LedgerRow: Decodable {
         return
     }
     
-    internal enum CodingKeys: String, CodingKey {
+    internal enum JSONObjectKeys: String, CodingKey {
         case transactionId = "transaction_id"
         case transactionTime = "transaction_time"
         case description

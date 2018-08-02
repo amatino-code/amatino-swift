@@ -13,6 +13,6 @@ public enum EntityListType: String {
     case deleted = "deleted"
 }
 
-public class EntityListError: AmatinoObjectError {}
+public class EntityListError: AmatinoError {}
 
 public class EntityList {}

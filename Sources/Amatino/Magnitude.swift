@@ -11,10 +11,7 @@ internal struct Magnitude {
     
     let decimal: Decimal
     
-    internal init<ErrorType: AmatinoObjectError>(
-        fromString rawMagnitude: String,
-        withError DecodeError: ErrorType.Type
-        ) throws {
+    internal init(fromString rawMagnitude: String) throws {
         
         let negative: Bool = rawMagnitude.contains("(")
         var parseMagnitude: String
@@ -26,7 +23,7 @@ internal struct Magnitude {
             parseMagnitude = rawMagnitude
         }
         guard var decimalMagnitude = Decimal(string: parseMagnitude) else {
-            throw ErrorType(.incomprehensibleResponse)
+            throw AmatinoError(.badResponse)
         }
         if negative == true {
             decimalMagnitude.negate()

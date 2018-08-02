@@ -7,12 +7,9 @@
 
 import Foundation
 
-public class AccountError: AmatinoObjectError {}
-
 public class Account: AmatinoObject {
 
     internal static let path = "/accounts"
-    internal static let errorType: AmatinoObjectError.Type = AccountError.self
 
     private static let urlKey = "account_id"
     
@@ -35,7 +32,7 @@ public class Account: AmatinoObject {
         globalUnit: GlobalUnit,
         callback: @escaping (Error?, Account?) -> Void
         ) throws {
-        let arguments = try AccountCreateArguments(
+        let arguments = try Account.CreateArguments(
             name: name,
             type: type,
             description: description,
@@ -54,7 +51,7 @@ public class Account: AmatinoObject {
         parent: Account,
         callback: @escaping (Error?, Account?) -> Void
         ) throws {
-        let arguments = try AccountCreateArguments(
+        let arguments = try Account.CreateArguments(
             name: name,
             description: description,
             globalUnit: globalUnit,
@@ -67,7 +64,7 @@ public class Account: AmatinoObject {
     private static func create(
         _ session: Session,
         _ entity: Entity,
-        _ arguments: AccountCreateArguments,
+        _ arguments: Account.CreateArguments,
         _ callback: @escaping (Error?, Account?) -> Void
         ) throws {
         let requestData = try RequestData(data: arguments)
@@ -83,10 +80,10 @@ public class Account: AmatinoObject {
         })
     }
     
-    public static func create(
+    public static func createMany(
         session: Session,
         entity: Entity,
-        arguments: [AccountCreateArguments],
+        arguments: [Account.CreateArguments],
         callback: @escaping (Error?, [Account]?) -> Void
         ) throws {
         let requestData = try RequestData(arrayData: arguments)
@@ -112,10 +109,7 @@ public class Account: AmatinoObject {
             stringValue: String(accountId),
             key: Account.urlKey
         )
-        let urlParameters = UrlParameters(
-            entityWithTargets: entity,
-            targets: [target]
-        )
+        let urlParameters = UrlParameters(entity: entity, targets: [target])
         let _ = try AmatinoRequest(
             path: path,
             data: nil,
@@ -127,17 +121,14 @@ public class Account: AmatinoObject {
         })
     }
     
-    public static func retrieve(
+    public static func retrieveMany(
         session: Session,
         entity: Entity,
         accountIds: [Int],
         callback: @escaping (Error?, [Account]?) -> Void
         ) throws {
         let targets = UrlTarget.createSequence(key: urlKey, values: accountIds)
-        let urlParameters = UrlParameters(
-            entityWithTargets: entity,
-            targets: targets
-        )
+        let urlParameters = UrlParameters(entity: entity, targets: targets)
         let _ = try AmatinoRequest(
             path: path,
             data: nil,
@@ -150,7 +141,7 @@ public class Account: AmatinoObject {
     }
 
     public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: JSONObjectKeys.self)
         id = try container.decode(Int.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         type = try container.decode(AccountType.self, forKey: .type)
@@ -170,7 +161,7 @@ public class Account: AmatinoObject {
         return
     }
 
-    enum CodingKeys: String, CodingKey {
+    enum JSONObjectKeys: String, CodingKey {
         case id = "account_id"
         case name
         case type
@@ -180,6 +171,176 @@ public class Account: AmatinoObject {
         case counterPartyEntityId = "counterparty_entity_id"
         case description
         case colour
+    }
+    
+    public struct CreateArguments: Encodable {
+        
+        public let maxNameLength = 1024
+        public let maxDescriptionLength = 1024
+        
+        private let name: String
+        private let type: AccountType
+        private let parentAccount: Account?
+        private let globalUnit: GlobalUnit?
+        private let customUnit: CustomUnit?
+        private let counterPartyEntity: Entity?
+        private let description: String
+        private let colour: Colour?
+        
+        internal var maxNameError: String { get {
+            return "Max name length \(maxNameLength) characters"
+        }}
+        internal var maxDescriptionError: String { get {
+            return "Max description length \(maxDescriptionLength) characters"
+            }}
+        
+        public init(
+            name: String,
+            type: AccountType,
+            description: String,
+            globalUnit: GlobalUnit
+            ) throws {
+            
+            self.name = name
+            self.description = description
+            self.globalUnit = globalUnit
+            self.type = type
+            self.customUnit = nil
+            self.counterPartyEntity = nil
+            self.parentAccount = nil
+            self.colour = nil
+            
+            try checkName(name: name)
+            try checkDescription(description: description)
+            
+            return
+        }
+        
+        public init(
+            name: String,
+            type: AccountType,
+            description: String,
+            customUnit: CustomUnit
+            ) throws {
+            
+            self.name = name
+            self.description = description
+            self.globalUnit = nil
+            self.type = type
+            self.customUnit = customUnit
+            self.counterPartyEntity = nil
+            self.parentAccount = nil
+            self.colour = nil
+            
+            try checkName(name: name)
+            try checkDescription(description: description)
+            
+            return
+        }
+        
+        public init(
+            name: String,
+            description: String,
+            customUnit: CustomUnit,
+            parent: Account
+            ) throws {
+            
+            self.name = name
+            self.description = description
+            self.globalUnit = nil
+            self.type = parent.type
+            self.customUnit = customUnit
+            self.counterPartyEntity = nil
+            self.parentAccount = parent
+            self.colour = nil
+            
+            try checkName(name: name)
+            try checkDescription(description: description)
+            
+            return
+        }
+        
+        public init(
+            name: String,
+            description: String,
+            globalUnit: GlobalUnit,
+            parent: Account
+            ) throws {
+            
+            self.name = name
+            self.description = description
+            self.globalUnit = globalUnit
+            self.type = parent.type
+            self.customUnit = nil
+            self.counterPartyEntity = nil
+            self.parentAccount = parent
+            self.colour = nil
+            
+            try checkName(name: name)
+            try checkDescription(description: description)
+            
+            return
+        }
+        
+        private func checkName(name: String) throws -> Void {
+            guard name.count < maxNameLength else {
+                throw ConstraintError(.nameLength, maxNameError)
+            }
+        }
+        
+        private func checkDescription(description: String) throws -> Void {
+            guard description.count < maxDescriptionLength else {
+                throw ConstraintError(.descriptionLength, maxDescriptionError)
+            }
+        }
+        
+        enum JSONObjectKeys: String, CodingKey {
+            case name
+            case type = "type"
+            case parentAccount = "parent_account_id"
+            case globalUnitId = "global_unit_id"
+            case customUnitId = "custom_unit_id"
+            case counterPartyEntity = "counterparty_entity_id"
+            case description
+            case colourHexCode = "colour"
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: JSONObjectKeys.self)
+            try container.encode(name, forKey: .name)
+            try container.encode(description, forKey: .description)
+            try container.encode(type, forKey: .type)
+            try container.encode(parentAccount?.id, forKey: .parentAccount)
+            try container.encode(globalUnit?.id, forKey: .globalUnitId)
+            try container.encode(customUnit?.id, forKey: .customUnitId)
+            try container.encode(
+                counterPartyEntity?.id,
+                forKey: .counterPartyEntity
+            )
+            try container.encode(colour?.hexValue, forKey: .colourHexCode)
+            return
+        }
+        
+        public class ConstraintError: AmatinoError {
+            
+            public let constraint: Constraint
+            public let constraintDescription: String
+            
+            internal init(_ cause: Constraint, _ description: String? = nil) {
+                constraint = cause
+                constraintDescription = description ?? cause.rawValue
+                super.init(.constraintViolated)
+                return
+            }
+            
+            public enum Constraint: String {
+                case descriptionLength = "Maximum description length exceeded"
+                case nameLength = "Maximum name length exceeded"
+                case tooManyArguments = "Maximum number of arguments exceeded"
+            }
+            
+        }
+        
     }
 
 }

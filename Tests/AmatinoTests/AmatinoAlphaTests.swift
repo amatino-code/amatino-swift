@@ -90,19 +90,19 @@ class AmatinoAlphaTests: XCTestCase {
         unit: GlobalUnit,
         callback: @escaping (_: Error?, _: [Account]?) -> Void
         ) throws {
-        let account1 = try AccountCreateArguments(
+        let account1 = try Account.CreateArguments(
             name: "Test Asset",
             type: .asset,
             description: "",
             globalUnit: unit
         )
-        let account2 = try AccountCreateArguments(
+        let account2 = try Account.CreateArguments(
             name: "Test Liability",
             type: .liability,
             description: "",
             globalUnit: unit
         )
-        let _ = try Account.create(
+        let _ = try Account.createMany(
             session: session,
             entity: entity,
             arguments: [account1, account2],
@@ -141,7 +141,7 @@ class AmatinoAlphaTests: XCTestCase {
         func createEntity(amatinoAlpha: AmatinoAlpha) {
             do {
                 
-                let body = try EntityCreateArguments(name: "My First Entity")
+                let body = try Entity.CreateArguments(name: "My First Entity")
                 
                 let _ = try amatinoAlpha.request(
                     path: "/entities",
@@ -182,13 +182,13 @@ class AmatinoAlphaTests: XCTestCase {
             entity: Entity
             ) {
             do {
-                let account1 = try AccountCreateArguments(
+                let account1 = try Account.CreateArguments(
                     name: "Test Asset",
                     type: .asset,
                     description: "",
                     globalUnit: unit
                 )
-                let account2 = try AccountCreateArguments(
+                let account2 = try Account.CreateArguments(
                     name: "Test Liability",
                     type: .liability,
                     description: "",
@@ -280,7 +280,7 @@ class AmatinoAlphaTests: XCTestCase {
             accounts: [Account]
             ) {
             do {
-                let transaction = try TransactionCreateArguments(
+                let transaction = try Transaction.CreateArguments(
                     transactionTime: Date(),
                     description: "Test Transaction",
                     globalUnitId: accounts[0].globalUnitId!,

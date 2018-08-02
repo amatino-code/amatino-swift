@@ -5,9 +5,7 @@
 //  author: hugh@amatino.io
 //
 
-internal protocol AmatinoObject: Decodable {
-    static var errorType: AmatinoObjectError.Type { get }
-}
+internal protocol AmatinoObject: Decodable {}
 
 extension AmatinoObject {
     
@@ -22,7 +20,7 @@ extension AmatinoObject {
         let object: ObjectType
         let objects: [ObjectType]
         guard let dataToDecode: Data = data else {
-            callback(errorType.init(.inconsistentInternalState), nil)
+            callback(AmatinoError(.inconsistentInternalState), nil)
             return
         }
         do {
@@ -31,7 +29,7 @@ extension AmatinoObject {
                 from: dataToDecode
             )
             guard objects.count > 0 else {
-                callback(errorType.init(.incomprehensibleResponse), nil)
+                callback(AmatinoError(.badResponse), nil)
                 return
             }
             object = objects[0]
@@ -53,7 +51,7 @@ extension AmatinoObject {
         let decoder = JSONDecoder()
         let objects: [ObjectType]
         guard let dataToDecode: Data = data else {
-            callback(AmatinoObjectError(.inconsistentInternalState), nil)
+            callback(AmatinoError(.inconsistentInternalState), nil)
             return
         }
         do {
@@ -62,7 +60,7 @@ extension AmatinoObject {
                 from: dataToDecode
             )
             guard objects.count > 0 else {
-                callback(AmatinoObjectError(.incomprehensibleResponse), nil)
+                callback(AmatinoError(.badResponse), nil)
                 return
             }
             callback(nil, objects)
@@ -83,7 +81,7 @@ extension AmatinoObject {
         let decoder = JSONDecoder()
         let object: ObjectType
         guard let dataToDecode: Data = data else {
-            callback(errorType.init(.inconsistentInternalState), nil)
+            callback(AmatinoError(.badResponse), nil)
             return
         }
         do {

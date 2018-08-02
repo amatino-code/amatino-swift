@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class UserError: AmatinoObjectError {}
+public class UserError: AmatinoError {}
 
 public class User: Codable {}
     

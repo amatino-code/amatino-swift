@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class GlobalUnitError: AmatinoObjectError {}
+public class GlobalUnitError: AmatinoError {}
 
 public class GlobalUnit: Decodable  {
     

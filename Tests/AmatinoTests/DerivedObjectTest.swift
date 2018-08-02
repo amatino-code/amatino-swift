@@ -45,7 +45,7 @@ class DerivedObjectTest: AmatinoTest {
             _ usd: GlobalUnit
             ) {
             do {
-                let tx1Arguments = try TransactionCreateArguments(
+                let tx1Arguments = try Transaction.CreateArguments(
                     transactionTime: Date(timeIntervalSinceNow: (-3600*24*2)),
                     description: "Test transaction 1",
                     globalUnit: usd,
@@ -62,7 +62,7 @@ class DerivedObjectTest: AmatinoTest {
                         )
                     ]
                 )
-                let tx2Arguments = try TransactionCreateArguments(
+                let tx2Arguments = try Transaction.CreateArguments(
                     transactionTime: Date(timeIntervalSinceNow: (-3600*24)),
                     description: "Test transaction 2",
                     globalUnit: usd,
@@ -79,7 +79,7 @@ class DerivedObjectTest: AmatinoTest {
                         )
                     ]
                 )
-                let tx3Arguments = try TransactionCreateArguments(
+                let tx3Arguments = try Transaction.CreateArguments(
                     transactionTime: Date(),
                     description: "Test transaction 3",
                     globalUnit: usd,
@@ -128,19 +128,19 @@ class DerivedObjectTest: AmatinoTest {
             _ unit: GlobalUnit
             ) {
             do {
-                let cashAccountArguments = try AccountCreateArguments(
+                let cashAccountArguments = try Account.CreateArguments(
                     name: "T1 Cash",
                     type: .asset,
                     description: "Test asset account",
                     globalUnit: unit
                 )
-                let revenueAccountArguments = try AccountCreateArguments(
+                let revenueAccountArguments = try Account.CreateArguments(
                     name: "T4 Revenue",
                     type: .income,
                     description: "Test income account",
                     globalUnit: unit
                 )
-                let liabilityAccountArguments = try AccountCreateArguments(
+                let liabilityAccountArguments = try Account.CreateArguments(
                     name: "T2 Liability",
                     type: .liability,
                     description: "Test liability account",
@@ -151,7 +151,7 @@ class DerivedObjectTest: AmatinoTest {
                     cashAccountArguments,
                     liabilityAccountArguments
                 ]
-                let _ = try Account.create(
+                let _ = try Account.createMany(
                     session: session,
                     entity: entity,
                     arguments: arguments,

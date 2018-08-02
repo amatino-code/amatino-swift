@@ -10,7 +10,6 @@ import Foundation
 public class LedgerPage: AmatinoObject, Sequence {
 
     internal static let path = "/accounts/ledger"
-    internal static let errorType: AmatinoObjectError.Type = LedgerError.self
     
     public let accountId: Int
     public let start: Date
@@ -91,23 +90,14 @@ public class LedgerPage: AmatinoObject, Sequence {
             String.self,
             forKey: .start
         )
-        start = try AmatinoDate(
-            fromString: rawstart,
-            withError: LedgerError.self
-            ).decodedDate
+        start = try AmatinoDate(fromString: rawstart).decodedDate
         let rawend = try container.decode(String.self, forKey: .end)
-        end = try AmatinoDate(
-            fromString: rawend,
-            withError: LedgerError.self
-            ).decodedDate
+        end = try AmatinoDate(fromString: rawend).decodedDate
         let rawgenerated = try container.decode(
             String.self,
             forKey: .generated
         )
-        generated = try AmatinoDate(
-            fromString: rawgenerated,
-            withError: LedgerError.self
-            ).decodedDate
+        generated = try AmatinoDate(fromString: rawgenerated).decodedDate
         recursive = try container.decode(Bool.self, forKey: .recursive)
         globalUnitDenominationId = try container.decode(
             Int?.self,
