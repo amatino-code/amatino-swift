@@ -81,8 +81,6 @@
 		1E58D5A020F2283700069961 /* RegionListAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829020ECCB2B00C406FE /* RegionListAttributes.swift */; };
 		1E58D5A120F2283700069961 /* RequestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8822022B289005F94DF /* RequestData.swift */; };
 		1E58D5A220F2283700069961 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2356DB201E21430008E123 /* Session.swift */; };
-		1E58D5A320F2283700069961 /* SessionAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB1A54620EC4DD000D9C3B4 /* SessionAttributes.swift */; };
-		1E58D5A420F2283700069961 /* SessionCreateArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED27CAC202B9D2900F098B0 /* SessionCreateArguments.swift */; };
 		1E58D5A520F2283700069961 /* Side.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E0E6F4920268C01006AF115 /* Side.swift */; };
 		1E58D5A620F2283700069961 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2356D5201D6A200008E123 /* Transaction.swift */; };
 		1E58D5AC20F2283700069961 /* UnitCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA28D332028FA3E00E576FD /* UnitCode.swift */; };
@@ -117,9 +115,7 @@
 		1EADC8852022B289005F94DF /* AmatinoRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8812022B289005F94DF /* AmatinoRequest.swift */; };
 		1EADC8862022B289005F94DF /* RequestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8822022B289005F94DF /* RequestData.swift */; };
 		1EADC8882022B402005F94DF /* UrlParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8872022B402005F94DF /* UrlParameters.swift */; };
-		1EB1A54720EC4DD000D9C3B4 /* SessionAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB1A54620EC4DD000D9C3B4 /* SessionAttributes.swift */; };
 		1ED0974A202A9EEA005D9732 /* UrlTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED09749202A9EEA005D9732 /* UrlTarget.swift */; };
-		1ED27CAD202B9D2900F098B0 /* SessionCreateArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED27CAC202B9D2900F098B0 /* SessionCreateArguments.swift */; };
 		1EEA829B20ECCB2D00C406FE /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA828F20ECCB2B00C406FE /* Region.swift */; };
 		1EEA829C20ECCB2D00C406FE /* RegionListAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829020ECCB2B00C406FE /* RegionListAttributes.swift */; };
 		1EEA829D20ECCB2D00C406FE /* EntityListAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829120ECCB2B00C406FE /* EntityListAttributes.swift */; };
@@ -197,9 +193,7 @@
 		1EADC8812022B289005F94DF /* AmatinoRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmatinoRequest.swift; sourceTree = "<group>"; };
 		1EADC8822022B289005F94DF /* RequestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestData.swift; sourceTree = "<group>"; };
 		1EADC8872022B402005F94DF /* UrlParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlParameters.swift; sourceTree = "<group>"; };
-		1EB1A54620EC4DD000D9C3B4 /* SessionAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionAttributes.swift; sourceTree = "<group>"; };
 		1ED09749202A9EEA005D9732 /* UrlTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlTarget.swift; sourceTree = "<group>"; };
-		1ED27CAC202B9D2900F098B0 /* SessionCreateArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCreateArguments.swift; sourceTree = "<group>"; };
 		1EEA828F20ECCB2B00C406FE /* Region.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Region.swift; sourceTree = "<group>"; };
 		1EEA829020ECCB2B00C406FE /* RegionListAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegionListAttributes.swift; sourceTree = "<group>"; };
 		1EEA829120ECCB2B00C406FE /* EntityListAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityListAttributes.swift; sourceTree = "<group>"; };
@@ -343,8 +337,6 @@
 				1EEA829020ECCB2B00C406FE /* RegionListAttributes.swift */,
 				1EADC8822022B289005F94DF /* RequestData.swift */,
 				1E2356DB201E21430008E123 /* Session.swift */,
-				1EB1A54620EC4DD000D9C3B4 /* SessionAttributes.swift */,
-				1ED27CAC202B9D2900F098B0 /* SessionCreateArguments.swift */,
 				1E0E6F4920268C01006AF115 /* Side.swift */,
 				1E2356D5201D6A200008E123 /* Transaction.swift */,
 				1EA28D332028FA3E00E576FD /* UnitCode.swift */,
@@ -533,7 +525,6 @@
 				1E58D59220F2283700069961 /* Entity.swift in Sources */,
 				1E16F5E6210AF196002F1B81 /* AmatinoDate.swift in Sources */,
 				1E84DF73210BDEE300EA399D /* LedgerPage.swift in Sources */,
-				1E58D5A320F2283700069961 /* SessionAttributes.swift in Sources */,
 				1E58D5AF20F2283700069961 /* UrlTargetable.swift in Sources */,
 				1E58D58F20F2283700069961 /* AMCryptography.m in Sources */,
 				1E16F5E2210AC71C002F1B81 /* Magnitude.swift in Sources */,
@@ -541,7 +532,6 @@
 				1E58D5AC20F2283700069961 /* UnitCode.swift in Sources */,
 				1E58D5B120F2283700069961 /* UserAttributes.swift in Sources */,
 				1E58D58820F2283700069961 /* AccountType.swift in Sources */,
-				1E58D5A420F2283700069961 /* SessionCreateArguments.swift in Sources */,
 				1E58D58620F2283700069961 /* Account.swift in Sources */,
 				1E2B420D20FF07FD00537C17 /* BalanceRetrieveArguments.swift in Sources */,
 				1E58D5AD20F2283700069961 /* UrlParameters.swift in Sources */,
@@ -616,8 +606,6 @@
 				1E20CFD920DB259400C129D0 /* AmatinoAlpha.swift in Sources */,
 				1E16F5E5210AF196002F1B81 /* AmatinoDate.swift in Sources */,
 				1E84DF72210BDEE300EA399D /* LedgerPage.swift in Sources */,
-				1ED27CAD202B9D2900F098B0 /* SessionCreateArguments.swift in Sources */,
-				1EB1A54720EC4DD000D9C3B4 /* SessionAttributes.swift in Sources */,
 				1EEA82A520ECCB2D00C406FE /* User.swift in Sources */,
 				1E38BB4C202AE27F00E055A4 /* UrlTargetable.swift in Sources */,
 				1E16F5E1210AC71C002F1B81 /* Magnitude.swift in Sources */,
