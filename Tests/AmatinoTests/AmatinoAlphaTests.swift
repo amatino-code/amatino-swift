@@ -141,7 +141,7 @@ class AmatinoAlphaTests: XCTestCase {
         func createEntity(amatinoAlpha: AmatinoAlpha) {
             do {
                 
-                let body = try EntityCreateArguments(name: "My First Entity")
+                let body = try Entity.CreateArguments(name: "My First Entity")
                 
                 let _ = try amatinoAlpha.request(
                     path: "/entities",

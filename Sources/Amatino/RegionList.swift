@@ -7,6 +7,6 @@
 
 import Foundation
 
-public class RegionListError: AmatinoObjectError {}
+public class RegionListError: AmatinoError {}
 
 public class RegionList {}

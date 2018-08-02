@@ -7,16 +7,14 @@
 
 import Foundation
 
-public class TransactionError: AmatinoObjectError {}
-
 public class Transaction: EntityObject {
     
-    static var errorType: AmatinoObjectError.Type = TransactionError.self
+    public static let maxDescriptionLength = 1024
+    public static let maxArguments = 10
     
     private static let path = "/transactions"
     private static let urlKey = "transaction_id"
-    private static let maxArguments = 10
-    
+
     public let id: Int64
     public let transactionTime: Date
     public let versionTime: Date
@@ -58,7 +56,7 @@ public class Transaction: EntityObject {
         ) throws {
         
         guard arguments.count <= maxArguments else {
-            throw TransactionError(.badRequest)
+            throw ConstraintError(.tooManyArguments)
         }
         let urlParameters = UrlParameters(singleEntity: entity)
         let requestData = try RequestData(arrayData: arguments)
@@ -228,7 +226,7 @@ public class Transaction: EntityObject {
         ) throws -> ObjectType where ObjectType : EntityObject {
         let attributes = try JSONDecoder().decode([Attributes].self, from: data)
         guard attributes.count > 0 else {
-            throw TransactionError(.incomprehensibleResponse)
+            throw AmatinoError(.badResponse)
         }
         let transaction = Transaction(session, entity, attributes[0])
         return transaction as! ObjectType
@@ -281,7 +279,7 @@ public class Transaction: EntityObject {
         let entries: [Entry]
 
         internal init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let container = try decoder.container(keyedBy: JSONObjectKeys.self)
             id = try container.decode(Int64.self, forKey: .id)
             let rawTransactionTime = try container.decode(
                 String.self,
@@ -290,7 +288,7 @@ public class Transaction: EntityObject {
             let formatter = DateFormatter()
             formatter.dateFormat = RequestData.dateStringFormat
             guard let tTime: Date = formatter.date(from: rawTransactionTime) else {
-                throw TransactionError(.incomprehensibleResponse)
+                throw AmatinoError(.badResponse)
             }
             transactionTime = tTime
             let rawVersionTime = try container.decode(
@@ -298,7 +296,7 @@ public class Transaction: EntityObject {
                 forKey: .versionTime
             )
             guard let vTime: Date = formatter.date(from: rawVersionTime) else {
-                throw TransactionError(.incomprehensibleResponse)
+                throw AmatinoError(.badResponse)
             }
             versionTime = vTime
             description = try container.decode(String.self, forKey: .description)
@@ -311,7 +309,7 @@ public class Transaction: EntityObject {
             return
         }
         
-        enum CodingKeys: String, CodingKey {
+        enum JSONObjectKeys: String, CodingKey {
             case id = "transaction_id"
             case transactionTime = "transaction_time"
             case description
@@ -371,7 +369,7 @@ public class Transaction: EntityObject {
         }
         
         public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
+            var container = encoder.container(keyedBy: JSONObjectKeys.self)
             try container.encode(id, forKey: .id)
             try container.encode(entries, forKey: .entries)
             try container.encode(
@@ -384,7 +382,7 @@ public class Transaction: EntityObject {
             return
         }
         
-        enum CodingKeys: String, CodingKey {
+        enum JSONObjectKeys: String, CodingKey {
             case id = "transaction_id"
             case transactionTime = "transaction_time"
             case description
@@ -395,9 +393,7 @@ public class Transaction: EntityObject {
     }
     
     public struct CreateArguments: Encodable {
-        
-        public let maxDescriptionLength: Int = 1024
-        
+
         private let transactionTime: Date
         private let description: Description
         private let globalUnitId: Int?
@@ -416,7 +412,6 @@ public class Transaction: EntityObject {
             self.globalUnitId = globalUnit.id
             self.customUnitId = nil
             self.entries = entries
-            let _ = try checkDescription(description: description)
             let _ = try checkEntries(entries: entries)
             return
         }
@@ -433,7 +428,6 @@ public class Transaction: EntityObject {
             self.globalUnitId = nil
             self.customUnitId = customUnit.id
             self.entries = entries
-            let _ = try checkDescription(description: description)
             let _ = try checkEntries(entries: entries)
             
             return
@@ -451,7 +445,6 @@ public class Transaction: EntityObject {
             self.globalUnitId = nil
             self.customUnitId = customUnitId
             self.entries = entries
-            let _ = try checkDescription(description: description)
             let _ = try checkEntries(entries: entries)
             return
         }
@@ -468,17 +461,8 @@ public class Transaction: EntityObject {
             self.globalUnitId = globalUnitId
             self.customUnitId = nil
             self.entries = entries
-            let _ = try checkDescription(description: description)
             let _ = try checkEntries(entries: entries)
             return
-        }
-        
-        private func checkDescription(description: String) throws -> Void {
-            guard description.count < maxDescriptionLength else {
-                throw ConstraintError("""
-                    Max description length \(maxDescriptionLength) characters
-                    """)
-            }
         }
         
         private func checkEntries(entries: Array<Entry>) throws -> Void {
@@ -492,12 +476,12 @@ public class Transaction: EntityObject {
                 }
             }
             guard runningBalance == 0 else {
-                throw ConstraintError("Total debits must equal total credits")
+                throw ConstraintError(.debitCreditBalance)
             }
             return
         }
         
-        enum CodingKeys: String, CodingKey {
+        enum JSONObjectKeys: String, CodingKey {
             case transactionTime = "transaction_time"
             case description
             case globalUnit = "global_unit_denomination"
@@ -506,7 +490,7 @@ public class Transaction: EntityObject {
         }
         
         public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
+            var container = encoder.container(keyedBy: JSONObjectKeys.self)
             try container.encode(entries, forKey: .entries)
             try container.encode(
                 String(describing: description),
@@ -576,7 +560,7 @@ public class Transaction: EntityObject {
         }
         
         public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
+            var container = encoder.container(keyedBy: JSONObjectKeys.self)
             try container.encode(id, forKey: .id)
             try container.encode(customUnitId, forKey: .customUnitId)
             try container.encode(globalUnitId, forKey: .globalUnitId)
@@ -584,7 +568,7 @@ public class Transaction: EntityObject {
             return
         }
         
-        enum CodingKeys: String, CodingKey {
+        enum JSONObjectKeys: String, CodingKey {
             case id = "transaction_id"
             case customUnitId = "custom_unit_denomination"
             case globalUnitId = "global_unit_denomination"
@@ -596,7 +580,6 @@ public class Transaction: EntityObject {
     internal struct Description: CustomStringConvertible {
         
         private let rawStringValue: String
-        private let maxDescriptionLength = 1024
         private var maxLengthErrorMessage: String {
             let errorString = """
             Transaction description is limited to
@@ -615,11 +598,34 @@ public class Transaction: EntityObject {
             }
             rawStringValue = storedDescription
             guard storedDescription.count < maxDescriptionLength else {
-                throw ConstraintError.init(maxLengthErrorMessage)
+                throw ConstraintError.init(
+                    .descriptionLength,
+                    maxLengthErrorMessage
+                )
             }
             return
         }
 
+    }
+    
+    public class ConstraintError: AmatinoError {
+        
+        public let constraint: Constraint
+        public let constraintDescription: String
+        
+        internal init(_ cause: Constraint, _ description: String? = nil) {
+            constraint = cause
+            constraintDescription = description ?? cause.rawValue
+            super.init(.constraintViolated)
+            return
+        }
+        
+        public enum Constraint: String {
+            case descriptionLength = "Maximum description length exceeded"
+            case debitCreditBalance = "Debits & credits must balance"
+            case tooManyArguments = "Maximum number of arguments exceeded"
+        }
+        
     }
     
 }

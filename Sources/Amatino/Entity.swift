@@ -6,8 +6,6 @@
 //
 import Foundation
 
-public class EntityError: AmatinoObjectError {}
-
 public class Entity: Decodable {
 
     private static let path = "/entities"
@@ -19,14 +17,16 @@ public class Entity: Decodable {
     public let description: String?
     public let regionId: Int
     public let active: Bool
-
+    
+    public static let maxNameLength = 1024
+    public static let maxDescriptionLength = 4096
     
     public static func create(
         session: Session,
         name: String,
         callback: @escaping (_: Error?, _: Entity?) -> Void
         ) throws {
-        let arguments = try EntityCreateArguments(name: name)
+        let arguments = try Entity.CreateArguments(name: name)
         let requestData = try RequestData(data: arguments)
         let _ = try AmatinoRequest(
             path: path,
@@ -79,7 +79,7 @@ public class Entity: Decodable {
     }
     
     public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: JSONObjectKeys.self)
         id = try container.decode(String.self, forKey: .id)
         ownerId = try container.decode(Int64.self, forKey: .ownerId)
         name = try container.decode(String.self, forKey: .name)
@@ -93,7 +93,7 @@ public class Entity: Decodable {
         return
     }
 
-    enum CodingKeys: String, CodingKey {
+    enum JSONObjectKeys: String, CodingKey {
         case id = "entity_id"
         case ownerId = "owner"
         case name
@@ -101,5 +101,116 @@ public class Entity: Decodable {
         case description
         case regionId = "storage_region"
         case active
+    }
+
+    public struct CreateArguments: Encodable {
+        
+        let name: Name
+        let description: Description
+        let region: Region?
+        let regionId: Int?
+        
+        public init(
+            name: String,
+            description: String,
+            region: Region
+            ) throws {
+            
+            self.name = try Name(name)
+            self.description = try Description(description)
+            self.region = region
+            regionId = region.id
+            return
+        }
+        
+        public init(name: String, description: String) throws {
+            self.name = try Name(name)
+            self.description = try Description(description)
+            self.region = nil
+            self.regionId = nil
+            return
+        }
+        
+        public init(name: String, region: Region) throws {
+            self.name = try Name(name)
+            self.description = Description()
+            self.region = region
+            self.regionId = region.id
+            return
+        }
+        
+        public init(name: String) throws {
+            self.name = try Name(name)
+            self.region = nil
+            self.regionId = nil
+            self.description = Description()
+            return
+        }
+        
+        enum JSONObjectKeys: String, CodingKey {
+            case name
+            case description
+            case regionId = "region_id"
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: JSONObjectKeys.self)
+            try container.encode(name.rawValue, forKey: .name)
+            try container.encode(description.rawValue, forKey: .description)
+            try container.encode(regionId, forKey: .regionId)
+            return
+        }
+    }
+    
+    internal struct Name {
+        let rawValue: String
+        private var maxNameError: String { get {
+            return "Max name length \(Entity.maxNameLength) characters"
+        }}
+        
+        init(_ name: String) throws {
+            rawValue = name
+            guard name.count < Entity.maxNameLength else {
+                throw ConstraintError(.nameLength, maxNameError)
+            }
+            return
+        }
+    }
+    
+    internal struct Description {
+        let rawValue: String?
+        private var maxDescriptionError: String { get {
+            return "Max descrip. length \(Entity.maxDescriptionLength) char"
+        }}
+        
+        init(_ description: String) throws {
+            rawValue = description
+            guard description.count < Entity.maxDescriptionLength else {
+                throw ConstraintError(.descriptionLength, maxDescriptionError)
+            }
+            return
+        }
+        
+        init() {
+            rawValue = nil
+            return
+        }
+    }
+    
+    public class ConstraintError: AmatinoError {
+        public let constraint: Constraint
+        public let constraintDescription: String
+        
+        internal init(_ cause: Constraint, _ description: String? = nil) {
+            constraint = cause
+            constraintDescription = description ?? cause.rawValue
+            super.init(.constraintViolated)
+            return
+        }
+        
+        public enum Constraint: String {
+            case descriptionLength = "Maximum description length exceeded"
+            case nameLength = "Maximum name length exceeded"
+        }
     }
 }

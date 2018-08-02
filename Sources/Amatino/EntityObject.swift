@@ -12,8 +12,6 @@ internal protocol EntityObject {
     var entity: Entity { get }
     var session: Session { get }
 
-    static var errorType: AmatinoObjectError.Type { get }
-    
     static func decodeInit<ObjectType: EntityObject>(
         _: Session,
         _: Entity,
@@ -72,7 +70,7 @@ extension EntityObject {
         ) throws -> ObjectType {
         guard error == nil else { throw error! }
         guard let dataToDecode: Data = data else {
-            throw objectType.errorType.init(.inconsistentInternalState)
+            throw AmatinoError(.inconsistentInternalState)
         }
         let entityObject: ObjectType = try ObjectType.responseInit(
             session,
@@ -117,7 +115,7 @@ extension EntityObject {
         ) throws -> [ObjectType] {
         guard error == nil else { throw error! }
         guard let dataToDecode: Data = data else {
-            throw objectType.errorType.init(.inconsistentInternalState)
+            throw AmatinoError(.inconsistentInternalState)
         }
         let entityObjects: [ObjectType] = try ObjectType.responseInitMany(
             session,

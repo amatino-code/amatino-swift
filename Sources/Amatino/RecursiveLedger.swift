@@ -85,7 +85,7 @@ public class RecursiveLedger: Sequence {
                 let decoder = JSONDecoder()
                 let ledger: RecursiveLedgerPage
                 guard let dataToDecode: Data = data else {
-                    let state = AmatinoObjectError(.inconsistentInternalState)
+                    let state = AmatinoError(.inconsistentInternalState)
                     callback(state, nil)
                     return
                 }
@@ -237,7 +237,7 @@ public class RecursiveLedger: Sequence {
         ) throws -> RecursiveLedger {
         guard error == nil else { throw error! }
         guard let dataToDecode: Data = data else {
-            throw LedgerError(.inconsistentInternalState)
+            throw AmatinoError(.inconsistentInternalState)
         }
         let decoder = JSONDecoder()
         let ledgerPage = try decoder.decode(

@@ -15,5 +15,8 @@ public struct Region: Codable {
         case name = "friendly_name"
         case id = "region_id"
     }
-    
+
 }
+
+
+

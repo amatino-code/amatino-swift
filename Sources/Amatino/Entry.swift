@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class EntryError: AmatinoObjectError {}
+public class EntryError: AmatinoError {}
 
 public struct Entry : Codable {
 
@@ -76,14 +76,14 @@ public struct Entry : Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let rawSide = try container.decode(Int.self, forKey: .side)
         guard let enumSide = Side(rawValue: rawSide) else {
-            throw EntryError(.incomprehensibleResponse)
+            throw EntryError(.badResponse)
         }
         side = enumSide
         description = try container.decode(String.self, forKey: .description)
         accountId = try container.decode(Int.self, forKey: .accountId)
         let rawAmount = try container.decode(String.self, forKey: .amount)
         guard let decimalAmount = Decimal(string: rawAmount) else {
-            throw EntryError(.incomprehensibleResponse)
+            throw EntryError(.badResponse)
         }
         amount = decimalAmount
         return

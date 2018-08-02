@@ -7,8 +7,6 @@
 
 import Foundation
 
-class BalanceError: AmatinoObjectError {}
-
 internal class AccountBalance: Decodable {
     
     public let accountId: Int
@@ -29,7 +27,7 @@ internal class AccountBalance: Decodable {
             forKey: .balanceTime
         )
         guard let bTime: Date = formatter.date(from: rawBalanceTime) else {
-            throw BalanceError(.incomprehensibleResponse)
+            throw AmatinoError(.badResponse)
         }
         balanceTime = bTime
         let rawGeneratedTime = try container.decode(
@@ -37,7 +35,7 @@ internal class AccountBalance: Decodable {
             forKey: .generatedTime
         )
         guard let gTime: Date = formatter.date(from: rawGeneratedTime) else {
-            throw BalanceError(.incomprehensibleResponse)
+            throw AmatinoError(.badResponse)
         }
         generatedTime = gTime
         globalUnitDenomination = try container.decode(
@@ -49,10 +47,7 @@ internal class AccountBalance: Decodable {
             forKey: .customUnitDenomination
         )
         let rawMagnitude = try container.decode(String.self, forKey: .balance)
-        magnitude = try Magnitude(
-            fromString: rawMagnitude,
-            withError: BalanceError.self
-            ).decimal
+        magnitude = try Magnitude(fromString: rawMagnitude).decimal
         recursive = try container.decode(Bool.self, forKey: .recursive)
         return
     }

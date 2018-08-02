@@ -7,12 +7,9 @@
 
 import Foundation
 
-public class AccountError: AmatinoObjectError {}
-
 public class Account: AmatinoObject {
 
     internal static let path = "/accounts"
-    internal static let errorType: AmatinoObjectError.Type = AccountError.self
 
     private static let urlKey = "account_id"
     
@@ -144,7 +141,7 @@ public class Account: AmatinoObject {
     }
 
     public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: JSONObjectKeys.self)
         id = try container.decode(Int.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         type = try container.decode(AccountType.self, forKey: .type)
@@ -164,7 +161,7 @@ public class Account: AmatinoObject {
         return
     }
 
-    enum CodingKeys: String, CodingKey {
+    enum JSONObjectKeys: String, CodingKey {
         case id = "account_id"
         case name
         case type
@@ -189,6 +186,13 @@ public class Account: AmatinoObject {
         private let counterPartyEntity: Entity?
         private let description: String
         private let colour: Colour?
+        
+        internal var maxNameError: String { get {
+            return "Max name length \(maxNameLength) characters"
+        }}
+        internal var maxDescriptionError: String { get {
+            return "Max description length \(maxDescriptionLength) characters"
+            }}
         
         public init(
             name: String,
@@ -280,19 +284,17 @@ public class Account: AmatinoObject {
         
         private func checkName(name: String) throws -> Void {
             guard name.count < maxNameLength else {
-                throw ConstraintError("Max name length \(maxNameLength) characters")
+                throw ConstraintError(.nameLength, maxNameError)
             }
         }
         
         private func checkDescription(description: String) throws -> Void {
             guard description.count < maxDescriptionLength else {
-                throw ConstraintError("""
-                    Max description length \(maxDescriptionLength) characters
-                    """)
+                throw ConstraintError(.descriptionLength, maxDescriptionError)
             }
         }
         
-        enum CodingKeys: String, CodingKey {
+        enum JSONObjectKeys: String, CodingKey {
             case name
             case type = "type"
             case parentAccount = "parent_account_id"
@@ -304,7 +306,7 @@ public class Account: AmatinoObject {
         }
         
         public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
+            var container = encoder.container(keyedBy: JSONObjectKeys.self)
             try container.encode(name, forKey: .name)
             try container.encode(description, forKey: .description)
             try container.encode(type, forKey: .type)
@@ -317,6 +319,26 @@ public class Account: AmatinoObject {
             )
             try container.encode(colour?.hexValue, forKey: .colourHexCode)
             return
+        }
+        
+        public class ConstraintError: AmatinoError {
+            
+            public let constraint: Constraint
+            public let constraintDescription: String
+            
+            internal init(_ cause: Constraint, _ description: String? = nil) {
+                constraint = cause
+                constraintDescription = description ?? cause.rawValue
+                super.init(.constraintViolated)
+                return
+            }
+            
+            public enum Constraint: String {
+                case descriptionLength = "Maximum description length exceeded"
+                case nameLength = "Maximum name length exceeded"
+                case tooManyArguments = "Maximum number of arguments exceeded"
+            }
+            
         }
         
     }

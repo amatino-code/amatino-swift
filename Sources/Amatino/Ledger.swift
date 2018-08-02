@@ -7,8 +7,6 @@
 
 import Foundation
 
-public class LedgerError: AmatinoObjectError {}
-
 public enum LedgerOrder {
     case youngestFirst
     case oldestFirst
@@ -93,7 +91,7 @@ public class Ledger: Sequence {
                 let decoder = JSONDecoder()
                 let ledger: LedgerPage
                 guard let dataToDecode: Data = data else {
-                    let state = AmatinoObjectError(.inconsistentInternalState)
+                    let state = AmatinoError(.inconsistentInternalState)
                     callback(state, nil)
                     return
                 }
@@ -239,7 +237,7 @@ public class Ledger: Sequence {
         ) throws -> Ledger {
         guard error == nil else { throw error! }
         guard let dataToDecode: Data = data else {
-            throw LedgerError(.inconsistentInternalState)
+            throw AmatinoError(.inconsistentInternalState)
         }
         let decoder = JSONDecoder()
         let ledgerPage = try decoder.decode(

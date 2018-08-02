@@ -7,19 +7,11 @@
 
 import Foundation
 
-enum AmatinoRequestError: Error {
-    case SessionRequired(description: String)
-    case URLInitialisationFailure()
-    case ResponseError()
-    case InvalidSession()
-    case EmptyResponse()
-    case JsonParse()
-}
-
 internal class AmatinoRequest {
     
     private let agent = "Amatino Swift 0.0.5"
-    private let apiEndpoint = "https://api.amatino.io"
+    //private let apiEndpoint = "https://api.amatino.io"
+    private let apiEndpoint = "http://127.0.0.1:5000"
     private static let apiSession = URLSession(
         configuration: URLSessionConfiguration.ephemeral
     )
@@ -72,13 +64,30 @@ internal class AmatinoRequest {
                     callback(error, nil)
                     return
                 }
-                guard let httpResponse = response as? HTTPURLResponse,
-                    (200...299).contains(httpResponse.statusCode) else {
-                        callback(AmatinoRequestError.ResponseError(), nil)
-                        // To Do - Descriptive error responses
-                        return
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    callback(AmatinoError(.inconsistentInternalState), nil)
+                    return
+                }
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    let error: AmatinoError
+                    switch httpResponse.statusCode {
+                    case 400: error = AmatinoError(.badRequest)
+                    case 401: error = AmatinoError(.notAuthenticated)
+                    case 402: error = AmatinoError(.subscriptionProblem)
+                    case 403: error = AmatinoError(.notAuthorised)
+                    case 404: error = AmatinoError(.notFound)
+                    case 429: error = AmatinoError(.rateLimit)
+                    case 500: error = AmatinoError(.genericServerError)
+                    case 502, 503, 504: error = AmatinoError(.serviceDisruption)
+                    default: error = AmatinoError(
+                        .inconsistentInternalState
+                        )
+                    }
+                    callback(error, nil)
+                    return
                 }
                 callback(nil, data)
+                return
         }).resume()
         return
     }
@@ -113,7 +122,7 @@ internal class AmatinoRequest {
         }
 
         guard targetURL != nil else {
-            throw AmatinoRequestError.URLInitialisationFailure()
+            throw AmatinoError(.inconsistentInternalState)
         }
 
         var request = URLRequest(url: targetURL!)

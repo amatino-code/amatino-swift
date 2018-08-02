@@ -11,14 +11,11 @@ internal struct AmatinoDate {
     
     let decodedDate: Date
     
-    internal init (
-        fromString dateString: String,
-        withError ErrorType: AmatinoObjectError.Type
-        ) throws {
+    internal init (fromString dateString: String) throws {
         let formatter = DateFormatter()
         formatter.dateFormat = RequestData.dateStringFormat
         guard let date: Date = formatter.date(from: dateString) else {
-            throw ErrorType.init(.incomprehensibleResponse)
+            throw AmatinoError(.badResponse)
         }
         decodedDate = date
         return
