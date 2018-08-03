@@ -405,7 +405,7 @@ class AmatinoAlphaTests: XCTestCase {
     }
     
     static var allTests = [
-        ("testInitialiseWithEmail", testInitialiseWithEmail),
+        ("Initialise Alpha with email", testInitialiseWithEmail),
         ("testCreateEntity", testCreateEntity),
         ("testCreateAccount", testCreateAccount)
     ]

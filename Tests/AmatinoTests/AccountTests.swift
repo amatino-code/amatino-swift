@@ -150,4 +150,72 @@ class AccountTests: AmatinoTest {
         return
     }
     
+    func testUpdateAccount() {
+        
+        let expectation = XCTestExpectation(description: "Update Account")
+        
+        let replacementName = "Updated Account"
+        
+        func updateAccount(_ account: Account) {
+            do {
+                let _ = try account.update(
+                    name: "Updated Account",
+                    description: account.description,
+                    parent: nil,
+                    type: account.type,
+                    counterParty: nil,
+                    colour: nil,
+                    globalUnit: unit!,
+                    callback: { (error, account) in
+                        guard error == nil else {
+                            let cast = error as? AmatinoError
+                            print(cast?.description ?? "Unknown Error")
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        guard let updatedAccount: Account = account else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        guard updatedAccount.name == replacementName else {
+                            print("Account name: \(updatedAccount.name)")
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        expectation.fulfill(); return
+                })
+            } catch {
+                print((error as? AmatinoError)?.description ?? "Unknown Err.")
+                XCTFail(); expectation.fulfill(); return
+            }
+        }
+        
+        func executeProcedure() {
+            do {
+                let _ = try Account.create(
+                    session: session!,
+                    entity: entity!,
+                    name: "Amatino Swift test account",
+                    type: .asset,
+                    description: "Testing account update",
+                    globalUnit: unit!,
+                    callback: { (error, account) in
+                        XCTAssertNil(error)
+                        XCTAssertNotNil(account)
+                        updateAccount(account!)
+                        return
+                })
+            } catch {
+                print((error as? AmatinoError)?.description ?? "Unknown Err.")
+                XCTFail(); expectation.fulfill(); return
+            }
+        }
+        
+        executeProcedure()
+        wait(for: [expectation], timeout: 5)
+        return
+        
+    }
+    
+    func testDeleteAccount() {
+        
+    }
+    
 }
