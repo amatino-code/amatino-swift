@@ -7,26 +7,40 @@
 
 import Foundation
 
-public class Transaction: EntityObject {
-    
+public final class Transaction: EntityObject {
+
+    internal init(
+        _ session: Session,
+        _ entity: Entity,
+        _ attributes: Transaction.Attributes
+        ) {
+        self.session = session
+        self.entity = entity
+        self.attributes = attributes
+        return
+    }
+
+    internal let attributes: Transaction.Attributes
+
     public static let maxDescriptionLength = 1024
     public static let maxArguments = 10
     
     private static let path = "/transactions"
     private static let urlKey = "transaction_id"
-
-    public let id: Int64
-    public let transactionTime: Date
-    public let versionTime: Date
-    public let description: String
-    public let version: Int64
-    public let globalUnitId: Int64?
-    public let customUnitId: Int64?
-    public let authorId: Int64
-    public let active: Bool
-    public let entries: [Entry]
+    
     public let entity: Entity
     public let session: Session
+
+    public var id: Int64 { get { return attributes.id } }
+    public var transactionTime: Date { get { return attributes.transactionTime}}
+    public var versionTime: Date { get { return attributes.versionTime} }
+    public var description: String { get { return attributes.description } }
+    public var version: Int64 { get { return attributes.version } }
+    public var globalUnitId: Int64? { get { return attributes.globalUnitId } }
+    public var customUnitId: Int64? { get { return attributes.customUnitId } }
+    public var authorId: Int64? { get { return attributes.authorId } }
+    public var active: Bool { get { return attributes.active } }
+    public var entries: [Entry] { get { return attributes.entries } }
     
     public static func create (
         session: Session,
@@ -71,7 +85,6 @@ public class Transaction: EntityObject {
                     session,
                     entity,
                     callback,
-                    Transaction.self,
                     error,
                     data
                 )
@@ -97,7 +110,6 @@ public class Transaction: EntityObject {
                     session,
                     entity,
                     callback,
-                    Transaction.self,
                     error,
                     data
                 )
@@ -128,7 +140,6 @@ public class Transaction: EntityObject {
                     session,
                     entity,
                     callback,
-                    Transaction.self,
                     error,
                     data
                 )
@@ -188,7 +199,6 @@ public class Transaction: EntityObject {
                     self.session,
                     self.entity,
                     callback,
-                    Transaction.self,
                     error,
                     data
                 )
@@ -212,57 +222,10 @@ public class Transaction: EntityObject {
                     self.session,
                     self.entity,
                     callback,
-                    Transaction.self,
                     error,
                     data
                 )
         })
-    }
-    
-    static func responseInit<ObjectType>(
-        _ session: Session,
-        _ entity: Entity,
-        _ data: Data
-        ) throws -> ObjectType where ObjectType : EntityObject {
-        let attributes = try JSONDecoder().decode([Attributes].self, from: data)
-        guard attributes.count > 0 else {
-            throw AmatinoError(.badResponse)
-        }
-        let transaction = Transaction(session, entity, attributes[0])
-        return transaction as! ObjectType
-    }
-    
-    static func responseInitMany<ObjectType>(
-        _ session: Session,
-        _ entity: Entity,
-        _ data: Data
-        ) throws -> [ObjectType] where ObjectType : EntityObject {
-        let attributes = try JSONDecoder().decode([Attributes].self, from: data)
-        var transactions = [Transaction]()
-        for attribute in attributes {
-            transactions.append(Transaction(session, entity, attribute))
-        }
-        return transactions as! [ObjectType]
-    }
-
-    internal init (
-        _ session: Session,
-        _ entity: Entity,
-        _ attributes: Attributes
-        ) {
-        self.session = session
-        self.entity = entity
-        id = attributes.id
-        transactionTime = attributes.transactionTime
-        versionTime = attributes.versionTime
-        description = attributes.description
-        version = attributes.version
-        globalUnitId = attributes.globalUnitId
-        customUnitId = attributes.customUnitId
-        authorId = attributes.authorId
-        active = attributes.active
-        entries = attributes.entries
-        return
     }
     
     internal struct Attributes: Decodable {

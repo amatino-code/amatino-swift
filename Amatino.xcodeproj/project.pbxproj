@@ -308,6 +308,7 @@
 				1E54D29D202D9D42004E8599 /* Amatino.h */,
 				1E20CFD820DB259400C129D0 /* AmatinoAlpha.swift */,
 				1E16F5E3210AF196002F1B81 /* AmatinoDate.swift */,
+				1E794681211187060006E971 /* AmatinoError.swift */,
 				1E20CD9D2027F7EB00EA3D73 /* AmatinoObject.swift */,
 				1EADC8812022B289005F94DF /* AmatinoRequest.swift */,
 				1E54D29A202D9B8D004E8599 /* AMCryptography.h */,
@@ -345,7 +346,6 @@
 				1E38BB4B202AE27F00E055A4 /* UrlTargetable.swift */,
 				1EEA829920ECCB2D00C406FE /* User.swift */,
 				1EEA829620ECCB2C00C406FE /* UserAttributes.swift */,
-				1E794681211187060006E971 /* AmatinoError.swift */,
 			);
 			name = Amatino;
 			path = Sources/Amatino;

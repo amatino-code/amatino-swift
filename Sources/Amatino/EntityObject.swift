@@ -9,120 +9,74 @@ import Foundation
 
 internal protocol EntityObject {
     
+    associatedtype attributesType: Decodable
+
     var entity: Entity { get }
     var session: Session { get }
-
-    static func decodeInit<ObjectType: EntityObject>(
-        _: Session,
-        _: Entity,
-        _: ObjectType.Type,
-        _: Error?,
-        _: Data?
-    ) throws -> ObjectType
+    var attributes: attributesType { get }
     
-    static func responseInit<ObjectType: EntityObject>(
-        _: Session,
-        _: Entity,
-        _: Data
-        ) throws -> ObjectType
-    
-    static func responseInitMany<ObjectType: EntityObject>(
-        _: Session,
-        _: Entity,
-        _: Data
-        ) throws -> [ObjectType]
+    init (_: Session, _: Entity, _: attributesType)
 }
 
 extension EntityObject {
     
-    static func asyncInit<ObjectType: EntityObject>(
+    static func asyncInit(
         _ session: Session,
         _ entity: Entity,
-        _ callback: @escaping (Error?, ObjectType?) -> Void,
-        _ object: ObjectType.Type,
+        _ callback: @escaping (Error?, Self?) -> Void,
         _ error: Error?,
         _ data: Data?
         ) {
         
-        let entityObject: ObjectType
+        let entityObject: Self
         do {
-            entityObject = try ObjectType.decodeInit(
-                session,
-                entity,
-                ObjectType.self,
-                error,
-                data
+            guard error == nil else { callback(error, nil); return }
+            guard let dataToDecode: Data = data else {
+                callback(AmatinoError(.inconsistentInternalState), nil); return
+            }
+            let attributes = try JSONDecoder().decode(
+                [attributesType].self,
+                from: dataToDecode
             )
+            guard attributes.count > 0 else {
+                callback(AmatinoError(.badResponse), nil); return
+            }
+            entityObject = self.init(session, entity, attributes[0])
         } catch {
-            callback(error, nil)
-            return
+            callback(error, nil); return
         }
-        callback(nil, entityObject)
-        return
+        callback(nil, entityObject); return
     }
     
-    static func decodeInit<ObjectType: EntityObject>(
+    static func asyncInitMany(
         _ session: Session,
         _ entity: Entity,
-        _ objectType: ObjectType.Type,
-        _ error: Error?,
-        _ data: Data?
-        ) throws -> ObjectType {
-        guard error == nil else { throw error! }
-        guard let dataToDecode: Data = data else {
-            throw AmatinoError(.inconsistentInternalState)
-        }
-        let entityObject: ObjectType = try ObjectType.responseInit(
-            session,
-            entity,
-            dataToDecode
-        )
-        return entityObject
-    }
-    
-    static func asyncInitMany<ObjectType: EntityObject>(
-        _ session: Session,
-        _ entity: Entity,
-        _ callback: @escaping (Error?, [ObjectType]?) -> Void,
-        _ object: ObjectType.Type,
+        _ callback: @escaping (Error?, [Self]?) -> Void,
         _ error: Error?,
         _ data: Data?
         ) {
         
-        let entityObjects: [ObjectType]
+        let entityObjects: [Self]
         do {
-            entityObjects = try ObjectType.decodeInitMany(
-                session,
-                entity,
-                ObjectType.self,
-                error,
-                data
+            guard error == nil else { callback(error, nil); return }
+            guard let dataToDecode: Data = data else {
+                callback(AmatinoError(.inconsistentInternalState), nil); return
+            }
+            let attributes = try JSONDecoder().decode(
+                [attributesType].self,
+                from: dataToDecode
             )
+            var workingObjects = [Self]()
+            for attribute in attributes {
+                workingObjects.append(Self(session, entity, attribute))
+            }
+            entityObjects = workingObjects
         } catch {
             callback(error, nil)
             return
         }
         callback(nil, entityObjects)
         return
-    }
-
-    static func decodeInitMany<ObjectType: EntityObject>(
-        _ session: Session,
-        _ entity: Entity,
-        _ objectType: ObjectType.Type,
-        _ error: Error?,
-        _ data: Data?
-        ) throws -> [ObjectType] {
-        guard error == nil else { throw error! }
-        guard let dataToDecode: Data = data else {
-            throw AmatinoError(.inconsistentInternalState)
-        }
-        let entityObjects: [ObjectType] = try ObjectType.responseInitMany(
-            session,
-            entity,
-            dataToDecode
-        )
-        return entityObjects
     }
     
 }
