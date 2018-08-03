@@ -216,6 +216,87 @@ class AccountTests: AmatinoTest {
     
     func testDeleteAccount() {
         
+        let expectation = XCTestExpectation(description: "Delete Account")
+        
+        func lookupDeletedAccount(_ account: Account) {
+            do {
+                let _ = try Account.retrieve(
+                    session: session!,
+                    entity: entity!,
+                    accountId: account.id,
+                    callback: { (error, account) in
+                        guard account == nil else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        guard let amError = error as? AmatinoError else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        guard amError.kind == .notFound else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        expectation.fulfill()
+                        return
+                })
+            } catch {
+                
+            }
+        }
+        
+        func deleteAccount(_ cash: Account, _ bank: Account) {
+            do {
+                let _ = try cash.delete(
+                    entryReplacement: bank,
+                    callback: { (error) in
+                        guard error == nil else {
+                            let cast = error as? AmatinoError
+                            print(cast?.description ?? "Unknown Error")
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        let _ = lookupDeletedAccount(cash)
+                })
+            } catch {
+                print((error as? AmatinoError)?.description ?? "Unknown Err.")
+                XCTFail(); expectation.fulfill(); return
+            }
+        }
+        
+        func executeProcedure() {
+            do {
+                let cashAccountArguments = try Account.CreateArguments(
+                    name: "[Deletion] T1A Cash",
+                    type: .asset,
+                    description: "Test asset account for deletion",
+                    globalUnit: unit!
+                )
+                let revenueAccountArguments = try Account.CreateArguments(
+                    name: "[Deletion] T1B Bank",
+                    type: .asset,
+                    description: "Test bank account for deletion",
+                    globalUnit: unit!
+                )
+                let arguments = [cashAccountArguments, revenueAccountArguments]
+                let _ = try Account.createMany(
+                    session: session!,
+                    entity: entity!,
+                    arguments: arguments,
+                    callback: { (error, accounts) in
+                        guard accounts != nil else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        guard accounts!.count == 2 else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        let _ = deleteAccount(accounts![0], accounts![1])
+                })
+            } catch {
+                print((error as? AmatinoError)?.description ?? "Unknown Err.")
+                XCTFail(); expectation.fulfill(); return
+            }
+        }
+        
+        executeProcedure()
+        wait(for: [expectation], timeout: 5)
+        return
     }
     
 }
