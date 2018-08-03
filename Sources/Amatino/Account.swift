@@ -181,17 +181,62 @@ public final class Account: EntityObject {
         })
     }
     
-    func update(
+    public func update(
         name: String,
         description: String,
-        globalUnit: GlobalUnit
-        ) {
+        parent: Account?,
+        type: AccountType,
+        counterParty: Entity?,
+        colour: Colour?,
+        globalUnit: GlobalUnit,
+        callback: @escaping (Error?, Account?) -> Void
+        ) throws {
+        
+        let arguments = UpdateArguments(
+            existing: self,
+            name: name,
+            type: type,
+            parent: parent,
+            customUnit: nil,
+            globalUnit: globalUnit,
+            counterParty: counterParty,
+            description: description,
+            colour: colour
+        )
+        let _ = try executeUpdate(arguments, callback)
+        return
+    }
+    
+    public func update(
+        name: String,
+        description: String,
+        parent: Account?,
+        type: AccountType,
+        counterParty: Entity?,
+        colour: Colour?,
+        customUnit: CustomUnit,
+        callback: @escaping (Error?, Account?) -> Void
+        ) throws {
+        
+        let arguments = UpdateArguments(
+            existing: self,
+            name: name,
+            type: type,
+            parent: parent,
+            customUnit: customUnit,
+            globalUnit: nil,
+            counterParty: counterParty,
+            description: description,
+            colour: colour
+        )
+        let _ = try executeUpdate(arguments, callback)
+        return
     }
     
     internal func executeUpdate(
-        arguments: UpdateArguments,
-        callback: @escaping (Error?, Account?) -> Void
-    ) throws {
+        _ arguments: UpdateArguments,
+        _ callback: @escaping (Error?, Account?) -> Void
+        ) throws {
         let _ = try AmatinoRequest(
             path: Account.path,
             data: RequestData(data: arguments),
@@ -207,6 +252,52 @@ public final class Account: EntityObject {
                     data
                 )
         })
+    }
+    
+    public func delete(
+        entryReplacement: Account,
+        newChildParent: Account? = nil,
+        callback: @escaping  (Error?) -> Void
+        ) throws {
+        let arguments = DelectionArguments(
+            target: self,
+            entryReplacement: entryReplacement,
+            deleteRecursively: false,
+            newChildParent: newChildParent
+        )
+        let _ = try executeDeletion(arguments, callback)
+        return
+    }
+    
+    public func deleteRecursively(
+        entryReplacement: Account,
+        callback: @escaping  (Error?) -> Void
+        ) throws {
+        let arguments = DelectionArguments(
+            target: self,
+            entryReplacement: entryReplacement,
+            deleteRecursively: true,
+            newChildParent: nil
+        )
+        let _ = try executeDeletion(arguments, callback)
+        return
+    }
+    
+    internal func executeDeletion(
+        _ arguments: DelectionArguments,
+        _ callback: @escaping(Error?) -> Void
+        ) throws {
+        let _ = try AmatinoRequest(
+            path: Account.path,
+            data: RequestData(data: arguments),
+            session: session,
+            urlParameters: UrlParameters(singleEntity: entity),
+            method: .DELETE,
+            callback: { (error, data) in
+                callback(error)
+                return
+        })
+        return
     }
  
     internal struct Attributes: Decodable {
@@ -420,7 +511,7 @@ public final class Account: EntityObject {
         let existing: Account
         let name: String
         let type: AccountType
-        let parent: Account
+        let parent: Account?
         let customUnit: CustomUnit?
         let globalUnit: GlobalUnit?
         let counterParty: Entity?
@@ -445,7 +536,7 @@ public final class Account: EntityObject {
             try container.encode(name, forKey: .name)
             try container.encode(description, forKey: .description)
             try container.encode(type, forKey: .type)
-            try container.encode(parent.id, forKey: .parent)
+            try container.encode(parent?.id, forKey: .parent)
             try container.encode(globalUnit?.id, forKey: .globalUnitId)
             try container.encode(customUnit?.id, forKey: .customUnitId)
             try container.encode(
@@ -455,6 +546,31 @@ public final class Account: EntityObject {
             try container.encode(colour?.hexValue, forKey: .colourHexCode)
         }
     
+    }
+    
+    internal struct DelectionArguments: Encodable {
+        
+        let target: Account
+        let entryReplacement: Account
+        let deleteRecursively: Bool
+        let newChildParent: Account?
+        
+        enum JSONObjectKeys: String, CodingKey {
+            case target = "target_account_id"
+            case entryReplacement = "entry_replacement_account_id"
+            case deleteRecursively = "delete_children"
+            case newChildParent = "new_parent_account_id"
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: JSONObjectKeys.self)
+            try container.encode(target.id, forKey: .target)
+            try container.encode(entryReplacement.id, forKey: .entryReplacement)
+            try container.encode(deleteRecursively, forKey: .deleteRecursively)
+            try container.encode(newChildParent?.id, forKey: .newChildParent)
+            return
+        }
+        
     }
 
     public class ConstraintError: AmatinoError {
