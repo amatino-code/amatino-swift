@@ -124,6 +124,15 @@
 		1EEA82AB20ECDD0500C406FE /* AccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82AA20ECDD0500C406FE /* AccountType.swift */; };
 		1EEA82AD20ECE0BC00C406FE /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82AC20ECE0BC00C406FE /* Account.swift */; };
 		1EEA82B120ED045200C406FE /* PermissionsGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA82B020ED045200C406FE /* PermissionsGraph.swift */; };
+		1EFDC61F21152ED60042EBCA /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC61E21152ED60042EBCA /* TreeNode.swift */; };
+		1EFDC62021152ED60042EBCA /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC61E21152ED60042EBCA /* TreeNode.swift */; };
+		1EFDC62121152ED60042EBCA /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC61E21152ED60042EBCA /* TreeNode.swift */; };
+		1EFDC623211544B20042EBCA /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC622211544B20042EBCA /* Node.swift */; };
+		1EFDC624211544B20042EBCA /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC622211544B20042EBCA /* Node.swift */; };
+		1EFDC625211544B20042EBCA /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC622211544B20042EBCA /* Node.swift */; };
+		1EFDC627211551AA0042EBCA /* PlaceholderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */; };
+		1EFDC628211551AA0042EBCA /* PlaceholderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */; };
+		1EFDC629211551AA0042EBCA /* PlaceholderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */; };
 		OBJ_21 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_27 /* AncillaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* AncillaryTests.swift */; };
 		OBJ_29 /* Amatino.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Amatino::Amatino::Product" /* Amatino.framework */; };
@@ -201,6 +210,9 @@
 		1EEA82AA20ECDD0500C406FE /* AccountType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountType.swift; sourceTree = "<group>"; };
 		1EEA82AC20ECE0BC00C406FE /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		1EEA82B020ED045200C406FE /* PermissionsGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsGraph.swift; sourceTree = "<group>"; };
+		1EFDC61E21152ED60042EBCA /* TreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNode.swift; sourceTree = "<group>"; };
+		1EFDC622211544B20042EBCA /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
+		1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderNode.swift; sourceTree = "<group>"; };
 		"Amatino::Amatino::Product" /* Amatino.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Amatino.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"Amatino::AmatinoTests::Product" /* AmatinoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = AmatinoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_12 /* AncillaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AncillaryTests.swift; sourceTree = "<group>"; };
@@ -342,6 +354,9 @@
 				1E38BB4B202AE27F00E055A4 /* UrlTargetable.swift */,
 				1EEA829920ECCB2D00C406FE /* User.swift */,
 				1EEA829620ECCB2C00C406FE /* UserAttributes.swift */,
+				1EFDC61E21152ED60042EBCA /* TreeNode.swift */,
+				1EFDC622211544B20042EBCA /* Node.swift */,
+				1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */,
 			);
 			name = Amatino;
 			path = Sources/Amatino;
@@ -490,6 +505,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EFDC62121152ED60042EBCA /* TreeNode.swift in Sources */,
 				1E58D59E20F2283700069961 /* Region.swift in Sources */,
 				1E58D59520F2283700069961 /* EntityList.swift in Sources */,
 				1E58D5A520F2283700069961 /* Side.swift in Sources */,
@@ -514,6 +530,7 @@
 				1E58D59920F2283700069961 /* GlobalUnit.swift in Sources */,
 				1E58D5A220F2283700069961 /* Session.swift in Sources */,
 				1E16F5DE210AC60E002F1B81 /* Ledger.swift in Sources */,
+				1EFDC629211551AA0042EBCA /* PlaceholderNode.swift in Sources */,
 				1E59DA02210EEECD0080C4CD /* RecursiveLedger.swift in Sources */,
 				1E59D9FE210EEE090080C4CD /* RecursiveLedgerPage.swift in Sources */,
 				1E58D59620F2283700069961 /* EntityListAttributes.swift in Sources */,
@@ -522,6 +539,7 @@
 				1E16F5E6210AF196002F1B81 /* AmatinoDate.swift in Sources */,
 				1E84DF73210BDEE300EA399D /* LedgerPage.swift in Sources */,
 				1E58D5AF20F2283700069961 /* UrlTargetable.swift in Sources */,
+				1EFDC625211544B20042EBCA /* Node.swift in Sources */,
 				1E58D58F20F2283700069961 /* AMCryptography.m in Sources */,
 				1E16F5E2210AC71C002F1B81 /* Magnitude.swift in Sources */,
 				1E58D59F20F2283700069961 /* RegionList.swift in Sources */,
@@ -538,14 +556,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				1EFDC627211551AA0042EBCA /* PlaceholderNode.swift in Sources */,
 				1E16F5E0210AC71C002F1B81 /* Magnitude.swift in Sources */,
 				OBJ_21 /* Package.swift in Sources */,
 				1E16F5E4210AF196002F1B81 /* AmatinoDate.swift in Sources */,
+				1EFDC623211544B20042EBCA /* Node.swift in Sources */,
 				1E59DA00210EEECD0080C4CD /* RecursiveLedger.swift in Sources */,
 				1E16F5DC210AC60C002F1B81 /* Ledger.swift in Sources */,
 				1E97CDE2210096B400C149A6 /* LedgerRow.swift in Sources */,
 				1E59D9FC210EEE090080C4CD /* RecursiveLedgerPage.swift in Sources */,
 				1E84DF71210BDEE300EA399D /* LedgerPage.swift in Sources */,
+				1EFDC61F21152ED60042EBCA /* TreeNode.swift in Sources */,
 				1E794682211187060006E971 /* AmatinoError.swift in Sources */,
 				1E4D5E34210FFC6400303BD2 /* EntityObject.swift in Sources */,
 			);
@@ -571,6 +592,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				1EFDC62021152ED60042EBCA /* TreeNode.swift in Sources */,
 				1ED0974A202A9EEA005D9732 /* UrlTarget.swift in Sources */,
 				1EADC8852022B289005F94DF /* AmatinoRequest.swift in Sources */,
 				1EA28D342028FA3E00E576FD /* UnitCode.swift in Sources */,
@@ -595,6 +617,7 @@
 				1E16F5DD210AC60D002F1B81 /* Ledger.swift in Sources */,
 				1E59DA01210EEECD0080C4CD /* RecursiveLedger.swift in Sources */,
 				1E59D9FD210EEE090080C4CD /* RecursiveLedgerPage.swift in Sources */,
+				1EFDC628211551AA0042EBCA /* PlaceholderNode.swift in Sources */,
 				1E7B837B20EDA07800867B30 /* Colour.swift in Sources */,
 				1EEA82AB20ECDD0500C406FE /* AccountType.swift in Sources */,
 				1EADC87A2022A864005F94DF /* CustomUnit.swift in Sources */,
@@ -603,6 +626,7 @@
 				1E84DF72210BDEE300EA399D /* LedgerPage.swift in Sources */,
 				1EEA82A520ECCB2D00C406FE /* User.swift in Sources */,
 				1E38BB4C202AE27F00E055A4 /* UrlTargetable.swift in Sources */,
+				1EFDC624211544B20042EBCA /* Node.swift in Sources */,
 				1E16F5E1210AC71C002F1B81 /* Magnitude.swift in Sources */,
 				1E20CD9E2027F7EB00EA3D73 /* AmatinoObject.swift in Sources */,
 				1EEA829B20ECCB2D00C406FE /* Region.swift in Sources */,
