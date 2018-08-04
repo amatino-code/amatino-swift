@@ -39,18 +39,19 @@ public class TreeNode: Node, Decodable {
             fromString: presentationRecursiveBalance
         )
         recursiveBalance = recursiveMagnitude.decimal
-        children = try TreeNode.decodeChildren(container: container)
+        children = try TreeNode.decodeNodes(
+            container: container.nestedUnkeyedContainer(forKey: .children)
+        )
+        return
     }
     
-    internal static func decodeChildren(
-        container: KeyedDecodingContainer<JSONObjectKeys>
+    internal static func decodeNodes(
+        container: UnkeyedDecodingContainer
         ) throws -> Array<Node> {
-        var childrenContainer = try container.nestedUnkeyedContainer(
-            forKey: .children
-        )
-        var childrenContainerToDecode = childrenContainer
+        var childrenContainer = container
+        var childrenContainerToDecode = container
         var childNodes = [Node]()
-        while(!childrenContainer.isAtEnd) {
+        while(!container.isAtEnd) {
             let childNode = try childrenContainer.nestedContainer(
                 keyedBy: JSONObjectKeys.self
             )

@@ -79,4 +79,28 @@ extension EntityObject {
         return
     }
     
+    static func asyncInitSolo(
+        _ session: Session,
+        _ entity: Entity,
+        _ callback: @escaping (Error?, Self?) -> Void,
+        _ error: Error?,
+        _ data: Data?
+        ) {
+        let entityObject: Self
+        do {
+            guard error == nil else { callback(error, nil); return }
+            guard let dataToDecode: Data = data else {
+                callback(AmatinoError(.inconsistentInternalState), nil); return
+            }
+            let attributes = try JSONDecoder().decode(
+                attributesType.self,
+                from: dataToDecode
+            )
+            entityObject = self.init(session, entity, attributes)
+        } catch {
+            callback(error, nil); return
+        }
+        callback(nil, entityObject); return
+    }
+
 }

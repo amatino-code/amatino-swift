@@ -133,6 +133,9 @@
 		1EFDC627211551AA0042EBCA /* PlaceholderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */; };
 		1EFDC628211551AA0042EBCA /* PlaceholderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */; };
 		1EFDC629211551AA0042EBCA /* PlaceholderNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */; };
+		1EFDC62B21155ADC0042EBCA /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62A21155ADC0042EBCA /* Tree.swift */; };
+		1EFDC62C21155ADC0042EBCA /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62A21155ADC0042EBCA /* Tree.swift */; };
+		1EFDC62D21155ADC0042EBCA /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62A21155ADC0042EBCA /* Tree.swift */; };
 		OBJ_21 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_27 /* AncillaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* AncillaryTests.swift */; };
 		OBJ_29 /* Amatino.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Amatino::Amatino::Product" /* Amatino.framework */; };
@@ -213,6 +216,7 @@
 		1EFDC61E21152ED60042EBCA /* TreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNode.swift; sourceTree = "<group>"; };
 		1EFDC622211544B20042EBCA /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderNode.swift; sourceTree = "<group>"; };
+		1EFDC62A21155ADC0042EBCA /* Tree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
 		"Amatino::Amatino::Product" /* Amatino.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Amatino.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"Amatino::AmatinoTests::Product" /* AmatinoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = AmatinoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_12 /* AncillaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AncillaryTests.swift; sourceTree = "<group>"; };
@@ -357,6 +361,7 @@
 				1EFDC61E21152ED60042EBCA /* TreeNode.swift */,
 				1EFDC622211544B20042EBCA /* Node.swift */,
 				1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */,
+				1EFDC62A21155ADC0042EBCA /* Tree.swift */,
 			);
 			name = Amatino;
 			path = Sources/Amatino;
@@ -535,6 +540,7 @@
 				1E59D9FE210EEE090080C4CD /* RecursiveLedgerPage.swift in Sources */,
 				1E58D59620F2283700069961 /* EntityListAttributes.swift in Sources */,
 				1E58D5A620F2283700069961 /* Transaction.swift in Sources */,
+				1EFDC62D21155ADC0042EBCA /* Tree.swift in Sources */,
 				1E58D59220F2283700069961 /* Entity.swift in Sources */,
 				1E16F5E6210AF196002F1B81 /* AmatinoDate.swift in Sources */,
 				1E84DF73210BDEE300EA399D /* LedgerPage.swift in Sources */,
@@ -563,6 +569,7 @@
 				1EFDC623211544B20042EBCA /* Node.swift in Sources */,
 				1E59DA00210EEECD0080C4CD /* RecursiveLedger.swift in Sources */,
 				1E16F5DC210AC60C002F1B81 /* Ledger.swift in Sources */,
+				1EFDC62B21155ADC0042EBCA /* Tree.swift in Sources */,
 				1E97CDE2210096B400C149A6 /* LedgerRow.swift in Sources */,
 				1E59D9FC210EEE090080C4CD /* RecursiveLedgerPage.swift in Sources */,
 				1E84DF71210BDEE300EA399D /* LedgerPage.swift in Sources */,
@@ -622,6 +629,7 @@
 				1EEA82AB20ECDD0500C406FE /* AccountType.swift in Sources */,
 				1EADC87A2022A864005F94DF /* CustomUnit.swift in Sources */,
 				1E20CFD920DB259400C129D0 /* AmatinoAlpha.swift in Sources */,
+				1EFDC62C21155ADC0042EBCA /* Tree.swift in Sources */,
 				1E16F5E5210AF196002F1B81 /* AmatinoDate.swift in Sources */,
 				1E84DF72210BDEE300EA399D /* LedgerPage.swift in Sources */,
 				1EEA82A520ECCB2D00C406FE /* User.swift in Sources */,
