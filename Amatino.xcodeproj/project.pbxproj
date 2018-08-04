@@ -50,8 +50,6 @@
 		1E2B420720FED2F100537C17 /* GlobalUnitList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2B420520FED2F100537C17 /* GlobalUnitList.swift */; };
 		1E2B420920FF023400537C17 /* Balance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2B420820FF023400537C17 /* Balance.swift */; };
 		1E2B420A20FF023400537C17 /* Balance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2B420820FF023400537C17 /* Balance.swift */; };
-		1E2B420C20FF07FD00537C17 /* BalanceRetrieveArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2B420B20FF07FD00537C17 /* BalanceRetrieveArguments.swift */; };
-		1E2B420D20FF07FD00537C17 /* BalanceRetrieveArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2B420B20FF07FD00537C17 /* BalanceRetrieveArguments.swift */; };
 		1E2B420F20FF11EA00537C17 /* BalanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2B420E20FF11EA00537C17 /* BalanceTests.swift */; };
 		1E2B421120FF124B00537C17 /* DerivedObjectTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2B421020FF124B00537C17 /* DerivedObjectTest.swift */; };
 		1E38BB4C202AE27F00E055A4 /* UrlTargetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E38BB4B202AE27F00E055A4 /* UrlTargetable.swift */; };
@@ -167,7 +165,6 @@
 		1E2356DB201E21430008E123 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		1E2B420520FED2F100537C17 /* GlobalUnitList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalUnitList.swift; sourceTree = "<group>"; };
 		1E2B420820FF023400537C17 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
-		1E2B420B20FF07FD00537C17 /* BalanceRetrieveArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceRetrieveArguments.swift; sourceTree = "<group>"; };
 		1E2B420E20FF11EA00537C17 /* BalanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceTests.swift; sourceTree = "<group>"; };
 		1E2B421020FF124B00537C17 /* DerivedObjectTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivedObjectTest.swift; sourceTree = "<group>"; };
 		1E38BB4B202AE27F00E055A4 /* UrlTargetable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlTargetable.swift; sourceTree = "<group>"; };
@@ -314,7 +311,6 @@
 				1E54D29A202D9B8D004E8599 /* AMCryptography.h */,
 				1E54D29B202D9C97004E8599 /* AMCryptography.m */,
 				1E2B420820FF023400537C17 /* Balance.swift */,
-				1E2B420B20FF07FD00537C17 /* BalanceRetrieveArguments.swift */,
 				1E7B837A20EDA07800867B30 /* Colour.swift */,
 				1EADC8792022A864005F94DF /* CustomUnit.swift */,
 				1EADC87B2022A8E2005F94DF /* Entity.swift */,
@@ -533,7 +529,6 @@
 				1E58D5B120F2283700069961 /* UserAttributes.swift in Sources */,
 				1E58D58820F2283700069961 /* AccountType.swift in Sources */,
 				1E58D58620F2283700069961 /* Account.swift in Sources */,
-				1E2B420D20FF07FD00537C17 /* BalanceRetrieveArguments.swift in Sources */,
 				1E58D5AD20F2283700069961 /* UrlParameters.swift in Sources */,
 				1E2B420A20FF023400537C17 /* Balance.swift in Sources */,
 			);
@@ -614,7 +609,6 @@
 				1EADC8882022B402005F94DF /* UrlParameters.swift in Sources */,
 				1EEA829D20ECCB2D00C406FE /* EntityListAttributes.swift in Sources */,
 				1EEA829F20ECCB2D00C406FE /* EntityList.swift in Sources */,
-				1E2B420C20FF07FD00537C17 /* BalanceRetrieveArguments.swift in Sources */,
 				1E54D29C202D9C97004E8599 /* AMCryptography.m in Sources */,
 				1E2B420920FF023400537C17 /* Balance.swift in Sources */,
 				1EADC8862022B289005F94DF /* RequestData.swift in Sources */,
