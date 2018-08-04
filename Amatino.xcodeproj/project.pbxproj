@@ -136,6 +136,9 @@
 		1EFDC62B21155ADC0042EBCA /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62A21155ADC0042EBCA /* Tree.swift */; };
 		1EFDC62C21155ADC0042EBCA /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62A21155ADC0042EBCA /* Tree.swift */; };
 		1EFDC62D21155ADC0042EBCA /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62A21155ADC0042EBCA /* Tree.swift */; };
+		1EFDC62F211571400042EBCA /* Performance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62E211571400042EBCA /* Performance.swift */; };
+		1EFDC630211571400042EBCA /* Performance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62E211571400042EBCA /* Performance.swift */; };
+		1EFDC631211571400042EBCA /* Performance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62E211571400042EBCA /* Performance.swift */; };
 		OBJ_21 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_27 /* AncillaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* AncillaryTests.swift */; };
 		OBJ_29 /* Amatino.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Amatino::Amatino::Product" /* Amatino.framework */; };
@@ -217,6 +220,7 @@
 		1EFDC622211544B20042EBCA /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderNode.swift; sourceTree = "<group>"; };
 		1EFDC62A21155ADC0042EBCA /* Tree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
+		1EFDC62E211571400042EBCA /* Performance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Performance.swift; sourceTree = "<group>"; };
 		"Amatino::Amatino::Product" /* Amatino.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Amatino.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"Amatino::AmatinoTests::Product" /* AmatinoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = AmatinoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_12 /* AncillaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AncillaryTests.swift; sourceTree = "<group>"; };
@@ -362,6 +366,7 @@
 				1EFDC622211544B20042EBCA /* Node.swift */,
 				1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */,
 				1EFDC62A21155ADC0042EBCA /* Tree.swift */,
+				1EFDC62E211571400042EBCA /* Performance.swift */,
 			);
 			name = Amatino;
 			path = Sources/Amatino;
@@ -524,6 +529,7 @@
 				1E58D58D20F2283700069961 /* AmatinoRequest.swift in Sources */,
 				1E58D58A20F2283700069961 /* AmatinoAlpha.swift in Sources */,
 				1E58D5AE20F2283700069961 /* UrlTarget.swift in Sources */,
+				1EFDC631211571400042EBCA /* Performance.swift in Sources */,
 				1E58D59B20F2283700069961 /* HTTPMethod.swift in Sources */,
 				1E4D5E36210FFC6400303BD2 /* EntityObject.swift in Sources */,
 				1E58D5B220F2283700069961 /* PermissionsGraph.swift in Sources */,
@@ -568,6 +574,7 @@
 				1E16F5E4210AF196002F1B81 /* AmatinoDate.swift in Sources */,
 				1EFDC623211544B20042EBCA /* Node.swift in Sources */,
 				1E59DA00210EEECD0080C4CD /* RecursiveLedger.swift in Sources */,
+				1EFDC62F211571400042EBCA /* Performance.swift in Sources */,
 				1E16F5DC210AC60C002F1B81 /* Ledger.swift in Sources */,
 				1EFDC62B21155ADC0042EBCA /* Tree.swift in Sources */,
 				1E97CDE2210096B400C149A6 /* LedgerRow.swift in Sources */,
@@ -613,6 +620,7 @@
 				1EADC87C2022A8E2005F94DF /* Entity.swift in Sources */,
 				1E2356DC201E21430008E123 /* Session.swift in Sources */,
 				1EEA82B120ED045200C406FE /* PermissionsGraph.swift in Sources */,
+				1EFDC630211571400042EBCA /* Performance.swift in Sources */,
 				1EEA829C20ECCB2D00C406FE /* RegionListAttributes.swift in Sources */,
 				1E4D5E35210FFC6400303BD2 /* EntityObject.swift in Sources */,
 				1E22B8D020FF7ACF00D60340 /* AccountBalance.swift in Sources */,
