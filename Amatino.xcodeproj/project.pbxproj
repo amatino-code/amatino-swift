@@ -139,6 +139,9 @@
 		1EFDC62F211571400042EBCA /* Performance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62E211571400042EBCA /* Performance.swift */; };
 		1EFDC630211571400042EBCA /* Performance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62E211571400042EBCA /* Performance.swift */; };
 		1EFDC631211571400042EBCA /* Performance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC62E211571400042EBCA /* Performance.swift */; };
+		1EFDC633211578950042EBCA /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC632211578950042EBCA /* Position.swift */; };
+		1EFDC634211578950042EBCA /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC632211578950042EBCA /* Position.swift */; };
+		1EFDC635211578950042EBCA /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFDC632211578950042EBCA /* Position.swift */; };
 		OBJ_21 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_27 /* AncillaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* AncillaryTests.swift */; };
 		OBJ_29 /* Amatino.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Amatino::Amatino::Product" /* Amatino.framework */; };
@@ -221,6 +224,7 @@
 		1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderNode.swift; sourceTree = "<group>"; };
 		1EFDC62A21155ADC0042EBCA /* Tree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
 		1EFDC62E211571400042EBCA /* Performance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Performance.swift; sourceTree = "<group>"; };
+		1EFDC632211578950042EBCA /* Position.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Position.swift; sourceTree = "<group>"; };
 		"Amatino::Amatino::Product" /* Amatino.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Amatino.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"Amatino::AmatinoTests::Product" /* AmatinoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = AmatinoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_12 /* AncillaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AncillaryTests.swift; sourceTree = "<group>"; };
@@ -367,6 +371,7 @@
 				1EFDC626211551AA0042EBCA /* PlaceholderNode.swift */,
 				1EFDC62A21155ADC0042EBCA /* Tree.swift */,
 				1EFDC62E211571400042EBCA /* Performance.swift */,
+				1EFDC632211578950042EBCA /* Position.swift */,
 			);
 			name = Amatino;
 			path = Sources/Amatino;
@@ -538,6 +543,7 @@
 				1E97CDE4210096B400C149A6 /* LedgerRow.swift in Sources */,
 				1E58D59120F2283700069961 /* CustomUnit.swift in Sources */,
 				1E58D58B20F2283700069961 /* AmatinoObject.swift in Sources */,
+				1EFDC635211578950042EBCA /* Position.swift in Sources */,
 				1E58D59920F2283700069961 /* GlobalUnit.swift in Sources */,
 				1E58D5A220F2283700069961 /* Session.swift in Sources */,
 				1E16F5DE210AC60E002F1B81 /* Ledger.swift in Sources */,
@@ -582,6 +588,7 @@
 				1E84DF71210BDEE300EA399D /* LedgerPage.swift in Sources */,
 				1EFDC61F21152ED60042EBCA /* TreeNode.swift in Sources */,
 				1E794682211187060006E971 /* AmatinoError.swift in Sources */,
+				1EFDC633211578950042EBCA /* Position.swift in Sources */,
 				1E4D5E34210FFC6400303BD2 /* EntityObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -629,6 +636,7 @@
 				1EADC8832022B289005F94DF /* HTTPMethod.swift in Sources */,
 				1E0E6F3E20258654006AF115 /* Entry.swift in Sources */,
 				1E15CD2E2023BD4B0031CB2B /* GlobalUnit.swift in Sources */,
+				1EFDC634211578950042EBCA /* Position.swift in Sources */,
 				1E16F5DD210AC60D002F1B81 /* Ledger.swift in Sources */,
 				1E59DA01210EEECD0080C4CD /* RecursiveLedger.swift in Sources */,
 				1E59D9FD210EEE090080C4CD /* RecursiveLedgerPage.swift in Sources */,
