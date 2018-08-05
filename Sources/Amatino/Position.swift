@@ -136,15 +136,13 @@ public final class Position: EntityObject {
             globalUnitId = try container.decode(Int?.self, forKey: .globalUnit)
             customUnitId = try container.decode(Int?.self, forKey: .customUnit)
             liabilityAccounts = try TreeNode.decodeNodes(
-                container: container.nestedUnkeyedContainer(
-                    forKey: .liabilities
-                )
+                container: container, key: .liabilities
             )
             assetAccounts = try TreeNode.decodeNodes(
-                container: container.nestedUnkeyedContainer(forKey: .assets)
+                container: container, key: .assets
             )
             equityAccounts = try TreeNode.decodeNodes(
-                container: container.nestedUnkeyedContainer(forKey: .equities)
+                container: container, key: .equities
             )
             depth = try container.decode(Int.self, forKey: .depth)
             return
@@ -174,6 +172,7 @@ public final class Position: EntityObject {
             try container.encode(balanceTime, forKey: .balanceTime)
             try container.encode(globalUnitId, forKey: .globalUnitId)
             try container.encode(customUnitId, forKey: .customUnitId)
+            try container.encode(depth, forKey: .depth)
             return
         }
         

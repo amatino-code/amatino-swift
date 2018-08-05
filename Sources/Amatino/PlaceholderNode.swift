@@ -24,9 +24,7 @@ public class PlaceholderNode: Node, Decodable {
         type = try container.decode(AccountType.self, forKey: .type)
         depth = try container.decode(Int.self, forKey: .depth)
         children = try TreeNode.decodeNodes(
-            container: container.nestedUnkeyedContainer(
-                forKey: TreeNode.JSONObjectKeys.children
-            )
+            container: container, key: TreeNode.JSONObjectKeys.children
         )
         return
     }

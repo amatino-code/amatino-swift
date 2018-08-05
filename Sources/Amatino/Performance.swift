@@ -144,10 +144,10 @@ public final class Performance: EntityObject {
             globalUnitId = try container.decode(Int?.self, forKey: .globalUnit)
             customUnitId = try container.decode(Int?.self, forKey: .customUnit)
             incomeAccounts = try TreeNode.decodeNodes(
-                container: container.nestedUnkeyedContainer(forKey: .income)
+                container: container, key: .incomes
             )
             expenseAccounts = try TreeNode.decodeNodes(
-                container: container.nestedUnkeyedContainer(forKey: .expenses)
+                container: container, key: .expenses
             )
             depth = try container.decode(Int.self, forKey: .depth)
             return
@@ -160,7 +160,7 @@ public final class Performance: EntityObject {
             case generatedTime = "generated_time"
             case globalUnit = "global_unit_denomination"
             case customUnit = "custom_unit_denomination"
-            case income
+            case incomes
             case expenses
             case depth
         }
@@ -179,6 +179,7 @@ public final class Performance: EntityObject {
             try container.encode(endTime, forKey: .endTime)
             try container.encode(globalUnitId, forKey: .globalUnitId)
             try container.encode(customUnitId, forKey: .customUnitId)
+            try container.encode(depth, forKey: .depth)
             return
         }
         

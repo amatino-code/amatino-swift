@@ -99,7 +99,7 @@ public final class Tree: EntityObject {
             globalUnitId = try container.decode(Int?.self, forKey: .globalUnit)
             customUnitId = try container.decode(Int?.self, forKey: .customUnit)
             accounts = try TreeNode.decodeNodes(
-                container: container.nestedUnkeyedContainer(forKey: .tree)
+                container: container, key: .tree
             )
             return
         }

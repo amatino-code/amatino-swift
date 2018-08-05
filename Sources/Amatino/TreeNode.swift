@@ -40,16 +40,37 @@ public class TreeNode: Node, Decodable {
         )
         recursiveBalance = recursiveMagnitude.decimal
         children = try TreeNode.decodeNodes(
-            container: container.nestedUnkeyedContainer(forKey: .children)
+            container: container, key: .children
         )
         return
     }
     
-    internal static func decodeNodes(
-        container: UnkeyedDecodingContainer
+    internal static func decodeNodes<K: CodingKey>(
+        container: KeyedDecodingContainer<K>,
+        key: K
         ) throws -> Array<Node> {
-        var childrenContainer = container
-        var childrenContainerToDecode = container
+        guard container.contains(key) else {
+            throw AmatinoError(.badResponse)
+        }
+        var childrenContainer: UnkeyedDecodingContainer
+        /* the value for key may be nil. We don't have a clean way to get either
+           an UnkeyedDecodingContainer or nil, so we have to control flow with
+           a do-catch block.
+        */
+        do {
+            childrenContainer = try container.nestedUnkeyedContainer(forKey: key)
+        } catch {
+            /* Int? stands in as a dummy type. We expect nil, never an Int. If
+               we do in fact find nil, we can be confident no error has occured
+               and we may safely return an empty Node array.
+            */
+            let sample = try container.decode(Int?.self, forKey: key)
+            guard sample == nil else {
+                throw error
+            }
+            return Array<Node>()
+        }
+        var childrenContainerToDecode = childrenContainer
         var childNodes = [Node]()
         while(!childrenContainer.isAtEnd) {
             let childNode = try childrenContainer.nestedContainer(
