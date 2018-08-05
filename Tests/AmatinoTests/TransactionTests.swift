@@ -308,7 +308,8 @@ class TransactionTests: AmatinoTest {
                             entity: self.entity!,
                             transactionId: transaction.id,
                             callback: { (error, transaction) in
-                                guard let amatinoError = error as? AmatinoError else {
+                                guard let amatinoError = error as? AmatinoError
+                                        else {
                                     XCTFail(); expectation.fulfill()
                                     return
                                 }

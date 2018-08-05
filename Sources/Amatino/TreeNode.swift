@@ -51,7 +51,7 @@ public class TreeNode: Node, Decodable {
         var childrenContainer = container
         var childrenContainerToDecode = container
         var childNodes = [Node]()
-        while(!container.isAtEnd) {
+        while(!childrenContainer.isAtEnd) {
             let childNode = try childrenContainer.nestedContainer(
                 keyedBy: JSONObjectKeys.self
             )
