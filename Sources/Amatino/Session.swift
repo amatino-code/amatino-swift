@@ -24,7 +24,7 @@ public class Session {
         callback: @escaping (Error?, Session?) -> Void
         ) {
         
-        let creationData = SessionCreateArguments(secret: secret, email: email)
+        let creationData = CreateArguments(secret: secret, email: email)
         let requestData: RequestData
         do {
             requestData = try RequestData(
@@ -46,10 +46,10 @@ public class Session {
                 callback: {(error: Error?, data: Data?) -> Void in
                     guard error == nil else {callback(error, nil); return}
                     let decoder = JSONDecoder()
-                    let object: SessionAttributes
+                    let object: Attributes
                     do {
                         object = try decoder.decode(
-                            SessionAttributes.self,
+                            Attributes.self,
                             from: data!
                         )
                     } catch {
@@ -67,7 +67,7 @@ public class Session {
         return
     }
     
-    internal init (attributes: SessionAttributes) {
+    internal init (attributes: Attributes) {
         apiKey = attributes.apiKey
         userId = attributes.userId
         sessionId = attributes.sessionId
@@ -94,10 +94,62 @@ public class Session {
         let dataToHash = timestamp + path + dataString
 
         guard let signature = AMSignature.sha512(apiKey, data:dataToHash) else {
-            throw InternalLibraryError(.SignatureHashFailed)
+            throw AmatinoError(.inconsistentInternalState)
         }
 
         return signature
     }
+    
+    public struct Attributes: Codable {
+        
+        public let apiKey: String
+        public let sessionId: Int
+        public let userId: Int
+        
+        enum CodingKeys: String, CodingKey {
+            
+            case apiKey = "api_key"
+            case sessionId = "session_id"
+            case userId = "user_id"
+            
+        }
+    }
+    
+    struct CreateArguments: Codable {
+        
+        let secret: String?
+        let email: String?
+        let userId: Int?
+        
+        init (secret: String, email: String) {
+            self.email = email
+            self.secret = secret
+            userId = nil
+            return
+        }
+        
+        init (secret: String, userId: Int) {
+            self.secret = secret
+            self.userId = userId
+            email = nil
+            return
+        }
+        
+        enum CodingKeys: String, CodingKey {
+            case userId = "user_id"
+            case email = "account_email"
+            case secret
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(secret, forKey: .secret)
+            try container.encode(email, forKey: .email)
+            try container.encode(userId, forKey: .userId)
+            return
+        }
+        
+    }
+
     
 }

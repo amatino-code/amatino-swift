@@ -33,7 +33,7 @@ internal class RequestData {
         }
         let dataString = String(data: encodedData, encoding: .utf8)
         guard dataString != nil else {
-            throw InternalLibraryError(.DataStringEncodingFailed)
+            throw AmatinoError(.inconsistentInternalState)
         }
         encodedDataString = String(data: encodedData, encoding: .utf8)!
     }
@@ -46,7 +46,7 @@ internal class RequestData {
         encodedData = try encoder.encode(arrayData)
         let dataString = String(data: encodedData, encoding: .utf8)
         guard dataString != nil else {
-            throw InternalLibraryError(.DataStringEncodingFailed)
+            throw AmatinoError(.inconsistentInternalState)
         }
         encodedDataString = dataString!
         return
@@ -56,7 +56,6 @@ internal class RequestData {
         let b64data = encodedData.base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
-            //.replacingOccurrences(of: "=", with: "")
         let urlParameter = "arguments=" + b64data
         return urlParameter
     }

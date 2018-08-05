@@ -150,4 +150,153 @@ class AccountTests: AmatinoTest {
         return
     }
     
+    func testUpdateAccount() {
+        
+        let expectation = XCTestExpectation(description: "Update Account")
+        
+        let replacementName = "Updated Account"
+        
+        func updateAccount(_ account: Account) {
+            do {
+                let _ = try account.update(
+                    name: "Updated Account",
+                    description: account.description,
+                    parent: nil,
+                    type: account.type,
+                    counterParty: nil,
+                    colour: nil,
+                    globalUnit: unit!,
+                    callback: { (error, account) in
+                        guard error == nil else {
+                            let cast = error as? AmatinoError
+                            print(cast?.description ?? "Unknown Error")
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        guard let updatedAccount: Account = account else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        guard updatedAccount.name == replacementName else {
+                            print("Account name: \(updatedAccount.name)")
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        expectation.fulfill(); return
+                })
+            } catch {
+                print((error as? AmatinoError)?.description ?? "Unknown Err.")
+                XCTFail(); expectation.fulfill(); return
+            }
+        }
+        
+        func executeProcedure() {
+            do {
+                let _ = try Account.create(
+                    session: session!,
+                    entity: entity!,
+                    name: "Amatino Swift test account",
+                    type: .asset,
+                    description: "Testing account update",
+                    globalUnit: unit!,
+                    callback: { (error, account) in
+                        XCTAssertNil(error)
+                        XCTAssertNotNil(account)
+                        updateAccount(account!)
+                        return
+                })
+            } catch {
+                print((error as? AmatinoError)?.description ?? "Unknown Err.")
+                XCTFail(); expectation.fulfill(); return
+            }
+        }
+        
+        executeProcedure()
+        wait(for: [expectation], timeout: 5)
+        return
+        
+    }
+    
+    func testDeleteAccount() {
+        
+        let expectation = XCTestExpectation(description: "Delete Account")
+        
+        func lookupDeletedAccount(_ account: Account) {
+            do {
+                let _ = try Account.retrieve(
+                    session: session!,
+                    entity: entity!,
+                    accountId: account.id,
+                    callback: { (error, account) in
+                        guard account == nil else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        guard let amError = error as? AmatinoError else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        guard amError.kind == .notFound else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        expectation.fulfill()
+                        return
+                })
+            } catch {
+                
+            }
+        }
+        
+        func deleteAccount(_ cash: Account, _ bank: Account) {
+            do {
+                let _ = try cash.delete(
+                    entryReplacement: bank,
+                    callback: { (error) in
+                        guard error == nil else {
+                            let cast = error as? AmatinoError
+                            print(cast?.description ?? "Unknown Error")
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        let _ = lookupDeletedAccount(cash)
+                })
+            } catch {
+                print((error as? AmatinoError)?.description ?? "Unknown Err.")
+                XCTFail(); expectation.fulfill(); return
+            }
+        }
+        
+        func executeProcedure() {
+            do {
+                let cashAccountArguments = try Account.CreateArguments(
+                    name: "[Deletion] T1A Cash",
+                    type: .asset,
+                    description: "Test asset account for deletion",
+                    globalUnit: unit!
+                )
+                let revenueAccountArguments = try Account.CreateArguments(
+                    name: "[Deletion] T1B Bank",
+                    type: .asset,
+                    description: "Test bank account for deletion",
+                    globalUnit: unit!
+                )
+                let arguments = [cashAccountArguments, revenueAccountArguments]
+                let _ = try Account.createMany(
+                    session: session!,
+                    entity: entity!,
+                    arguments: arguments,
+                    callback: { (error, accounts) in
+                        guard accounts != nil else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        guard accounts!.count == 2 else {
+                            XCTFail(); expectation.fulfill(); return
+                        }
+                        let _ = deleteAccount(accounts![0], accounts![1])
+                })
+            } catch {
+                print((error as? AmatinoError)?.description ?? "Unknown Err.")
+                XCTFail(); expectation.fulfill(); return
+            }
+        }
+        
+        executeProcedure()
+        wait(for: [expectation], timeout: 5)
+        return
+    }
+    
 }

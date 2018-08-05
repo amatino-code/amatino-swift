@@ -429,22 +429,93 @@ class PopulatedEntityTest: DerivedObjectTest {
         return
     }
     
-    func boop(session: Session, starkIndustries: Entity, suitSales: Account) throws {
+    func testRetrieveTree() {
+        let treeExpectation = XCTestExpectation(description: "Retrieve tree")
         
-                                                                                                                        try Ledger.retrieve(
-                                                                                                                            session: session,
-                                                                                                                            entity: starkIndustries,
-                                                                                                                            account: suitSales,
-                                                                                                                            callback: { (error, ledger) in
-                                                                                                                                for line in ledger! {
-                                                                                                                                    print("Running balance: \(line.balance)")
-                                                                                                                                }
-                                                                                                                        })
+        do {
+            let _ = try Tree.retrieve(
+                session: session!,
+                entity: entity!,
+                globalUnit: unit!,
+                callback: { (error, tree) in
+                    guard error == nil else {
+                        let cast = error as? AmatinoError
+                        print(cast?.description ?? "Unknown Error")
+                        XCTFail(); treeExpectation.fulfill(); return
+                    }
+                    guard let newTree: Tree = tree else {
+                        XCTFail(); treeExpectation.fulfill(); return
+                    }
+                    guard newTree.accounts.count > 0 else {
+                        XCTFail(); treeExpectation.fulfill(); return
+                    }
+                    treeExpectation.fulfill(); return
+            })
+        } catch {
+            print((error as? AmatinoError)?.description ?? "Unknown Err.")
+            XCTFail(); treeExpectation.fulfill(); return
+        }
         
-        
-        
-        
+        wait(for: [treeExpectation], timeout: 5)
     }
     
+    func testRetrievePerformance() {
+        let expectation = XCTestExpectation(description: "Retrieve Performance")
+        
+        do {
+            let _ = try Performance.retrieve(
+                session: session!,
+                entity: entity!,
+                startTime: Date(timeIntervalSinceNow: (-3600*24*10)),
+                endTime: Date(),
+                globalUnit: unit!,
+                callback: { (error, performance) in
+                    guard error == nil else {
+                        let cast = error as? AmatinoError
+                        print(cast?.description ?? "Unknown Error")
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard let newPerformance: Performance = performance else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard newPerformance.incomeAccounts.count > 0 else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    expectation.fulfill(); return
+            })
+        } catch {
+            print((error as? AmatinoError)?.description ?? "Unknown Err.")
+            XCTFail(); expectation.fulfill(); return
+        }
+        wait(for: [expectation], timeout: 5)
+    }
     
+    func testRetrievePosition() {
+        let expectation = XCTestExpectation(description: "Retrieve Position")
+        
+        do {
+            let _ = try Position.retrieve(
+                session: session!,
+                entity: entity!,
+                globalUnit: unit!,
+                callback: { (error, position) in
+                    guard error == nil else {
+                        let cast = error as? AmatinoError
+                        print(cast?.description ?? "Unknown Error")
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard let newPosition: Position = position else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard newPosition.assetAccounts.count > 0 else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    expectation.fulfill(); return
+            })
+        } catch {
+            print((error as? AmatinoError)?.description ?? "Unknown Err.")
+            XCTFail(); expectation.fulfill(); return
+        }
+        wait(for: [expectation], timeout: 5)
+    }
 }

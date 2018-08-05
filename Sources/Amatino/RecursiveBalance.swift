@@ -18,7 +18,7 @@ class RecursiveBalance: AccountBalance {
         callback: @escaping (Error?, RecursiveBalance?) -> Void
         ) throws {
         
-        let arguments = BalanceRetrieveArguments(account: account)
+        let arguments = Balance.RetrieveArguments(account: account)
         let _ = try RecursiveBalance.retrieve(
             session: session,
             entity: entity,
@@ -36,7 +36,7 @@ class RecursiveBalance: AccountBalance {
         callback: @escaping (Error?, RecursiveBalance?) -> Void
         ) throws {
         
-        let arguments = BalanceRetrieveArguments(
+        let arguments = Balance.RetrieveArguments(
             account: account,
             balanceTime: balanceTime
         )
@@ -52,7 +52,7 @@ class RecursiveBalance: AccountBalance {
     public static func retrieve(
         session: Session,
         entity: Entity,
-        arguments: BalanceRetrieveArguments,
+        arguments: Balance.RetrieveArguments,
         callback: @escaping (Error?, RecursiveBalance?) -> Void
         ) throws {
         
