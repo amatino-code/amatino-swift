@@ -1,138 +1,138 @@
 # Amatino Swift
-
-Amatino is a double entry accounting system. It provides double entry accounting as a service. Amatino is served via a web API. Amatino Swift is a library for interacting with the Amatino API from within a Swift application. By using Amatino Swift, a Swift developer can utilise Amatino services without needing to deal with raw HTTP requests.
+Amatino is an accounting engine. It provides double entry accounting as a service. Amatino is served via a web API. Amatino Swift is a library for interacting with the Amatino API from within a Swift application, on macOS or iOS.
 
 ## Under construction
+The Amatino API pffers a full range of accounting services via HTTP requests. Amatino Swift is in an Alpha state, offering expressive, object-oriented Swift interfaces for almost all Amatino API services.
 
-Right now, the Amatino API pffers a full range of accounting services via HTTP requests. However, this Amatino Swift library is in an 'Alpha' state. Its capabilities are limited. One class is available: `AmatinoAlpha`.
+A few API features, such as [Custom Units](https://amatino.io/documentation/custom_units) and [Entity ](https://amatino.io/documentation/entities) Permissions Graphs, are not yet available in Amatino Swift.  While Amatino's [HTTP documentation](https://amatino.io/documentation) is full and comprehensive, Amatino Swift documentation is still under construction.
 
-`AmatinoAlpha` is a thin wrapper around asynchronous HTTP requests to the Amatino API. It facilitates testing and experimentation with the Amatino API without having to resort to raw HTTP request manipulation and HMAC computation.
-
-Amatino Swift will eventually offer expressive, object-oriented interfaces for all Amatino API services. To be notified when Amatino Swift enters a Beta state, with all capabilities available, sign up to the [Amatino Development Newsletter](https://amatino.io/newsletter).
-
-In the mean time, you may wish to review [Amatino's HTTP documentation](https://amatino.io/documentation) to see what capabilities you can expect from Amatino Swift in the future.
+To be notified when Amatino Swift enters a Beta state, with all capabilities and documentation available, sign up to the [Amatino Development Newsletter](https://amatino.io/newsletter).
 
 ## Installation
+You may install Amatino Swift in a variety of ways:
 
-We're still evaluating the best ways to distribute Amatino (your suggestions welcome). At the moment, we offer compiled Cocoa Frameworks for MacOS and iOS via [Amatino Swift's Releases page](https://github.com/amatino-code/amatino-swift/releases).
+### Carthage
+Add Amatino to your `Cartfile`:
 
-You can drag and drop the appropriate .framework file into your MacOS or iOS Xcode project, then `import Amatino` to begin using Amatino's services.
-
-## Example Usage
-
-The `AmatinoAlpha` object allows you to use the Amatino API without dealing with raw HTTP requests or HMACs. It lacks the expressive syntax, input validation, and error handling that Amatino Swift will have in the beta stage.
-
-Initialise an `AmatinoAlpha` instance like so:
-
-````swift
-let _ = AmatinoAlpha.create(
-    email: "clever@cooke.com",
-    secret: "high entropy passphrase",
-    callback: {(error: Error?, amatinoAlpha: AmatinoAlpha?) in
-        // Do stuff with amatinoAlpha
-})
-````
-
-Requests may then be made like so:
-
-````swift
-let newEntityData = try! EntityCreateArguments(name: "My First Entity")
-
-let _ = try! amatinoAlpha.request(
-    path: "/entities",
-    method: HTTPMethod.POST,
-    queryString: nil,
-    body: [newEntityData],
-    callback: {(error: Error?, responseData: Data?) in
-        // Do stuff with responseData
-})
-````
-
-Wherein the parameters passed to `request()` are the HTTP path, method, url parameters ('query string'),  and body laid out in the Amatino API HTTP documentation.
-
-For example, the above request created an [Entity](https://amatino.io/documentation/entities). The requirements for Entity creation are available at [/entities#action-Create](https://amatino.io/documentation/entities#action-Create).
-
-The example uses the `EntityCreateArguments` struct to form the `body` required by the `AmatinoAlpha.request()` method. You can pass any `encodable` to `body`. For example, a dictionary of form `[String: Any]`.
-
-However, encoding JSON `null` values in dictionaries with the Swift Foundation library requires verbose code. A dictionary with a `nil` key, for example:
-
-```swift
-let newEntityData = [
-    "name": "My First Entity",
-    "description": nil,
-    "region_id": nil
-]
+```
+github "amatino-code/amatino-swift"
 ```
 
-... Will be encoded by the default Foundation JSONEncoder as ...
+For help, see the [Carthage quick start guide](https://github.com/Carthage/Carthage#quick-start).
 
-````
-'{"name": "My First Entity"}'
-````
+### CocoaPods
+Add Amatino to your `Podfile`:
 
-While the [Amatino API specification](https://amatino.io/documentation/entities#action-Create) requires:
+```
+pod 'Amatino', '>= 0.0.8'
+```
+For help, see [the CocoaPods user guide](https://guides.cocoapods.org/using/using-cocoapods.html).
 
-````
-'{"name": "My First Entity", "description": null, "region_id": null}'
-````
+### Manually
+You can clone this repository, compile Amatino, and drag the compiled .framework into your Xcode project. Or, pre-compiled .framework binaries are available on [Amatino Swift's Releases page](https://github.com/amatino-code/amatino-swift/releases).  
 
-This problem can be solved by defining an explicit implmentation of `encode()`. For example, the `EntityCreateArguments` struct we used above includes the following `encode`:
+## Example Usage
+To get started, you will need a `Session`. Creating a `Session` is analogous to 'logging in' to Amatino.
 
-````swift
-// ...
-    enum CodingKeys: String, CodingKey {
-        case name
-        case description
-        case regionId = "region_id"
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(name, forKey: .name)
-        try container.encode(description, forKey: .description)
-        try container.encode(regionId, forKey: .regionId)
-        return
-    }
-// ...
-````
-At this stage, Amatino Swift also includes the following Encodable structs:
+```swift
+try Session.create(
+  email: "clever@cookie.com",
+  secret: "high entropy passphrase",
+  callback: { (error, session) in
+    // Session instances are the keys to unlocking
+    // Amatino services throughout your application
+})
+```
+ All financial data are stored in [`Entities`](https://amatino.io/documentation/entities), ultra-generic objects that may represent a person, company, project, or any other being which you wish to describe with financial information.
 
-+ [`EntityCreateArguments`](https://github.com/amatino-code/amatino-swift/blob/master/Sources/Amatino/EntityCreateArguments.swift)
-+ [`SessionCreateArguments`](https://github.com/amatino-code/amatino-swift/blob/master/Sources/Amatino/Session.swift)
-+ [`AccountCreateArguments`](https://github.com/amatino-code/amatino-swift/blob/master/Sources/Amatino/AccountCreateArguments.swift)
-+ [`TransactionCreateArguments`](https://github.com/amatino-code/amatino-swift/blob/master/Sources/Amatino/TransactionCreateArguments.swift)
+```swift
+try Entity.create(
+  session: session,
+  name: "Mega Corporation",
+  callback: { (error, entity) in
+    // We can now store information describing Mega
+    // Corporation
+})
+```
+Entities are structured with [`Accounts`](https://amatino.io/documentation/accounts). For example, a bank account, a pile of physical cash, income from sale of accounting software, or travel expenses.
+```swift
+try Account.create(
+  session: session,
+  entity: entity,
+  name: "Widget Sales",
+  type: .revenue,
+  description: "Revenue from sale of excellent widgets",
+  globalUnit: usd,
+  callback( { error, account} in 
+	  // Accounts can be nested, their denominations
+	  // mixed and matched
+})
+```
+Once we have some Accounts, we can store records of economic activity! To do so, we use the [`Transaction`]("https://amatino.io/documentation/transactions") class.
+```swift
+try Transaction.create(
+  session: session,
+  entity: entity,
+  transactionTime: Date(),
+  description: "Record some widget sales",
+  globalUnit: usd,
+  entries: [
+    Entry(
+      side: .debit,
+      account: cash,
+      amount: Decimal(7)
+    ),
+    Entry(
+      side: .debit,
+      account: customerDeposits,
+      amount: Decimal(3)
+    ),
+    Entry(
+      side: .credit,
+      account: widgetSales,
+      amount: Decimal(10)
+    )
+  ],
+  callback: { (error, transaction) in
+    // Transactions can contain up to 100 constituent
+    // entries, and be denominated in an arbitrary unit
+})
+```
+Storing information is nice, but the real power comes from Amatino's ability to organise and retrieve it. For example, we could retrieve a [`Ledger`](https://amatino.io/documentation/ledgers) that lists all Transactions party to an Account.
+```swift
+try Ledger.retrieve(
+  session: session,
+  entity: entity,
+  account: widgetSales,
+  callback: { (error, ledger) in
+    // You can also retrieve RecursiveLedgers, which
+    // list all transactions in the target and all the
+    // target's children 
+})
+```
+Many more classes and methods are available. However, in this early Alpha state, they are not comprehensively documented. Follow [@AmatinoAPI on Twitter](https://twitter.com/amatinoapi) or sign up to the [Development Newsletter](https://amatino.io/newsletter) to be notified when full documentation is available.
 
-To interact with other objects using `AmatinoAlpha`, you will need to either avoid `nil` values in encodable dictionaries, or write your own implementation of `encode()`. Obviously this sucks!
+## Development Updates
 
-As Amatino Swift matures to Beta stage, encodable structs will become available for all objects. Further, you won't need to deal with them directly. For example, check out the more expressive syntax already available for Entity creation:
-
-````swift
-let _ = Entity.create(
-    session: session,
-    name: "My First Entity",
-    callback: {(error, entity) in
-        // Do stuff with entity
-    })
-````
 To receive occasional updates on Amatino Swift development progress, including notification when the library enters a full-featured beta state, sign up to the [Amatino Development Newsletter](https://amatino.io/newsletter).
 
-For more examples of `AmatinoAlpha` usage, see the [getting started guide](https://amatino.io/articles/getting-started).
+Get notified about new library versions by following [@AmatinoAPI](https://amatinoapi) on Twitter.
 
 ## Other languages
 
-Amatino libraries are also available in [Python](https://github.com/Amatino-Code/amatino-python), [C# (.NET)](https://github.com/Amatino-Code/amatino-dotnet), and [Javascript](https://github.com/Amatino-Code/amatino-js).
-
+Amatino libraries are also available in [Python](https://github.com/Amatino-Code/amatino-python) and [Javascript](https://github.com/Amatino-Code/amatino-js).
+  
 ## Useful links
 
-- [Amatino home](https://amatino.io)
-- [Development blog](https://amatino.io/blog)
-- [Development newsletter](https://amatino.io/newsletter)
-- [Discussion forum](https://amatino.io/discussion) 
-- [More Amatino client libraries](https://github.com/amatino-code)
-- [Documentation](https://amatino.io/documentation)
+-  [Amatino home](https://amatino.io)
+-  [Development blog](https://amatino.io/blog)
+-  [Development newsletter](https://amatino.io/newsletter)
+-  [Discussion forum](https://amatino.io/discussion)
+-  [More Amatino client libraries](https://github.com/amatino-code)
+-  [Documentation](https://amatino.io/documentation)
 - [Billing and account management](https://amatino.io/billing)
-- [About Amatino Pty Ltd](https://amatino.io/about)
-
+-  [About Amatino Pty Ltd](https://amatino.io/about)
+  
 ## Get in contact
 
 To quickly speak to a human about Amatino, [email hugh@amatino.io](mailto:hugh@amatino.io) or [yell at him on Twitter (@hugh_jeremy)](https://twitter.com/hugh_jeremy).
