@@ -99,6 +99,10 @@
 		1E794682211187060006E971 /* AmatinoError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E794681211187060006E971 /* AmatinoError.swift */; };
 		1E794683211187060006E971 /* AmatinoError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E794681211187060006E971 /* AmatinoError.swift */; };
 		1E794684211187060006E971 /* AmatinoError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E794681211187060006E971 /* AmatinoError.swift */; };
+		1E7AC3A421192DED00102932 /* Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7AC3A321192DED00102932 /* Unit.swift */; };
+		1E7AC3A521192DED00102932 /* Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7AC3A321192DED00102932 /* Unit.swift */; };
+		1E7AC3A621192DED00102932 /* Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7AC3A321192DED00102932 /* Unit.swift */; };
+		1E7AC3AC2119477000102932 /* CustomUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7AC3AB2119477000102932 /* CustomUnitTests.swift */; };
 		1E7B837B20EDA07800867B30 /* Colour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7B837A20EDA07800867B30 /* Colour.swift */; };
 		1E84DF71210BDEE300EA399D /* LedgerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84DF70210BDEE300EA399D /* LedgerPage.swift */; };
 		1E84DF72210BDEE300EA399D /* LedgerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84DF70210BDEE300EA399D /* LedgerPage.swift */; };
@@ -197,6 +201,8 @@
 		1E59D9FB210EEE090080C4CD /* RecursiveLedgerPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecursiveLedgerPage.swift; sourceTree = "<group>"; };
 		1E59D9FF210EEECD0080C4CD /* RecursiveLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecursiveLedger.swift; sourceTree = "<group>"; };
 		1E794681211187060006E971 /* AmatinoError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmatinoError.swift; sourceTree = "<group>"; };
+		1E7AC3A321192DED00102932 /* Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Unit.swift; sourceTree = "<group>"; };
+		1E7AC3AB2119477000102932 /* CustomUnitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomUnitTests.swift; sourceTree = "<group>"; };
 		1E7B837A20EDA07800867B30 /* Colour.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colour.swift; sourceTree = "<group>"; };
 		1E84DF70210BDEE300EA399D /* LedgerPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerPage.swift; sourceTree = "<group>"; };
 		1E97CDD92100947000C149A6 /* Ledger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger.swift; sourceTree = "<group>"; };
@@ -286,6 +292,7 @@
 				1E2B420E20FF11EA00537C17 /* BalanceTests.swift */,
 				1E2B421020FF124B00537C17 /* DerivedObjectTest.swift */,
 				1E59D9F5210E8C010080C4CD /* PopulatedEntityTest.swift */,
+				1E7AC3AB2119477000102932 /* CustomUnitTests.swift */,
 			);
 			name = AmatinoTests;
 			path = Tests/AmatinoTests;
@@ -372,6 +379,7 @@
 				1E38BB4B202AE27F00E055A4 /* UrlTargetable.swift */,
 				1EEA829920ECCB2D00C406FE /* User.swift */,
 				1EEA829620ECCB2C00C406FE /* UserAttributes.swift */,
+				1E7AC3A321192DED00102932 /* Unit.swift */,
 			);
 			name = Amatino;
 			path = Sources/Amatino;
@@ -541,6 +549,7 @@
 				1E22B8D120FF7ACF00D60340 /* AccountBalance.swift in Sources */,
 				1E58D5B020F2283700069961 /* User.swift in Sources */,
 				1E97CDE4210096B400C149A6 /* LedgerRow.swift in Sources */,
+				1E7AC3A621192DED00102932 /* Unit.swift in Sources */,
 				1E58D59120F2283700069961 /* CustomUnit.swift in Sources */,
 				1E58D58B20F2283700069961 /* AmatinoObject.swift in Sources */,
 				1EFDC635211578950042EBCA /* Position.swift in Sources */,
@@ -587,6 +596,7 @@
 				1E59D9FC210EEE090080C4CD /* RecursiveLedgerPage.swift in Sources */,
 				1E84DF71210BDEE300EA399D /* LedgerPage.swift in Sources */,
 				1EFDC61F21152ED60042EBCA /* TreeNode.swift in Sources */,
+				1E7AC3A421192DED00102932 /* Unit.swift in Sources */,
 				1E794682211187060006E971 /* AmatinoError.swift in Sources */,
 				1EFDC633211578950042EBCA /* Position.swift in Sources */,
 				1E4D5E34210FFC6400303BD2 /* EntityObject.swift in Sources */,
@@ -597,6 +607,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				1E7AC3AC2119477000102932 /* CustomUnitTests.swift in Sources */,
 				1E15311620FC95FE00EB8CC6 /* EntityTests.swift in Sources */,
 				1E2B420F20FF11EA00537C17 /* BalanceTests.swift in Sources */,
 				1E59D9F6210E8C010080C4CD /* PopulatedEntityTest.swift in Sources */,
@@ -634,6 +645,7 @@
 				1E2356D6201D6A200008E123 /* Transaction.swift in Sources */,
 				1E97CDE3210096B400C149A6 /* LedgerRow.swift in Sources */,
 				1EADC8832022B289005F94DF /* HTTPMethod.swift in Sources */,
+				1E7AC3A521192DED00102932 /* Unit.swift in Sources */,
 				1E0E6F3E20258654006AF115 /* Entry.swift in Sources */,
 				1E15CD2E2023BD4B0031CB2B /* GlobalUnit.swift in Sources */,
 				1EFDC634211578950042EBCA /* Position.swift in Sources */,
