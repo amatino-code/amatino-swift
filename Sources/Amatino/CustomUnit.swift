@@ -6,7 +6,20 @@
 //
 import Foundation
 
-public class CustomUnit: AmatinoObject, Decodable, Unit  {
+public final class CustomUnit: EntityObject, Unit  {
+
+    internal init(
+        _ session: Session,
+        _ entity: Entity,
+        _ attributes: CustomUnit.Attributes
+        ) {
+        self.session = session
+        self.entity = entity
+        self.attributes = attributes
+        return
+    }
+    
+    internal let attributes: CustomUnit.Attributes
     
     public static let maxNameLength = 1024
     public static let maxDescriptionLength = 1024
@@ -18,38 +31,141 @@ public class CustomUnit: AmatinoObject, Decodable, Unit  {
     internal static let urlKey = "custom_unit_id"
     internal static let path = "/custom_units"
     
-    public let code: String
-    public let id: Int
-    public let name: String
-    public let priority: Int
-    public let description: String
-    public let exponent: Int
+    public let entity: Entity
+    public let session: Session
+    
+    public var code: String { get { return attributes.code } }
+    public var id: Int { get { return attributes.id } }
+    public var name: String { get { return attributes.name } }
+    public var priority: Int { get { return attributes.priority} }
+    public var description: String { get { return attributes.description} }
+    public var exponent: Int { get { return attributes.exponent} }
     
     public static func create(
         session: Session,
-        entity: Entity
+        entity: Entity,
+        code: String,
+        name: String,
+        priority: Int,
+        description: String,
+        exponent: Int,
+        callback: @escaping (Error?, CustomUnit?) -> Void
         ) {
+        do {
+            let arguments = try CustomUnit.CreationArguments(
+                code: code,
+                name: name,
+                priority: priority,
+                description: description,
+                exponent: exponent
+            )
+            let _ = try AmatinoRequest(
+                path: CustomUnit.path,
+                data: RequestData(data: arguments),
+                session: session,
+                urlParameters: UrlParameters(singleEntity: entity),
+                method: .POST,
+                callback: { (error, data) in
+                    let _ = asyncInit(session, entity, callback, error, data)
+            })
+        } catch {
+            callback(error, nil)
+        }
+    }
+    
+    public static func createMany(
+        session: Session,
+        entity: Entity,
+        arguments: [CustomUnit.CreationArguments],
+        callback: @escaping (Error?, [CustomUnit]?) -> Void
+        ) {
+        do {
+            let _ = try AmatinoRequest(
+                path: CustomUnit.path,
+                data: RequestData(arrayData: arguments),
+                session: session,
+                urlParameters: UrlParameters(singleEntity: entity),
+                method: .POST,
+                callback: { (error, data) in
+                    let _ = asyncInitMany(
+                        session,
+                        entity,
+                        callback,
+                        error,
+                        data
+                    )
+            })
+        } catch {
+            callback(error, nil)
+        }
+    }
+    
+    public func update(
+        code: String,
+        name: String,
+        priority: Int,
+        description: String,
+        exponent: Int,
+        callback: @escaping (Error?, CustomUnit?) -> Void
+        ) {
+        do {
+            let arguments = try CustomUnit.UpdateArguments(
+                unit: self,
+                code: code,
+                name: name,
+                priority: priority,
+                description: description,
+                exponent: exponent
+            )
+            let _ = try AmatinoRequest(
+                path: CustomUnit.path,
+                data: RequestData(data: arguments),
+                session: session,
+                urlParameters: UrlParameters(singleEntity: entity),
+                method: .PUT,
+                callback: { (error, data) in
+                    let _ = CustomUnit.asyncInit(
+                        self.session,
+                        self.entity,
+                        callback,
+                        error,
+                        data
+                    )
+            })
+        } catch {
+            callback(error, nil)
+        }
+    }
+    
+    internal struct Attributes: Decodable {
+    
+        public let code: String
+        public let id: Int
+        public let name: String
+        public let priority: Int
+        public let description: String
+        public let exponent: Int
+    
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            id = try container.decode(Int.self, forKey: .id)
+            code = try container.decode(String.self, forKey: .code)
+            name = try container.decode(String.self, forKey: .name)
+            priority = try container.decode(Int.self, forKey: .priority)
+            description = try container.decode(String.self, forKey: .description)
+            exponent = try container.decode(Int.self, forKey: .exponent)
+            return
+        }
         
-    }
-    
-    public required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(Int.self, forKey: .id)
-        code = try container.decode(String.self, forKey: .code)
-        name = try container.decode(String.self, forKey: .name)
-        priority = try container.decode(Int.self, forKey: .priority)
-        description = try container.decode(String.self, forKey: .description)
-        exponent = try container.decode(Int.self, forKey: .exponent)
-        return
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "custom_unit_id"
-        case code
-        case name
-        case priority
-        case description
-        case exponent
+        enum CodingKeys: String, CodingKey {
+            case id = "custom_unit_id"
+            case code
+            case name
+            case priority
+            case description
+            case exponent
+        }
+        
     }
     
     public struct CreationArguments: Encodable {
@@ -57,7 +173,7 @@ public class CustomUnit: AmatinoObject, Decodable, Unit  {
         let name: Name
         let priority: Int
         let description: Description
-        let exponent: Int
+        let exponent: Exponent
         
         init (
             code: String,
@@ -70,7 +186,8 @@ public class CustomUnit: AmatinoObject, Decodable, Unit  {
             self.name = try Name(name)
             self.description = try Description(description)
             self.priority = priority
-            self.exponent = exponent
+            self.exponent = try Exponent(exponent)
+            return
         }
         
         public func encode(to encoder: Encoder) throws {
@@ -79,7 +196,7 @@ public class CustomUnit: AmatinoObject, Decodable, Unit  {
             try container.encode(name.rawValue, forKey: .name)
             try container.encode(description.rawValue, forKey: .description)
             try container.encode(priority, forKey: .priority)
-            try container.encode(exponent, forKey: .exponent)
+            try container.encode(exponent.rawValue, forKey: .exponent)
             return
         }
         
@@ -90,6 +207,54 @@ public class CustomUnit: AmatinoObject, Decodable, Unit  {
             case priority
             case exponent
         }
+    }
+    
+    internal struct UpdateArguments: Encodable {
+        private let id: Int
+        private let code: Code
+        private let name: Name
+        private let priority: Int
+        private let description: Description
+        private let exponent: Exponent
+        
+        init(
+            unit: CustomUnit,
+            code: String,
+            name: String,
+            priority: Int,
+            description: String,
+            exponent: Int
+            ) throws {
+
+            id = unit.id
+            self.code = try Code(code)
+            self.name = try Name(name)
+            self.description = try Description(description)
+            self.priority = priority
+            self.exponent = try Exponent(exponent)
+            return
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: JSONObjectKeys.self)
+            try container.encode(code.rawValue, forKey: .code)
+            try container.encode(name.rawValue, forKey: .name)
+            try container.encode(description.rawValue, forKey: .description)
+            try container.encode(priority, forKey: .priority)
+            try container.encode(exponent.rawValue, forKey: .exponent)
+            try container.encode(id, forKey: .id)
+            return
+        }
+        
+        enum JSONObjectKeys: String, CodingKey {
+            case id = "custom_unit_id"
+            case code
+            case name
+            case description
+            case priority
+            case exponent
+        }
+        
     }
     
     public class ConstraintError: AmatinoError {

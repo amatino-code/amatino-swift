@@ -22,7 +22,7 @@ public class GlobalUnit: AmatinoObject, Unit  {
     public let description: String
     public let exponent: Int
     
-    /*public static func retrieve(
+    public static func retrieve(
         unitId: Int,
         session: Session,
         callback: @escaping (_: Error?, _: GlobalUnit?) -> Void
@@ -40,7 +40,7 @@ public class GlobalUnit: AmatinoObject, Unit  {
             callback: {(error: Error?, data: Data?) in
                 let _ = loadResponse(error, data, callback)
         })
-    }*/
+    }
     
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)

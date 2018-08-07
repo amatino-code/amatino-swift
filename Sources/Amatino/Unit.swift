@@ -7,10 +7,7 @@
 
 import Foundation
 
-internal protocol Unit: AmatinoObject {
-    
-    static var urlKey: String { get }
-    static var path: String { get }
+public protocol Unit {
     
     var code: String { get }
     var id: Int { get }
@@ -21,28 +18,3 @@ internal protocol Unit: AmatinoObject {
     
 }
 
-extension Unit {
-    public static func retrieve(
-        unitId: Int,
-        session: Session,
-        callback: @escaping (_: Error?, _: Self?) -> Void
-        ) -> Void {
-        
-        let target = UrlTarget(integerValue: unitId, key: urlKey)
-        let urlParameters = UrlParameters(targetsOnly: [target])
-        do {
-            let _ = try AmatinoRequest(
-                path: path,
-                data: nil,
-                session: session,
-                urlParameters: urlParameters,
-                method: .GET,
-                callback: {(error: Error?, data: Data?) in
-                    let _ = loadResponse(error, data, callback)
-            })
-        } catch {
-            callback(error, nil)
-        }
-        return
-    }
-}
