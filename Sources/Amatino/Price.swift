@@ -6,3 +6,12 @@
 //
 
 import Foundation
+
+public struct Price {
+    
+    let numeration: Unit
+    let denomination: Unit
+    let magnitude: Decimal
+    let time: Date
+
+}
