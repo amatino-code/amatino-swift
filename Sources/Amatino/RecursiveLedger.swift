@@ -106,8 +106,6 @@ public class RecursiveLedger: Sequence {
     }
     
     public static func retrieve(
-        session: Session,
-        entity: Entity,
         account: Account,
         start: Date? = nil,
         end: Date? = nil,
@@ -121,14 +119,10 @@ public class RecursiveLedger: Sequence {
             end: end,
             order: order
         )
-        try RecursiveLedger.retrieve(
-            session, entity, account, arguments, callback
-        )
+        try RecursiveLedger.retrieve(account, arguments, callback)
     }
     
     public static func retrieve(
-        session: Session,
-        entity: Entity,
         account: Account,
         denomination: GlobalUnit,
         start: Date? = nil,
@@ -144,14 +138,10 @@ public class RecursiveLedger: Sequence {
             end: end,
             order: order
         )
-        try RecursiveLedger.retrieve(
-            session, entity, account, arguments, callback
-        )
+        try RecursiveLedger.retrieve(account, arguments, callback)
     }
     
     public static func retrieve(
-        session: Session,
-        entity: Entity,
         account: Account,
         denomination: CustomUnit,
         start: Date? = nil,
@@ -167,19 +157,15 @@ public class RecursiveLedger: Sequence {
             end: end,
             order: order
         )
-        try RecursiveLedger.retrieve(
-            session, entity, account, arguments, callback
-        )
+        try RecursiveLedger.retrieve(account, arguments, callback)
     }
     
     private static func retrieve(
-        _ session: Session,
-        _ entity: Entity,
         _ account: Account,
         _ arguments: LedgerPage.RetrievalArguments,
         _ callback: @escaping (Error?, RecursiveLedger?) -> Void
         ) throws {
-        let urlParameters = UrlParameters(singleEntity: entity)
+        let urlParameters = UrlParameters(singleEntity: account.entity)
         let requestData = try RequestData(
             data: arguments,
             overrideListing: true
@@ -187,13 +173,11 @@ public class RecursiveLedger: Sequence {
         let _ = try AmatinoRequest(
             path: path,
             data: requestData,
-            session: session,
+            session: account.session,
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
                 let _ = RecursiveLedger.asyncInit(
-                    session,
-                    entity,
                     account,
                     error,
                     data,
@@ -203,8 +187,6 @@ public class RecursiveLedger: Sequence {
     }
     
     private static func asyncInit(
-        _ session: Session,
-        _ entity: Entity,
         _ account: Account,
         _ error: Error?,
         _ data: Data?,
@@ -213,13 +195,7 @@ public class RecursiveLedger: Sequence {
         
         let ledger: RecursiveLedger
         do {
-            ledger = try RecursiveLedger.decodeInit(
-                session,
-                entity,
-                account,
-                error,
-                data
-            )
+            ledger = try RecursiveLedger.decodeInit(account, error, data)
         } catch {
             callback(error, nil)
             return
@@ -229,8 +205,6 @@ public class RecursiveLedger: Sequence {
     }
     
     private static func decodeInit(
-        _ session: Session,
-        _ entity: Entity,
         _ account: Account,
         _ error: Error?,
         _ data: Data?
@@ -244,13 +218,11 @@ public class RecursiveLedger: Sequence {
             RecursiveLedgerPage.self,
             from: dataToDecode
         )
-        let ledger = RecursiveLedger(session, entity, account, ledgerPage)
+        let ledger = RecursiveLedger(account, ledgerPage)
         return ledger
     }
     
     internal init (
-        _ session: Session,
-        _ entity: Entity,
         _ account: Account,
         _ attributes: RecursiveLedgerPage
         ) {
@@ -263,8 +235,8 @@ public class RecursiveLedger: Sequence {
         loadedRows = attributes.rows
         latestLoadedPage = attributes.page
         order = attributes.order
-        self.session = session
-        self.entity = entity
+        self.session = account.session
+        self.entity = account.entity
         self.account = account
         return
     }
