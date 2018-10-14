@@ -26,18 +26,41 @@ public class Entity: Decodable, Equatable {
         name: String,
         callback: @escaping (_: Error?, _: Entity?) -> Void
         ) throws {
-        let arguments = try Entity.CreateArguments(name: name)
-        let requestData = try RequestData(data: arguments)
-        let _ = try AmatinoRequest(
-            path: path,
-            data: requestData,
-            session: session,
-            urlParameters: nil,
-            method: .POST,
-            callback: {(error, data) in
-                let _ = Entity.loadResponse(error, data, callback)
-        })
-        
+        do {
+            let arguments = try Entity.CreateArguments(name: name)
+            Entity.create(
+                session: session,
+                arguments: arguments,
+                callback: callback
+            )
+        } catch {
+            callback(error, nil)
+            return
+        }
+        return
+    }
+    
+    public static func create(
+        session: Session,
+        arguments: Entity.CreateArguments,
+        callback: @escaping (_: Error?, _: Entity?) -> Void
+        ) {
+        do {
+            let requestData = try RequestData(data: arguments)
+            let _ = try AmatinoRequest(
+                path: path,
+                data: requestData,
+                session: session,
+                urlParameters: nil,
+                method: .POST,
+                callback: {(error, data) in
+                    let _ = Entity.loadResponse(error, data, callback)
+            })
+        } catch {
+            callback(error, nil)
+            return
+        }
+        return
     }
     
     public static func retrieve(
@@ -113,13 +136,13 @@ public class Entity: Decodable, Equatable {
         public init(
             name: String,
             description: String,
-            region: Region
+            region: Region?
             ) throws {
             
             self.name = try Name(name)
             self.description = try Description(description)
             self.region = region
-            regionId = region.id
+            regionId = region?.id
             return
         }
         
