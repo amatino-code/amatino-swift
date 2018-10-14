@@ -129,8 +129,6 @@ public class Ledger: Sequence {
     }
     
     public static func retrieve(
-        session: Session,
-        entity: Entity,
         account: Account,
         denomination: GlobalUnit,
         start: Date? = nil,
