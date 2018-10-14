@@ -131,11 +131,11 @@ public class Entity: Decodable, Equatable {
             return
         }
         
-        public init(name: String, region: Region) throws {
+        public init(name: String, region: Region?) throws {
             self.name = try Name(name)
             self.description = Description()
             self.region = region
-            self.regionId = region.id
+            self.regionId = region?.id
             return
         }
         
