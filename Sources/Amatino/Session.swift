@@ -14,9 +14,9 @@ public class Session {
 
     internal static let apiPath = "/session"
 
-    private let apiKey: String
-    private let userId: Int
-    internal let sessionId: Int
+    public let apiKey: String
+    public let userId: Int
+    public let sessionId: Int
     
     public static func create(
         email: String,
