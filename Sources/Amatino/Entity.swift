@@ -6,7 +6,7 @@
 //
 import Foundation
 
-public class Entity: Decodable {
+public class Entity: Decodable, Equatable {
 
     private static let path = "/entities"
     
@@ -212,5 +212,9 @@ public class Entity: Decodable {
             case descriptionLength = "Maximum description length exceeded"
             case nameLength = "Maximum name length exceeded"
         }
+    }
+    
+    public static func == (lhs: Entity, rhs: Entity) -> Bool {
+        return lhs.id == rhs.id
     }
 }
