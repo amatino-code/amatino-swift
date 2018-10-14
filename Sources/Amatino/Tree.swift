@@ -41,14 +41,23 @@ public final class Tree: EntityObject {
         globalUnit: GlobalUnit,
         balanceTime: Date? = nil,
         callback: @escaping (_: Error?, _: Tree?) -> Void
-        ) throws {
+        )  {
         
         let arguments = Tree.RetrievalArguments(
             balanceTime: balanceTime ?? Date(),
             globalUnitId: globalUnit.id,
             customUnitId: nil
         )
-        let _ = try Tree.executeRetrieval(session, entity, arguments, callback)
+        do {
+            let _ = try Tree.executeRetrieval(
+                session,
+                entity,
+                arguments,
+                callback
+            )
+        } catch {
+            callback(error, nil)
+        }
         return
     }
     

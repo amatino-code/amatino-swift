@@ -26,20 +26,25 @@ public class GlobalUnit: AmatinoObject, Unit  {
         unitId: Int,
         session: Session,
         callback: @escaping (_: Error?, _: GlobalUnit?) -> Void
-    ) throws -> Void {
+    ) -> Void {
         
         let target = UrlTarget(integerValue: unitId, key: urlKey)
         let urlParameters = UrlParameters(targetsOnly: [target])
         
-        let _ = try AmatinoRequest(
-            path: path,
-            data: nil,
-            session: session,
-            urlParameters: urlParameters,
-            method: .GET,
-            callback: {(error: Error?, data: Data?) in
-                let _ = loadResponse(error, data, callback)
-        })
+        do {
+            let _ = try AmatinoRequest(
+                path: path,
+                data: nil,
+                session: session,
+                urlParameters: urlParameters,
+                method: .GET,
+                callback: {(error: Error?, data: Data?) in
+                    let _ = loadResponse(error, data, callback)
+            })
+        } catch {
+            callback(error, nil)
+            return
+        }
     }
     
     public required init(from decoder: Decoder) throws {
