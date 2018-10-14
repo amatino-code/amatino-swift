@@ -26,20 +26,27 @@ class CustomUnitTests: AmatinoTest {
             unitExpectation
         ]
         
-        func retrieveUnit(_: Session, _: Entity) {
-            let _ = GlobalUnit.retrieve(
-                unitId: 5,
-                session: session!,
-                callback: { (error, globalUnit) in
-                    XCTAssertNil(error)
-                    XCTAssertNotNil(globalUnit)
-                    self.unit = globalUnit!
-                    unitExpectation.fulfill()
-                    return
-            })
+        func retrieveUnit(_: Session) {
+            do {
+                let _ = try GlobalUnit.retrieve(
+                    unitId: 5,
+                    session: session!,
+                    callback: { (error, globalUnit) in
+                        XCTAssertNil(error)
+                        XCTAssertNotNil(globalUnit)
+                        self.unit = globalUnit!
+                        unitExpectation.fulfill()
+                        return
+                })
+            } catch {
+                XCTFail("Failed to retrieve Global Unit")
+                unitExpectation.fulfill()
+                return
+            }
         }
         
         func createEntity(_: Session) {
+
             do {
                 let _ = try Entity.create(
                     session: session!,
@@ -48,7 +55,6 @@ class CustomUnitTests: AmatinoTest {
                         XCTAssertNotNil(entity)
                         self.entity = entity
                         entityExpectation.fulfill()
-                        retrieveUnit(self.session!, self.entity!)
                 }
             } catch {
                 XCTFail()
@@ -60,11 +66,13 @@ class CustomUnitTests: AmatinoTest {
             email: dummyUserEmail(),
             secret: dummyUserSecret(),
             callback: { (error, session) in
-                XCTAssertNil(error)
-                XCTAssertNotNil(session)
+                guard self.responsePassing(error, session, expectations) else {
+                    return
+                }
                 self.session = session
                 sessionExpectation.fulfill()
                 createEntity(session!)
+                retrieveUnit(session!)
         })
         
         wait(for: expectations, timeout: 8, enforceOrder: false)

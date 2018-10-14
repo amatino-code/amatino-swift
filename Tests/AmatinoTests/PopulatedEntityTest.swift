@@ -221,8 +221,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try Ledger.retrieve(
-                session: session!,
-                entity: entity!,
                 account: cashAccount!,
                 callback: { (error, newLedger) in
                     guard error == nil else {
@@ -301,8 +299,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try RecursiveLedger.retrieve(
-                session: session!,
-                entity: entity!,
                 account: cashAccount!,
                 callback: { (error, newLedger) in
                     XCTAssertNil(error)
@@ -346,8 +342,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try Ledger.retrieve(
-                session: session!,
-                entity: entity!,
                 account: cashAccount!,
                 callback: { (error, newLedger) in
                     guard error == nil else {
@@ -395,8 +389,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try Ledger.retrieve(
-                session: session!,
-                entity: entity!,
                 account: cashAccount!,
                 start: Date(timeIntervalSinceNow: (-3600*24*2)),
                 end: Date(timeIntervalSinceNow: (-3600*24*1)),

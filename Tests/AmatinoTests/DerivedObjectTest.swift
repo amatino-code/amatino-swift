@@ -101,15 +101,12 @@ class DerivedObjectTest: AmatinoTest {
                     entity: entity,
                     arguments: [tx1Arguments, tx2Arguments, tx3Arguments],
                     callback: { (error, transactions) in
-                        guard error == nil else {
-                            XCTFail()
-                            transactionExpectation.fulfill()
-                            return
-                        }
-                        guard transactions != nil else {
-                            XCTFail()
-                            transactionExpectation.fulfill()
-                            return
+                        guard self.responsePassing(
+                            error,
+                            transactions,
+                            expectations
+                            ) else {
+                                return
                         }
                         transactionExpectation.fulfill()
                         return
@@ -156,8 +153,13 @@ class DerivedObjectTest: AmatinoTest {
                     entity: entity,
                     arguments: arguments,
                     callback: { (error, accounts) in
-                        XCTAssertNil(error)
-                        XCTAssertNotNil(accounts)
+                        guard self.responsePassing(
+                            error,
+                            accounts,
+                            expectations
+                        ) else {
+                            return
+                        }
                         self.revenueAccount = accounts![0]
                         self.cashAccount = accounts![1]
                         self.liabilityAccount = accounts![2]
@@ -167,7 +169,7 @@ class DerivedObjectTest: AmatinoTest {
                             entity,
                             self.cashAccount!,
                             self.revenueAccount!,
-                            unit
+                            self.unit!
                         )
                         return
                 })
@@ -181,30 +183,46 @@ class DerivedObjectTest: AmatinoTest {
             
         }
         
-        func retrieveUnit(_: Session, _: Entity) {
-            let _ = GlobalUnit.retrieve(
-                unitId: 5,
-                session: session!,
-                callback: { (error, globalUnit) in
-                    XCTAssertNil(error)
-                    XCTAssertNotNil(globalUnit)
-                    self.unit = globalUnit!
-                    unitExpectation.fulfill()
-                    createAccounts(self.session!, self.entity!, self.unit!)
-                    return
-            })
+        func retrieveUnit(_ : Session, _: Entity) {
+            do {
+                let _ = try GlobalUnit.retrieve(
+                    unitId: 5,
+                    session: session!,
+                    callback: { (error, globalUnit) in
+                        guard self.responsePassing(
+                            error,
+                            globalUnit,
+                            expectations
+                        ) else {
+                            return
+                        }
+                        self.unit = globalUnit!
+                        unitExpectation.fulfill()
+                        createAccounts(self.session!, self.entity!, self.unit!)
+                        return
+                })
+            } catch {
+                XCTFail("Failed to retrieve Global Unit")
+                unitExpectation.fulfill()
+                return
+            }
         }
         
-        func createEntity(_: Session) {
+        func createEntity(_ session: Session) {
             do {
                 let _ = try Entity.create(
-                    session: session!,
+                    session: session,
                     name: "Amatino Swift test entity") { (error, entity) in
-                        XCTAssertNil(error)
-                        XCTAssertNotNil(entity)
+                        guard self.responsePassing(
+                            error,
+                            entity,
+                            expectations
+                        ) else {
+                            return
+                        }
                         self.entity = entity
                         entityExpectation.fulfill()
-                        retrieveUnit(self.session!, self.entity!)
+                        retrieveUnit(session, entity!)
                 }
             } catch {
                 XCTFail()
@@ -217,8 +235,9 @@ class DerivedObjectTest: AmatinoTest {
             email: dummyUserEmail(),
             secret: dummyUserSecret(),
             callback: { (error, session) in
-                XCTAssertNil(error)
-                XCTAssertNotNil(session)
+                guard self.responsePassing(error, session, expectations) else {
+                    return
+                }
                 self.session = session
                 sessionExpectation.fulfill()
                 createEntity(session!)
