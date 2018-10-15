@@ -101,6 +101,10 @@ public class Entity: Decodable, Equatable {
         }
     }
     
+    public func delete(_ callback: (Error?, Entity?)) {
+        return
+    }
+    
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: JSONObjectKeys.self)
         id = try container.decode(String.self, forKey: .id)
