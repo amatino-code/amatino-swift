@@ -267,19 +267,19 @@ public class Ledger: Sequence {
     
     public struct Iterator: IteratorProtocol {
         let rowSource: [LedgerRow]
-        var rowsProvided = 0
+        var index = 0
         
         init(_ rows: [LedgerRow]) {
             rowSource = rows
         }
         
         public mutating func next() -> LedgerRow? {
-            let nextRowIndex = rowsProvided + 1
-            guard nextRowIndex < rowSource.count else {
+            guard index + 1 <= rowSource.count else {
                 return nil
             }
-            rowsProvided = nextRowIndex
-            return rowSource[nextRowIndex]
+            let rowToReturn = rowSource[index]
+            index += 1
+            return rowToReturn
         }
     }
 }
