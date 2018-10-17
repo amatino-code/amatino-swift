@@ -81,6 +81,54 @@ class EntityTests: AmatinoTest {
 
     }
     
+    func testListEntities() throws {
+
+        let session = try self.assertNotNil(self.session)
+    
+        let createExpectation = XCTestExpectation(description: "Create entity")
+        let listExpectation = XCTestExpectation(description: "List entities")
+        let expectations = [createExpectation, listExpectation]
+
+        do {
+            print("Begin Entity creation")
+            let _ = try Entity.create(
+                session: session,
+                name: "Amatino Swift test entity") { (error, entity) in
+                    XCTAssertNil(error)
+                    XCTAssertNotNil(entity)
+                    createExpectation.fulfill()
+                    print("Entity created")
+                    let _ = EntityList.retrieve(
+                        session: session, scope: .all,
+                        callback: { (error, list) in
+                            guard error == nil else {
+                                self.failWith(error!, expectations)
+                                return
+                            }
+                            guard let list = list else {
+                                listExpectation.fulfill()
+                                XCTFail("EntityList missing")
+                                return
+                            }
+                            guard list.count > 1 else {
+                                listExpectation.fulfill()
+                                XCTFail("List length < 1")
+                                return
+                            }
+                            listExpectation.fulfill()
+                            return
+                    })
+            }
+        } catch {
+            self.failWith(error, expectations)
+            return
+        }
+        
+        
+        wait(for: expectations, timeout: 8)
+        return
+    }
+
 }
 
 

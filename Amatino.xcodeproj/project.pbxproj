@@ -198,7 +198,6 @@
 		1E54D29B202D9C97004E8599 /* AMCryptography.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AMCryptography.m; sourceTree = "<group>"; };
 		1E54D29D202D9D42004E8599 /* Amatino.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Amatino.h; sourceTree = "<group>"; };
 		1E58D55220F2254D00069961 /* AmatinoIOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AmatinoIOS.framework; path = Amatino.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		1E58D55420F2254D00069961 /* Amatino.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Amatino.h; sourceTree = "<group>"; };
 		1E58D55520F2254D00069961 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1E59D9F5210E8C010080C4CD /* PopulatedEntityTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopulatedEntityTest.swift; sourceTree = "<group>"; };
 		1E59D9FB210EEE090080C4CD /* RecursiveLedgerPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecursiveLedgerPage.swift; sourceTree = "<group>"; };
@@ -270,7 +269,6 @@
 		1E58D55320F2254D00069961 /* Amatino */ = {
 			isa = PBXGroup;
 			children = (
-				1E58D55420F2254D00069961 /* Amatino.h */,
 				1E58D55520F2254D00069961 /* Info.plist */,
 			);
 			path = Amatino;
