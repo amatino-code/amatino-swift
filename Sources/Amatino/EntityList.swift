@@ -20,12 +20,13 @@ public class EntityList: Sequence {
     internal static let pageKey = "page"
     
     public let session: Session
-    public private(set) var lastPageRetrieved: Int
-    public private(set) var numberOfPages: Int
-    public private(set) var entities: [Entity]
+    public let scope: EntityListScope
+    public let page: Int
+    public let numberOfPages: Int
+    public let entities: [Entity]
     
     public var morePagesAvailable: Bool {
-        if numberOfPages > lastPageRetrieved {
+        if numberOfPages > page {
             return true
         }
         return false
@@ -44,11 +45,12 @@ public class EntityList: Sequence {
     public static func retrieve(
         session: Session,
         scope: EntityListScope,
+        page: Int = 1,
         callback: @escaping (Error?, EntityList?) -> Void
         ) {
         
         let state = UrlTarget(stringValue: scope.rawValue, key: stateKey)
-        let page = UrlTarget(integerValue: 1, key: pageKey)
+        let page = UrlTarget(integerValue: page, key: pageKey)
         let urlParameters = UrlParameters(targetsOnly: [state, page])
         
         do {
@@ -63,7 +65,7 @@ public class EntityList: Sequence {
                         callback(error, nil)
                         return
                     }
-                    asyncInit(session, data, callback)
+                    asyncInit(session, scope, data, callback)
                     return
                 }
             )
@@ -73,8 +75,45 @@ public class EntityList: Sequence {
         }
     }
     
+    public func nextPage(callback: @escaping (Error?, EntityList?) -> Void) {
+
+        guard self.morePagesAvailable else { callback(nil, nil); return}
+        
+        let state = UrlTarget(
+            stringValue: scope.rawValue,
+            key: EntityList.stateKey
+        )
+        let page = UrlTarget(
+            integerValue: self.page + 1,
+            key: EntityList.pageKey
+        )
+        let urlParameters = UrlParameters(targetsOnly: [state, page])
+        
+        do {
+            let _ = try AmatinoRequest(
+                path: EntityList.path,
+                data: nil,
+                session: self.session,
+                urlParameters: urlParameters,
+                method: .GET,
+                callback: { (error, data) in
+                    guard error == nil else { callback(error, nil); return }
+                    EntityList.asyncInit(
+                        self.session,
+                        self.scope,
+                        data,
+                        callback
+                    )
+                    return
+            })
+        } catch {
+            callback(error, nil); return
+        }
+    }
+
     private static func asyncInit(
         _ session: Session,
+        _ scope: EntityListScope,
         _ data: Data?,
         _ callback: @escaping (Error?, EntityList?) -> Void
     ) {
@@ -95,25 +134,29 @@ public class EntityList: Sequence {
             return
         }
         
-        let entityList = EntityList(session: session, list: rawList)
+        let entityList = EntityList(
+            session: session,
+            scope: scope,
+            list: rawList
+        )
         callback(nil, entityList)
         return
     }
     
     private struct RawList: Decodable {
-        internal let pageNumber: Int
+        internal let page: Int
         internal let numberOfPages: Int
         internal let entities: [Entity]
         
         enum JSONObjectKeys: String, CodingKey {
             case numberOfPages = "number_of_pages"
-            case pageNumber = "page_number"
+            case page = "page_number"
             case entities
         }
         
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: JSONObjectKeys.self)
-            pageNumber = try container.decode(Int.self, forKey: .pageNumber)
+            page = try container.decode(Int.self, forKey: .page)
             numberOfPages = try container.decode(
                 Int.self,
                 forKey: .numberOfPages
@@ -123,11 +166,12 @@ public class EntityList: Sequence {
         }
     }
 
-    private init(session: Session, list: RawList) {
+    private init(session: Session, scope: EntityListScope, list: RawList) {
         self.session = session
         self.entities = list.entities
         self.numberOfPages = list.numberOfPages
-        self.lastPageRetrieved = list.pageNumber
+        self.page = list.page
+        self.scope = scope
         return
     }
     
