@@ -423,31 +423,24 @@ class PopulatedEntityTest: DerivedObjectTest {
     
     func testRetrieveTree() {
         let treeExpectation = XCTestExpectation(description: "Retrieve tree")
-        
-        do {
-            let _ = try Tree.retrieve(
-                session: session!,
-                entity: entity!,
-                globalUnit: unit!,
-                callback: { (error, tree) in
-                    guard error == nil else {
-                        let cast = error as? AmatinoError
-                        print(cast?.description ?? "Unknown Error")
-                        XCTFail(); treeExpectation.fulfill(); return
-                    }
-                    guard let newTree: Tree = tree else {
-                        XCTFail(); treeExpectation.fulfill(); return
-                    }
-                    guard newTree.accounts.count > 0 else {
-                        XCTFail(); treeExpectation.fulfill(); return
-                    }
-                    treeExpectation.fulfill(); return
-            })
-        } catch {
-            print((error as? AmatinoError)?.description ?? "Unknown Err.")
-            XCTFail(); treeExpectation.fulfill(); return
-        }
-        
+
+        let _ = Tree.retrieve(
+            session: session!,
+            entity: entity!,
+            globalUnit: unit!,
+            callback: { (error, tree) in
+                guard error == nil else {
+                    let cast = error as? AmatinoError
+                    XCTFail(); treeExpectation.fulfill(); return
+                }
+                guard let newTree: Tree = tree else {
+                    XCTFail(); treeExpectation.fulfill(); return
+                }
+                guard newTree.accounts.count > 0 else {
+                    XCTFail(); treeExpectation.fulfill(); return
+                }
+                treeExpectation.fulfill(); return
+        })
         wait(for: [treeExpectation], timeout: 5)
     }
     

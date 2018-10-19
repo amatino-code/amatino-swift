@@ -72,21 +72,17 @@ class TransactionTests: AmatinoTest {
         }
         
         func retrieveUnit(_: Session, _: Entity) {
-            do {
-                let _ = try GlobalUnit.retrieve(
-                    unitId: 5,
-                    session: session!,
-                    callback: { (error, globalUnit) in
-                        XCTAssertNil(error)
-                        XCTAssertNotNil(globalUnit)
-                        self.unit = globalUnit!
-                        unitExpectation.fulfill()
-                        createAccounts(self.session!, self.entity!, self.unit!)
-                        return
-                })
-            } catch {
-                XCTFail("Failed to retrieve GlobalUnit")
-            }
+            let _ = GlobalUnit.retrieve(
+                unitId: 5,
+                session: session!,
+                callback: { (error, globalUnit) in
+                    XCTAssertNil(error)
+                    XCTAssertNotNil(globalUnit)
+                    self.unit = globalUnit!
+                    unitExpectation.fulfill()
+                    createAccounts(self.session!, self.entity!, self.unit!)
+                    return
+            })
         }
         
         func createEntity(_: Session) {

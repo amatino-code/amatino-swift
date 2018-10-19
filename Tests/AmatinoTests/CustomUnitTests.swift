@@ -27,22 +27,20 @@ class CustomUnitTests: AmatinoTest {
         ]
         
         func retrieveUnit(_: Session) {
-            do {
-                let _ = try GlobalUnit.retrieve(
-                    unitId: 5,
-                    session: session!,
-                    callback: { (error, globalUnit) in
-                        XCTAssertNil(error)
-                        XCTAssertNotNil(globalUnit)
-                        self.unit = globalUnit!
-                        unitExpectation.fulfill()
-                        return
-                })
-            } catch {
-                XCTFail("Failed to retrieve Global Unit")
-                unitExpectation.fulfill()
-                return
-            }
+            let _ = GlobalUnit.retrieve(
+                unitId: 5,
+                session: session!,
+                callback: { (error, globalUnit) in
+                    do {
+                        let _ = try self.assertNil(error)
+                        let _ = try self.assertNotNil(globalUnit)
+                    } catch {
+                        self.failWith(error, expectations); return
+                    }
+                    self.unit = globalUnit!
+                    unitExpectation.fulfill()
+                    return
+            })
         }
         
         func createEntity(_: Session) {

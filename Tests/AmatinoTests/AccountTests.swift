@@ -29,26 +29,21 @@ class AccountTests: AmatinoTest {
         ]
         
         func retrieveUnit(_: Session, _: Entity) {
-            do {
-                let _ = try GlobalUnit.retrieve(
-                    unitId: 5,
-                    session: session!,
-                    callback: { (error, globalUnit) in
-                        do {
-                            let _ = try self.assertNil(error)
-                            let _ = try self.assertNotNil(globalUnit)
-                        } catch {
-                            self.failWith(error, expectations)
-                            return
-                        }
-                        self.unit = globalUnit!
-                        unitExpectation.fulfill()
+            let _ = GlobalUnit.retrieve(
+                unitId: 5,
+                session: session!,
+                callback: { (error, globalUnit) in
+                    do {
+                        let _ = try self.assertNil(error)
+                        let _ = try self.assertNotNil(globalUnit)
+                    } catch {
+                        self.failWith(error, expectations)
                         return
-                })
-            } catch {
-                XCTFail("Failed to retrieve Global Unit")
-                return;
-            }
+                    }
+                    self.unit = globalUnit!
+                    unitExpectation.fulfill()
+                    return
+            })
         }
         
         func createEntity(_: Session) {

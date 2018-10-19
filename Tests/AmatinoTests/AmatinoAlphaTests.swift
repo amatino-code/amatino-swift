@@ -76,7 +76,7 @@ class AmatinoAlphaTests: XCTestCase {
         session: Session,
         callback: @escaping (_: Error?, _: GlobalUnit?) -> Void
         ) throws {
-        let _ = try GlobalUnit.retrieve(
+        let _ = GlobalUnit.retrieve(
             unitId: 5,
             session: session,
             callback: callback

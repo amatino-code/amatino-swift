@@ -184,28 +184,22 @@ class DerivedObjectTest: AmatinoTest {
         }
         
         func retrieveUnit(_ : Session, _: Entity) {
-            do {
-                let _ = try GlobalUnit.retrieve(
-                    unitId: 5,
-                    session: session!,
-                    callback: { (error, globalUnit) in
-                        guard self.responsePassing(
-                            error,
-                            globalUnit,
-                            expectations
-                        ) else {
-                            return
-                        }
-                        self.unit = globalUnit!
-                        unitExpectation.fulfill()
-                        createAccounts(self.session!, self.entity!, self.unit!)
+            let _ = try GlobalUnit.retrieve(
+                unitId: 5,
+                session: session!,
+                callback: { (error, globalUnit) in
+                    guard self.responsePassing(
+                        error,
+                        globalUnit,
+                        expectations
+                    ) else {
                         return
-                })
-            } catch {
-                XCTFail("Failed to retrieve Global Unit")
-                unitExpectation.fulfill()
-                return
-            }
+                    }
+                    self.unit = globalUnit!
+                    unitExpectation.fulfill()
+                    createAccounts(self.session!, self.entity!, self.unit!)
+                    return
+            })
         }
         
         func createEntity(_ session: Session) {
