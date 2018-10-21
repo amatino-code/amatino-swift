@@ -146,7 +146,7 @@ public class EntityList: Sequence {
     private struct RawList: Decodable {
         internal let page: Int
         internal let numberOfPages: Int
-        internal let entities: [Entity]
+        internal let entityAttributes: [Entity.Attributes]
         
         enum JSONObjectKeys: String, CodingKey {
             case numberOfPages = "number_of_pages"
@@ -161,14 +161,16 @@ public class EntityList: Sequence {
                 Int.self,
                 forKey: .numberOfPages
             )
-            entities = try container.decode([Entity].self, forKey: .entities)
+            entityAttributes = try container.decode(
+                [Entity.Attributes].self, forKey: .entities
+            )
             return
         }
     }
 
     private init(session: Session, scope: EntityListScope, list: RawList) {
         self.session = session
-        self.entities = list.entities
+        self.entities = list.entityAttributes.map({Entity(session, $0)})
         self.numberOfPages = list.numberOfPages
         self.page = list.page
         self.scope = scope
