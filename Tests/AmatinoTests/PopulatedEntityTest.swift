@@ -430,7 +430,6 @@ class PopulatedEntityTest: DerivedObjectTest {
             globalUnit: unit!,
             callback: { (error, tree) in
                 guard error == nil else {
-                    let cast = error as? AmatinoError
                     XCTFail(); treeExpectation.fulfill(); return
                 }
                 guard let newTree: Tree = tree else {

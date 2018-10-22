@@ -184,7 +184,7 @@ class DerivedObjectTest: AmatinoTest {
         }
         
         func retrieveUnit(_ : Session, _: Entity) {
-            let _ = try GlobalUnit.retrieve(
+            let _ = GlobalUnit.retrieve(
                 unitId: 5,
                 session: session!,
                 callback: { (error, globalUnit) in
