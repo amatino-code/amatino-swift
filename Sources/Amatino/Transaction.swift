@@ -10,11 +10,9 @@ import Foundation
 public final class Transaction: EntityObject {
 
     internal init(
-        _ session: Session,
         _ entity: Entity,
         _ attributes: Transaction.Attributes
         ) {
-        self.session = session
         self.entity = entity
         self.attributes = attributes
         return
@@ -29,7 +27,7 @@ public final class Transaction: EntityObject {
     private static let urlKey = "transaction_id"
     
     public let entity: Entity
-    public let session: Session
+    public var session: Session { get { return entity.session } }
 
     public var id: Int64 { get { return attributes.id } }
     public var transactionTime: Date { get { return attributes.transactionTime}}
@@ -43,7 +41,6 @@ public final class Transaction: EntityObject {
     public var entries: [Entry] { get { return attributes.entries } }
     
     public static func create (
-        session: Session,
         entity: Entity,
         transactionTime: Date,
         description: String,
@@ -58,12 +55,11 @@ public final class Transaction: EntityObject {
             globalUnit: globalUnit,
             entries: entries
         )
-        let _ = try executeCreate(session, entity, arguments, callback)
+        let _ = try executeCreate(entity, arguments, callback)
         return
     }
     
     public static func createMany(
-        session: Session,
         entity: Entity,
         arguments: [Transaction.CreateArguments],
         callback: @escaping (_: Error?, _: [Transaction]?) -> Void
@@ -77,12 +73,11 @@ public final class Transaction: EntityObject {
         let _ = try AmatinoRequest(
             path: path,
             data: requestData,
-            session: session,
+            session: entity.session,
             urlParameters: urlParameters,
             method: .POST,
             callback: { (error, data) in
                 let _ = asyncInitMany(
-                    session,
                     entity,
                     callback,
                     error,
@@ -93,7 +88,6 @@ public final class Transaction: EntityObject {
     }
 
     private static func executeCreate(
-        _ session: Session,
         _ entity: Entity,
         _ arguments: Transaction.CreateArguments,
         _ callback: @escaping (_: Error?, _: Transaction?) -> Void
@@ -102,12 +96,11 @@ public final class Transaction: EntityObject {
         let _ = try AmatinoRequest(
             path: Transaction.path,
             data: requestData,
-            session: session,
+            session: entity.session,
             urlParameters: UrlParameters(singleEntity: entity),
             method: .POST,
             callback: { (error, data) in
                 let _ = asyncInit(
-                    session,
                     entity,
                     callback,
                     error,
@@ -118,7 +111,6 @@ public final class Transaction: EntityObject {
     }
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         transactionId: Int64,
         callback: @escaping (_: Error?, _: Transaction?) -> Void
@@ -132,12 +124,11 @@ public final class Transaction: EntityObject {
         let _ = try AmatinoRequest(
             path: path,
             data: requestData,
-            session: session,
+            session: entity.session,
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
                 let _ = asyncInit(
-                    session,
                     entity,
                     callback,
                     error,
@@ -196,7 +187,6 @@ public final class Transaction: EntityObject {
             method: .PUT,
             callback: { (error, data) in
                 let _ = Transaction.asyncInit(
-                    self.session,
                     self.entity,
                     callback,
                     error,
@@ -219,7 +209,6 @@ public final class Transaction: EntityObject {
             method: .DELETE,
             callback: { (error, data) in
                 let _ = Transaction.asyncInit(
-                    self.session,
                     self.entity,
                     callback,
                     error,

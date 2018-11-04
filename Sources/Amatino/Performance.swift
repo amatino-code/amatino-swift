@@ -10,11 +10,9 @@ import Foundation
 public final class Performance: EntityObject {
     
     internal init(
-        _ session: Session,
         _ entity: Entity,
         _ attributes: Performance.Attributes
         ) {
-        self.session = session
         self.entity = entity
         self.attributes = attributes
         return
@@ -25,7 +23,7 @@ public final class Performance: EntityObject {
     private static let path = "/performances"
     
     public let entity: Entity
-    public let session: Session
+    public var session: Session { get { return entity.session } }
     
     public var startTime: Date { get { return attributes.startTime } }
     public var endTime: Date { get { return attributes.endTime } }
@@ -43,7 +41,6 @@ public final class Performance: EntityObject {
     private var entityId: String { get { return attributes.entityId } }
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         startTime: Date,
         endTime: Date,
@@ -58,12 +55,11 @@ public final class Performance: EntityObject {
             customUnitId: nil,
             depth: depth
         )
-        try Performance.executeRetrieval(session, entity, arguments, callback)
+        try Performance.executeRetrieval(entity, arguments, callback)
         return
     }
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         startTime: Date,
         endTime: Date,
@@ -78,12 +74,11 @@ public final class Performance: EntityObject {
             customUnitId: customUnit.id,
             depth: depth
         )
-        try Performance.executeRetrieval(session, entity, arguments, callback)
+        try Performance.executeRetrieval(entity, arguments, callback)
         return
     }
     
     private static func executeRetrieval(
-        _ session: Session,
         _ entity: Entity,
         _ arguments: Performance.RetrievalArguments,
         _ callback: @escaping (Error?, Performance?) -> Void
@@ -92,12 +87,11 @@ public final class Performance: EntityObject {
         let _ = try AmatinoRequest(
             path: Performance.path,
             data: try RequestData(data: arguments, overrideListing: true),
-            session: session,
+            session: entity.session,
             urlParameters: UrlParameters(singleEntity: entity),
             method: .GET
         ) { (error, data) in
             let _ = asyncInitSolo(
-                session,
                 entity,
                 callback,
                 error,

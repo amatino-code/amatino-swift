@@ -10,11 +10,9 @@ import Foundation
 public final class Position: EntityObject {
     
     internal init(
-        _ session: Session,
         _ entity: Entity,
         _ attributes: Position.Attributes
         ) {
-        self.session = session
         self.entity = entity
         self.attributes = attributes
         return
@@ -25,7 +23,7 @@ public final class Position: EntityObject {
     private static let path = "/positions"
     
     public let entity: Entity
-    public let session: Session
+    public var session: Session { get { return entity.session} }
     
     public var balanceTime: Date { get { return attributes.balanceTime } }
     public var generatedTime: Date { get { return attributes.generatedTime } }
@@ -45,7 +43,6 @@ public final class Position: EntityObject {
     private var entityId: String { get { return attributes.entityId } }
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         globalUnit: GlobalUnit,
         balanceTime: Date? = nil,
@@ -58,12 +55,11 @@ public final class Position: EntityObject {
             customUnitId: nil,
             depth: depth
         )
-        try Position.executeRetrieval(session, entity, arguments, callback)
+        try Position.executeRetrieval(entity, arguments, callback)
         return
     }
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         customUnit: CustomUnit,
         balanceTime: Date? = nil,
@@ -76,12 +72,11 @@ public final class Position: EntityObject {
             customUnitId: customUnit.id,
             depth: depth
         )
-        try Position.executeRetrieval(session, entity, arguments, callback)
+        try Position.executeRetrieval(entity, arguments, callback)
         return
     }
     
     private static func executeRetrieval(
-        _ session: Session,
         _ entity: Entity,
         _ arguments: Position.RetrievalArguments,
         _ callback: @escaping (Error?, Position?) -> Void
@@ -90,12 +85,11 @@ public final class Position: EntityObject {
         let _ = try AmatinoRequest(
             path: Position.path,
             data: try RequestData(data: arguments, overrideListing: true),
-            session: session,
+            session: entity.session,
             urlParameters: UrlParameters(singleEntity: entity),
             method: .GET
         ) { (error, data) in
             let _ = asyncInitSolo(
-                session,
                 entity,
                 callback,
                 error,
