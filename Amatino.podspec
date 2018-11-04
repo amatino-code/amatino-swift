@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name             = 'Amatino'
-    spec.version          = '0.0.9'
+    spec.version          = '0.0.10'
     spec.license          = { :type => 'MIT' }
     spec.homepage         = 'https://amatino.io'
     spec.authors          = { 'Hugh Jeremy' => 'hugh@amatino.io' }
