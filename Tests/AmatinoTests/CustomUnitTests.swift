@@ -23,9 +23,9 @@ class CustomUnitTests: AmatinoTest {
         let expectations = [
             sessionExpectation,
             entityExpectation,
-            unitExpectation
+            unitExpectation,
         ]
-        
+
         func retrieveUnit(_: Session) {
             let _ = GlobalUnit.retrieve(
                 unitId: 5,
@@ -78,7 +78,124 @@ class CustomUnitTests: AmatinoTest {
     }
     
     func testCreateCustomUnit() {
+        
+        let expectation = XCTestExpectation(description: "Create Custom Unit")
+        
+        func creationCallback(error: Error?, unit: CustomUnit?) {
+            if responsePassing(error, unit, [expectation]) {
+                expectation.fulfill()
+            }
+            return
+        }
+        
+        CustomUnit.create(
+            entity: entity!,
+            code: "BTC",
+            name: "Bitcoin",
+            priority: 50,
+            description: "Crypto juice",
+            exponent: 4,
+            callback: creationCallback
+        )
+        
+        wait(for: [expectation], timeout: 8, enforceOrder: false)
+
+        return
+    }
     
+    func testRetrieveCustomUnit() {
+        
+        let create = XCTestExpectation(description: "Create Custom Unit")
+        let retrieve = XCTestExpectation(description: "Retrieve Custom Unit")
+        let expectations = [create, retrieve]
+        
+        func creationCallback(error: Error?, unit: CustomUnit?) {
+            if !responsePassing(error, unit, []) {
+                failWith(expectations: expectations)
+                return
+            }
+            guard let unit = unwrapWithExpectations(unit, expectations) else {
+                return
+            }
+            create.fulfill()
+            CustomUnit.retrieve(
+                entity: entity!,
+                id: unit.id,
+                callback: retrieveCallback
+            )
+        }
+        
+        func retrieveCallback(error: Error?, unit: CustomUnit?) {
+            if responsePassing(error, unit, expectations) {
+                retrieve.fulfill()
+                return
+            }
+            return
+        }
+        
+        CustomUnit.create(
+            entity: entity!,
+            code: "BTC",
+            name: "Bitcoin",
+            priority: 50,
+            description: "Crypto juice",
+            exponent: 4,
+            callback: creationCallback
+        )
+        
+        wait(for: expectations, timeout: 8, enforceOrder: false)
+        
+        return
+    }
+    
+    func testUpdateCustomUnit() {
+        
+        let create = XCTestExpectation(description: "Create Custom Unit")
+        let update = XCTestExpectation(description: "Update Custom Unit")
+        let expectations = [create, update]
+        
+        let updateDescription = "Updated unit"
+        
+        func creationCallback(error: Error?, unit: CustomUnit?) {
+            if !responsePassing(error, unit, []) {
+                failWith(expectations: expectations)
+                return
+            }
+            guard let unit = unwrapWithExpectations(unit, expectations) else {
+                return
+            }
+            create.fulfill()
+            unit.update(
+                code: "XRP",
+                name: "Ripple",
+                priority: 60,
+                description: updateDescription,
+                exponent: 5,
+                callback: updateCallback
+            )
+        }
+
+        func updateCallback(error: Error?, unit: CustomUnit?) {
+            if responsePassing(error, unit, expectations) {
+                update.fulfill()
+                return
+            }
+            return
+        }
+        
+        CustomUnit.create(
+            entity: entity!,
+            code: "BTC",
+            name: "Bitcoin",
+            priority: 50,
+            description: "Crypto juice",
+            exponent: 4,
+            callback: creationCallback
+        )
+        
+        wait(for: expectations, timeout: 8, enforceOrder: false)
+        
+        return
     }
     
 }

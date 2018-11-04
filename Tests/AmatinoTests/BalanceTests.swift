@@ -16,7 +16,6 @@ class BalanceTests: DerivedObjectTest {
         
         do {
             let _ = try Balance.retrieve(
-                session: session!,
                 entity: entity!,
                 account: cashAccount!) { (error, balance) in
                     XCTAssertNil(error)
@@ -39,7 +38,6 @@ class BalanceTests: DerivedObjectTest {
         
         do {
             let _ = try RecursiveBalance.retrieve(
-                session: session!,
                 entity: entity!,
                 account: cashAccount!) { (error, balance) in
                     XCTAssertNil(error)

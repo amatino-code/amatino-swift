@@ -103,7 +103,6 @@ class AmatinoAlphaTests: XCTestCase {
             globalUnit: unit
         )
         let _ = try Account.createMany(
-            session: session,
             entity: entity,
             arguments: [account1, account2],
             callback: callback

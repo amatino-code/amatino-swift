@@ -97,7 +97,6 @@ class DerivedObjectTest: AmatinoTest {
                     ]
                 )
                 let _ = try Transaction.createMany(
-                    session: session,
                     entity: entity,
                     arguments: [tx1Arguments, tx2Arguments, tx3Arguments],
                     callback: { (error, transactions) in
@@ -149,7 +148,6 @@ class DerivedObjectTest: AmatinoTest {
                     liabilityAccountArguments
                 ]
                 let _ = try Account.createMany(
-                    session: session,
                     entity: entity,
                     arguments: arguments,
                     callback: { (error, accounts) in

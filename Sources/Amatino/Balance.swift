@@ -12,7 +12,6 @@ class Balance: AccountBalance {
     private static let path = "/accounts/balance"
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         account: Account,
         callback: @escaping (Error?, Balance?) -> Void
@@ -20,7 +19,6 @@ class Balance: AccountBalance {
         
         let arguments = Balance.RetrieveArguments(account: account)
         let _ = try Balance.retrieve(
-            session: session,
             entity: entity,
             arguments: arguments,
             callback: callback
@@ -29,7 +27,6 @@ class Balance: AccountBalance {
     }
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         account: Account,
         balanceTime: Date,
@@ -41,7 +38,6 @@ class Balance: AccountBalance {
             balanceTime: balanceTime
         )
         let _ = try Balance.retrieve(
-            session: session,
             entity: entity,
             arguments: arguments,
             callback: callback
@@ -50,7 +46,6 @@ class Balance: AccountBalance {
     }
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         arguments: Balance.RetrieveArguments,
         callback: @escaping (Error?, Balance?) -> Void
@@ -61,7 +56,7 @@ class Balance: AccountBalance {
         let _ = try AmatinoRequest(
             path: path,
             data: requestData,
-            session: session,
+            session: entity.session,
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in

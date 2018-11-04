@@ -92,6 +92,26 @@ class AmatinoTest: XCTestCase {
         return variable
     }
     
+    internal func unwrapWithExpectations<T>(
+        _ variable: T?,
+        _ expectations: [XCTestExpectation]?
+        ) -> T? {
+        
+        guard let variable = variable else {
+            XCTFail("Unexpected nil value")
+            if let expectations = expectations {
+                for expectation in expectations {
+                    expectation.fulfill()
+                }
+            }
+
+            return nil
+        }
+        
+        return variable
+
+    }
+    
     internal func failWith(
         _ error: Error,
         _ expectations: [XCTestExpectation]? = nil
@@ -106,6 +126,16 @@ class AmatinoTest: XCTestCase {
             return
         }
         XCTFail(error.message, file: error.file, line: error.line)
+        return
+    }
+    
+    internal func failWith(expectations: [XCTestExpectation]? = nil) {
+        if let expectations = expectations {
+            for expectation in expectations {
+                expectation.fulfill()
+            }
+        }
+        XCTFail("Generic test error")
         return
     }
     

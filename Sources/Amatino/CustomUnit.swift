@@ -70,6 +70,33 @@ public final class CustomUnit: EntityObject  {
         }
     }
     
+    public static func retrieve(
+        entity: Entity,
+        id: Int,
+        callback: @escaping (Error?, CustomUnit?) -> Void
+        ) {
+        let target = UrlTarget(integerValue: id, key: urlKey)
+        do {
+            let _ = try AmatinoRequest(
+                path: CustomUnit.path,
+                data: nil,
+                session: entity.session,
+                urlParameters: UrlParameters(entity: entity, targets: [target]),
+                method: .GET,
+                callback: { (error, data ) in
+                    let _ = asyncInit(
+                        entity,
+                        callback,
+                        error,
+                        data
+                    )
+            })
+        } catch {
+            callback(error, nil)
+        }
+        return
+    }
+    
     public static func createMany(
         entity: Entity,
         arguments: [CustomUnit.CreationArguments],

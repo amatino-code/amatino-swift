@@ -122,7 +122,6 @@ class PopulatedEntityTest: DerivedObjectTest {
                     ]
                 )
                 let _ = try Transaction.createMany(
-                    session: session!,
                     entity: entity!,
                     arguments: [tx1, tx2, tx3, tx4],
                     callback: { (error, transactions) in
@@ -146,7 +145,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         func createCashChild() {
             do {
                 let _ = try Account.create(
-                    session: session!,
                     entity: entity!,
                     name: "T1.1 Cash",
                     description: "Test cash child",
@@ -425,7 +423,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         let treeExpectation = XCTestExpectation(description: "Retrieve tree")
 
         let _ = Tree.retrieve(
-            session: session!,
             entity: entity!,
             globalUnit: unit!,
             callback: { (error, tree) in
@@ -448,7 +445,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try Performance.retrieve(
-                session: session!,
                 entity: entity!,
                 startTime: Date(timeIntervalSinceNow: (-3600*24*10)),
                 endTime: Date(),
@@ -479,7 +475,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try Position.retrieve(
-                session: session!,
                 entity: entity!,
                 globalUnit: unit!,
                 callback: { (error, position) in

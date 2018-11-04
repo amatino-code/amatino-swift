@@ -95,7 +95,6 @@ class AccountTests: AmatinoTest {
         let expectation = XCTestExpectation(description: "Create Account")
         
         let _ = try Account.create(
-            session: session!,
             entity: entity!,
             name: "Amatino Swift test account",
             type: .asset,
@@ -127,7 +126,6 @@ class AccountTests: AmatinoTest {
         func retrieveAccount(_ accountId: Int) {
             do {
                 let _ = try Account.retrieve(
-                    session: session!,
                     entity: entity!,
                     accountId: accountId,
                     callback: { (error, account) in
@@ -150,7 +148,6 @@ class AccountTests: AmatinoTest {
         
         do {
             let _ = try Account.create(
-                session: session!,
                 entity: entity!,
                 name: "Amatino Swift test account",
                 type: .asset,
@@ -217,7 +214,6 @@ class AccountTests: AmatinoTest {
         func executeProcedure() {
             do {
                 let _ = try Account.create(
-                    session: session!,
                     entity: entity!,
                     name: "Amatino Swift test account",
                     type: .asset,
@@ -253,7 +249,6 @@ class AccountTests: AmatinoTest {
         func lookupDeletedAccount(_ account: Account) {
             do {
                 let _ = try Account.retrieve(
-                    session: session!,
                     entity: entity!,
                     accountId: account.id,
                     callback: { (error, account) in
@@ -308,7 +303,6 @@ class AccountTests: AmatinoTest {
                 )
                 let arguments = [cashAccountArguments, revenueAccountArguments]
                 let _ = try Account.createMany(
-                    session: session!,
                     entity: entity!,
                     arguments: arguments,
                     callback: { (error, accounts) in
