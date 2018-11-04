@@ -12,7 +12,6 @@ class RecursiveBalance: AccountBalance {
     internal static let path = "/accounts/balance/recursive"
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         account: Account,
         callback: @escaping (Error?, RecursiveBalance?) -> Void
@@ -20,7 +19,6 @@ class RecursiveBalance: AccountBalance {
         
         let arguments = Balance.RetrieveArguments(account: account)
         let _ = try RecursiveBalance.retrieve(
-            session: session,
             entity: entity,
             arguments: arguments,
             callback: callback
@@ -29,7 +27,6 @@ class RecursiveBalance: AccountBalance {
     }
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         account: Account,
         balanceTime: Date,
@@ -41,7 +38,6 @@ class RecursiveBalance: AccountBalance {
             balanceTime: balanceTime
         )
         let _ = try RecursiveBalance.retrieve(
-            session: session,
             entity: entity,
             arguments: arguments,
             callback: callback
@@ -50,7 +46,6 @@ class RecursiveBalance: AccountBalance {
     }
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         arguments: Balance.RetrieveArguments,
         callback: @escaping (Error?, RecursiveBalance?) -> Void
@@ -61,7 +56,7 @@ class RecursiveBalance: AccountBalance {
         let _ = try AmatinoRequest(
             path: path,
             data: requestData,
-            session: session,
+            session: entity.session,
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in

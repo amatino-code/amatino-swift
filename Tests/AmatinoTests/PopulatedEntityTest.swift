@@ -122,7 +122,6 @@ class PopulatedEntityTest: DerivedObjectTest {
                     ]
                 )
                 let _ = try Transaction.createMany(
-                    session: session!,
                     entity: entity!,
                     arguments: [tx1, tx2, tx3, tx4],
                     callback: { (error, transactions) in
@@ -146,7 +145,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         func createCashChild() {
             do {
                 let _ = try Account.create(
-                    session: session!,
                     entity: entity!,
                     name: "T1.1 Cash",
                     description: "Test cash child",
@@ -221,8 +219,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try Ledger.retrieve(
-                session: session!,
-                entity: entity!,
                 account: cashAccount!,
                 callback: { (error, newLedger) in
                     guard error == nil else {
@@ -301,8 +297,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try RecursiveLedger.retrieve(
-                session: session!,
-                entity: entity!,
                 account: cashAccount!,
                 callback: { (error, newLedger) in
                     XCTAssertNil(error)
@@ -346,8 +340,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try Ledger.retrieve(
-                session: session!,
-                entity: entity!,
                 account: cashAccount!,
                 callback: { (error, newLedger) in
                     guard error == nil else {
@@ -395,8 +387,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try Ledger.retrieve(
-                session: session!,
-                entity: entity!,
                 account: cashAccount!,
                 start: Date(timeIntervalSinceNow: (-3600*24*2)),
                 end: Date(timeIntervalSinceNow: (-3600*24*1)),
@@ -431,31 +421,22 @@ class PopulatedEntityTest: DerivedObjectTest {
     
     func testRetrieveTree() {
         let treeExpectation = XCTestExpectation(description: "Retrieve tree")
-        
-        do {
-            let _ = try Tree.retrieve(
-                session: session!,
-                entity: entity!,
-                globalUnit: unit!,
-                callback: { (error, tree) in
-                    guard error == nil else {
-                        let cast = error as? AmatinoError
-                        print(cast?.description ?? "Unknown Error")
-                        XCTFail(); treeExpectation.fulfill(); return
-                    }
-                    guard let newTree: Tree = tree else {
-                        XCTFail(); treeExpectation.fulfill(); return
-                    }
-                    guard newTree.accounts.count > 0 else {
-                        XCTFail(); treeExpectation.fulfill(); return
-                    }
-                    treeExpectation.fulfill(); return
-            })
-        } catch {
-            print((error as? AmatinoError)?.description ?? "Unknown Err.")
-            XCTFail(); treeExpectation.fulfill(); return
-        }
-        
+
+        let _ = Tree.retrieve(
+            entity: entity!,
+            globalUnit: unit!,
+            callback: { (error, tree) in
+                guard error == nil else {
+                    XCTFail(); treeExpectation.fulfill(); return
+                }
+                guard let newTree: Tree = tree else {
+                    XCTFail(); treeExpectation.fulfill(); return
+                }
+                guard newTree.accounts.count > 0 else {
+                    XCTFail(); treeExpectation.fulfill(); return
+                }
+                treeExpectation.fulfill(); return
+        })
         wait(for: [treeExpectation], timeout: 5)
     }
     
@@ -464,7 +445,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try Performance.retrieve(
-                session: session!,
                 entity: entity!,
                 startTime: Date(timeIntervalSinceNow: (-3600*24*10)),
                 endTime: Date(),
@@ -495,7 +475,6 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         do {
             let _ = try Position.retrieve(
-                session: session!,
                 entity: entity!,
                 globalUnit: unit!,
                 callback: { (error, position) in

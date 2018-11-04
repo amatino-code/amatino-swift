@@ -9,23 +9,22 @@ internal protocol AmatinoObject: Decodable {}
 
 extension AmatinoObject {
     
-    static func loadResponse<ObjectType: AmatinoObject>(
+    static func loadResponse(
         _ error: Error?,
         _ data: Data?,
-        _ callback: (Error?, ObjectType?) -> Void,
-        _ object: ObjectType.Type
+        _ callback: (Error?, Self?) -> Void
         ) {
         guard error == nil else {callback(error, nil); return}
         let decoder = JSONDecoder()
-        let object: ObjectType
-        let objects: [ObjectType]
+        let object: Self
+        let objects: [Self]
         guard let dataToDecode: Data = data else {
             callback(AmatinoError(.inconsistentInternalState), nil)
             return
         }
         do {
             objects = try decoder.decode(
-                [ObjectType].self,
+                [Self].self,
                 from: dataToDecode
             )
             guard objects.count > 0 else {
@@ -41,22 +40,21 @@ extension AmatinoObject {
         }
     }
     
-    static func loadArrayResponse<ObjectType: AmatinoObject>(
+    static func loadArrayResponse(
         _ error: Error?,
         _ data: Data?,
-        _ callback: (Error?, [ObjectType]?) -> Void,
-        _ object: ObjectType.Type
+        _ callback: (Error?, [Self]?) -> Void
     ) {
         guard error == nil else {callback(error, nil); return}
         let decoder = JSONDecoder()
-        let objects: [ObjectType]
+        let objects: [Self]
         guard let dataToDecode: Data = data else {
             callback(AmatinoError(.inconsistentInternalState), nil)
             return
         }
         do {
             objects = try decoder.decode(
-                [ObjectType].self,
+                [Self].self,
                 from: dataToDecode
             )
             guard objects.count > 0 else {
@@ -71,22 +69,21 @@ extension AmatinoObject {
         }
     }
     
-    static func loadObjectResponse<ObjectType: AmatinoObject>(
+    static func loadObjectResponse(
         _ error: Error?,
         _ data: Data?,
-        _ callback: (Error?, ObjectType?) -> Void,
-        _ object: ObjectType.Type
+        _ callback: (Error?, Self?) -> Void
         ) {
         guard error == nil else {callback(error, nil); return}
         let decoder = JSONDecoder()
-        let object: ObjectType
+        let object: Self
         guard let dataToDecode: Data = data else {
             callback(AmatinoError(.badResponse), nil)
             return
         }
         do {
             object = try decoder.decode(
-                ObjectType.self,
+                Self.self,
                 from: dataToDecode
             )
             callback(nil, object)

@@ -10,10 +10,10 @@ import Foundation
 
 public class GlobalUnitError: AmatinoError {}
 
-public class GlobalUnit: Decodable  {
+public class GlobalUnit: AmatinoObject {
     
-    private static let urlKey = "global_unit_id"
-    private static let path = "/units"
+    internal static let urlKey = "global_unit_id"
+    internal static let path = "/units"
     
     public let code: String
     public let id: Int
@@ -39,26 +39,12 @@ public class GlobalUnit: Decodable  {
                 urlParameters: urlParameters,
                 method: .GET,
                 callback: {(error: Error?, data: Data?) in
-                    guard error == nil else {callback(error, nil); return}
-                    let decoder = JSONDecoder()
-                    let globalUnit: GlobalUnit
-                    do {
-                        globalUnit = try decoder.decode(
-                            [GlobalUnit].self,
-                            from: data!
-                        )[0]
-                    } catch {
-                        let error = GlobalUnitError(.badResponse)
-                        callback(error, nil)
-                        return
-                    }
-                    callback(nil, globalUnit)
-                    return
+                    let _ = loadResponse(error, data, callback)
             })
         } catch {
             callback(error, nil)
+            return
         }
-
     }
     
     public required init(from decoder: Decoder) throws {

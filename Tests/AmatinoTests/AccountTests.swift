@@ -16,6 +16,8 @@ class AccountTests: AmatinoTest {
     var unit: GlobalUnit? = nil
     
     override func setUp() {
+        
+        continueAfterFailure = false
 
         let sessionExpectation = XCTestExpectation(description: "Session")
         let entityExpectation = XCTestExpectation(description: "Entity")
@@ -31,8 +33,13 @@ class AccountTests: AmatinoTest {
                 unitId: 5,
                 session: session!,
                 callback: { (error, globalUnit) in
-                    XCTAssertNil(error)
-                    XCTAssertNotNil(globalUnit)
+                    do {
+                        let _ = try self.assertNil(error)
+                        let _ = try self.assertNotNil(globalUnit)
+                    } catch {
+                        self.failWith(error, expectations)
+                        return
+                    }
                     self.unit = globalUnit!
                     unitExpectation.fulfill()
                     return
@@ -44,8 +51,13 @@ class AccountTests: AmatinoTest {
                 let _ = try Entity.create(
                     session: session!,
                     name: "Amatino Swift test entity") { (error, entity) in
-                        XCTAssertNil(error)
-                        XCTAssertNotNil(entity)
+                        do {
+                            let _ = try self.assertNil(error)
+                            let _ = try self.assertNotNil(entity)
+                        } catch {
+                            self.failWith(error, expectations)
+                            return
+                        }
                         self.entity = entity
                         entityExpectation.fulfill()
                         retrieveUnit(self.session!, self.entity!)
@@ -60,8 +72,13 @@ class AccountTests: AmatinoTest {
             email: dummyUserEmail(),
             secret: dummyUserSecret(),
             callback: { (error, session) in
-                XCTAssertNil(error)
-                XCTAssertNotNil(session)
+                do {
+                    let _ = try self.assertNil(error)
+                    let _ = try self.assertNotNil(session)
+                } catch {
+                    self.failWith(error, expectations)
+                    return
+                }
                 self.session = session
                 sessionExpectation.fulfill()
                 createEntity(session!)
@@ -71,51 +88,54 @@ class AccountTests: AmatinoTest {
         return
     }
     
-    func testCreateAccount() {
-        XCTAssertNotNil(session)
-        XCTAssertNotNil(entity)
-        XCTAssertNotNil(unit)
+    func testCreateAccount() throws {
+        let _ = try assertNotNil(session)
+        let _ = try assertNotNil(entity)
+        let _ = try assertNotNil(unit)
         let expectation = XCTestExpectation(description: "Create Account")
         
-        do {
-            let _ = try Account.create(
-                session: session!,
-                entity: entity!,
-                name: "Amatino Swift test account",
-                type: .asset,
-                description: "Testing account creation",
-                globalUnit: unit!,
-                callback: { (error, account) in
-                    XCTAssertNil(error)
-                    XCTAssertNotNil(account)
-                    expectation.fulfill()
+        let _ = try Account.create(
+            entity: entity!,
+            name: "Amatino Swift test account",
+            type: .asset,
+            description: "Testing account creation",
+            globalUnit: unit!,
+            callback: { (error, account) in
+                do {
+                    let _ = try self.assertNil(error)
+                    let _ = try self.assertNotNil(account)
+                } catch {
+                    self.failWith(error, [expectation])
                     return
-            })
-        } catch {
-            XCTFail()
-            expectation.fulfill()
-            return
-        }
+                }
+                expectation.fulfill()
+                return
+        })
 
         wait(for: [expectation], timeout: 5)
         return
     }
     
-    func testRetrieveAccount() {
-        XCTAssertNotNil(session)
-        XCTAssertNotNil(entity)
-        XCTAssertNotNil(unit)
+    func testRetrieveAccount() throws {
+        let _ = try assertNotNil(session)
+        let _ = try assertNotNil(entity)
+        let _ = try assertNotNil(unit)
+
         let expectation = XCTestExpectation(description: "Retrieve Account")
         
         func retrieveAccount(_ accountId: Int) {
             do {
                 let _ = try Account.retrieve(
-                    session: session!,
                     entity: entity!,
                     accountId: accountId,
                     callback: { (error, account) in
-                        XCTAssertNil(error)
-                        XCTAssertNotNil(account)
+                        do {
+                            let _ = try self.assertNil(error)
+                            let _ = try self.assertNotNil(account)
+                        } catch {
+                            self.failWith(error, [expectation])
+                            return
+                        }
                         expectation.fulfill()
                         return
                 })
@@ -128,15 +148,19 @@ class AccountTests: AmatinoTest {
         
         do {
             let _ = try Account.create(
-                session: session!,
                 entity: entity!,
                 name: "Amatino Swift test account",
                 type: .asset,
                 description: "Testing account retrieval",
                 globalUnit: unit!,
                 callback: { (error, account) in
-                    XCTAssertNil(error)
-                    XCTAssertNotNil(account)
+                    do {
+                        let _ = try self.assertNil(error)
+                        let _ = try self.assertNotNil(account)
+                    } catch {
+                        self.failWith(error, [expectation])
+                        return
+                    }
                     let _ = retrieveAccount(account!.id)
                     return
             })
@@ -190,15 +214,19 @@ class AccountTests: AmatinoTest {
         func executeProcedure() {
             do {
                 let _ = try Account.create(
-                    session: session!,
                     entity: entity!,
                     name: "Amatino Swift test account",
                     type: .asset,
                     description: "Testing account update",
                     globalUnit: unit!,
                     callback: { (error, account) in
-                        XCTAssertNil(error)
-                        XCTAssertNotNil(account)
+                        do {
+                            let _ = try self.assertNil(error)
+                            let _ = try self.assertNotNil(account)
+                        } catch {
+                            self.failWith(error, [expectation])
+                            return
+                        }
                         updateAccount(account!)
                         return
                 })
@@ -221,7 +249,6 @@ class AccountTests: AmatinoTest {
         func lookupDeletedAccount(_ account: Account) {
             do {
                 let _ = try Account.retrieve(
-                    session: session!,
                     entity: entity!,
                     accountId: account.id,
                     callback: { (error, account) in
@@ -276,7 +303,6 @@ class AccountTests: AmatinoTest {
                 )
                 let arguments = [cashAccountArguments, revenueAccountArguments]
                 let _ = try Account.createMany(
-                    session: session!,
                     entity: entity!,
                     arguments: arguments,
                     callback: { (error, accounts) in

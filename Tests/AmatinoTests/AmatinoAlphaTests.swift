@@ -75,7 +75,7 @@ class AmatinoAlphaTests: XCTestCase {
     private func dummyUnit(
         session: Session,
         callback: @escaping (_: Error?, _: GlobalUnit?) -> Void
-        ) {
+        ) throws {
         let _ = GlobalUnit.retrieve(
             unitId: 5,
             session: session,
@@ -103,7 +103,6 @@ class AmatinoAlphaTests: XCTestCase {
             globalUnit: unit
         )
         let _ = try Account.createMany(
-            session: session,
             entity: entity,
             arguments: [account1, account2],
             callback: callback
@@ -213,34 +212,40 @@ class AmatinoAlphaTests: XCTestCase {
         }
         
         func stageTest(amatinoAlpha: AmatinoAlpha, session: Session) {
-            
-            let _ = self.dummyUnit(
-                session: session,
-                callback: { (error, globalUnit) in
-                    guard error == nil else {
-                        XCTFail("Unit init yielded: \(error!)")
-                        return
-                    }
-                    do {
-                        let _ = try self.dummyEntity(
-                            session: session,
-                            callback: { (error, entity) in
-                                guard error == nil else {
-                                    XCTFail("Entity init yielded: \(error!)")
+            do {
+                let _ = try self.dummyUnit(
+                    session: session,
+                    callback: { (error, globalUnit) in
+                        guard error == nil else {
+                            XCTFail("Unit init yielded: \(error!)")
+                            return
+                        }
+                        do {
+                            let _ = try self.dummyEntity(
+                                session: session,
+                                callback: { (error, entity) in
+                                    guard error == nil else {
+                                        XCTFail(
+                                            "Entity init yielded: \(error!)"
+                                        )
+                                        return
+                                    }
+                                    let _ = createAccount(
+                                        amatinoAlpha: amatinoAlpha,
+                                        unit: globalUnit!,
+                                        entity: entity!
+                                    )
                                     return
-                                }
-                                let _ = createAccount(
-                                    amatinoAlpha: amatinoAlpha,
-                                    unit: globalUnit!,
-                                    entity: entity!
-                                )
-                                return
-                        })
-                    } catch {
-                        XCTFail("Dummy entity creation yielded \(error)")
-                        return
-                    }
-            })
+                            })
+                        } catch {
+                            XCTFail("Dummy entity creation yielded \(error)")
+                            return
+                        }
+                })
+            } catch {
+                XCTFail("Test staging failed")
+                return
+            }
         }
         
         
@@ -350,34 +355,40 @@ class AmatinoAlphaTests: XCTestCase {
         
         func stageTest(amatinoAlpha: AmatinoAlpha, session: Session) {
             
-            let _ = self.dummyUnit(
-                session: session,
-                callback: { (error, globalUnit) in
-                    guard error == nil else {
-                        XCTFail("Unit init yielded: \(error!)")
-                        return
-                    }
-                    do {
-                        let _ = try self.dummyEntity(
-                            session: session,
-                            callback: { (error, entity) in
-                                guard error == nil else {
-                                    XCTFail("Entity init yielded: \(error!)")
+            do {
+                let _ = try self.dummyUnit(
+                    session: session,
+                    callback: { (error, globalUnit) in
+                        guard error == nil else {
+                            XCTFail("Unit init yielded: \(error!)")
+                            return
+                        }
+                        do {
+                            let _ = try self.dummyEntity(
+                                session: session,
+                                callback: { (error, entity) in
+                                    guard error == nil else {
+                                        XCTFail(
+                                            "Entity init yielded: \(error!)"
+                                        )
+                                        return
+                                    }
+                                    let _ = stageAccounts(
+                                        alpha: amatinoAlpha,
+                                        unit: globalUnit!,
+                                        entity: entity!,
+                                        session: session
+                                    )
                                     return
-                                }
-                                let _ = stageAccounts(
-                                    alpha: amatinoAlpha,
-                                    unit: globalUnit!,
-                                    entity: entity!,
-                                    session: session
-                                )
-                                return
-                        })
-                    } catch {
-                        XCTFail("Dummy entity creation yielded \(error)")
-                        return
-                    }
-            })
+                            })
+                        } catch {
+                            XCTFail("Dummy entity creation yielded \(error)")
+                            return
+                        }
+                })
+            } catch {
+                XCTFail("Failed to retrieve Global Unit")
+            }
         }
         
         let _ = AmatinoAlpha.create(

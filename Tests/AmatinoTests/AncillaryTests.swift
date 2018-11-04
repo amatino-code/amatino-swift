@@ -80,5 +80,5 @@ class AncillaryTests: AmatinoTest {
         wait(for: [expectation], timeout: 8)
         return
     }
-    
+
 }

@@ -50,7 +50,6 @@ class TransactionTests: AmatinoTest {
                 )
                 let arguments = [revenueAccountArguments, cashAccountArguments]
                 let _ = try Account.createMany(
-                    session: session,
                     entity: entity,
                     arguments: arguments,
                     callback: { (error, accounts) in
@@ -129,7 +128,6 @@ class TransactionTests: AmatinoTest {
                 )
             ]
             let _ = try Transaction.create(
-                session: session!,
                 entity: entity!,
                 transactionTime: Date(),
                 description: "Amatino Swift test transaction",
@@ -159,7 +157,6 @@ class TransactionTests: AmatinoTest {
                 )
             ]
             let _ = try Transaction.create(
-                session: session!,
                 entity: entity!,
                 transactionTime: Date(),
                 description: "Amatino Swift test transaction creation",
@@ -188,7 +185,6 @@ class TransactionTests: AmatinoTest {
         func retrieveTransaction(_ transactionId: Int64) {
             do {
                 let _ = try Transaction.retrieve(
-                    session: session!,
                     entity: entity!,
                     transactionId: transactionId,
                     callback: { (error, transaction) in
@@ -214,7 +210,6 @@ class TransactionTests: AmatinoTest {
                 )
             ]
             let _ = try Transaction.create(
-                session: session!,
                 entity: entity!,
                 transactionTime: Date(),
                 description: "Amatino Swift test transaction retrieval",
@@ -304,7 +299,6 @@ class TransactionTests: AmatinoTest {
                     }
                     do {
                         try Transaction.retrieve(
-                            session: self.session!,
                             entity: self.entity!,
                             transactionId: transaction.id,
                             callback: { (error, transaction) in

@@ -77,8 +77,7 @@ public class LedgerPage: AmatinoObject, Sequence {
                 let _ = loadObjectResponse(
                     error,
                     data,
-                    callback,
-                    LedgerPage.self
+                    callback
                 )
         })
     }

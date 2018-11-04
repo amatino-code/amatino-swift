@@ -14,3 +14,25 @@ public enum AccountType: Int, Codable {
     case liability = 2
     case equity = 3
 }
+
+extension AccountType {
+    
+    public static func nameFor(accountType: AccountType) -> String {
+        switch accountType {
+        case .income:
+            return "Income"
+        case .expense:
+            return "Expense"
+        case .asset:
+            return "Asset"
+        case .equity:
+            return "Equity"
+        case .liability:
+            return "Liability"
+        }
+    }
+    
+    static let allNames = ["Asset", "Liablity", "Equity", "Income", "Expense"]
+    static let allCases: [AccountType] = [.asset]
+
+}

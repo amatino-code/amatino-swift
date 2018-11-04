@@ -112,8 +112,6 @@ public class Ledger: Sequence {
     }
     
     public static func retrieve(
-        session: Session,
-        entity: Entity,
         account: Account,
         start: Date? = nil,
         end: Date? = nil,
@@ -127,12 +125,10 @@ public class Ledger: Sequence {
             end: end,
             order: order
         )
-        try Ledger.retrieve(session, entity, account, arguments, callback)
+        try Ledger.retrieve(account, arguments, callback)
     }
     
     public static func retrieve(
-        session: Session,
-        entity: Entity,
         account: Account,
         denomination: GlobalUnit,
         start: Date? = nil,
@@ -148,12 +144,10 @@ public class Ledger: Sequence {
             end: end,
             order: order
         )
-        try Ledger.retrieve(session, entity, account, arguments, callback)
+        try Ledger.retrieve(account, arguments, callback)
     }
     
     public static func retrieve(
-        session: Session,
-        entity: Entity,
         account: Account,
         denomination: CustomUnit,
         start: Date? = nil,
@@ -169,17 +163,15 @@ public class Ledger: Sequence {
             end: end,
             order: order
         )
-        try Ledger.retrieve(session, entity, account, arguments, callback)
+        try Ledger.retrieve(account, arguments, callback)
     }
 
     private static func retrieve(
-        _ session: Session,
-        _ entity: Entity,
         _ account: Account,
         _ arguments: LedgerPage.RetrievalArguments,
         _ callback: @escaping (Error?, Ledger?) -> Void
         ) throws {
-        let urlParameters = UrlParameters(singleEntity: entity)
+        let urlParameters = UrlParameters(singleEntity: account.entity)
         let requestData = try RequestData(
             data: arguments,
             overrideListing: true
@@ -187,13 +179,13 @@ public class Ledger: Sequence {
         let _ = try AmatinoRequest(
             path: path,
             data: requestData,
-            session: session,
+            session: account.session,
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
                 let _ = Ledger.asyncInit(
-                    session,
-                    entity,
+                    account.session,
+                    account.entity,
                     account,
                     error,
                     data,
@@ -275,19 +267,19 @@ public class Ledger: Sequence {
     
     public struct Iterator: IteratorProtocol {
         let rowSource: [LedgerRow]
-        var rowsProvided = 0
+        var index = 0
         
         init(_ rows: [LedgerRow]) {
             rowSource = rows
         }
         
         public mutating func next() -> LedgerRow? {
-            let nextRowIndex = rowsProvided + 1
-            guard nextRowIndex < rowSource.count else {
+            guard index + 1 <= rowSource.count else {
                 return nil
             }
-            rowsProvided = nextRowIndex
-            return rowSource[nextRowIndex]
+            let rowToReturn = rowSource[index]
+            index += 1
+            return rowToReturn
         }
     }
 }

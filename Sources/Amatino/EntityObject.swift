@@ -15,13 +15,12 @@ internal protocol EntityObject {
     var session: Session { get }
     var attributes: attributesType { get }
     
-    init (_: Session, _: Entity, _: attributesType)
+    init (_: Entity, _: attributesType)
 }
 
 extension EntityObject {
     
     static func asyncInit(
-        _ session: Session,
         _ entity: Entity,
         _ callback: @escaping (Error?, Self?) -> Void,
         _ error: Error?,
@@ -41,7 +40,7 @@ extension EntityObject {
             guard attributes.count > 0 else {
                 callback(AmatinoError(.badResponse), nil); return
             }
-            entityObject = self.init(session, entity, attributes[0])
+            entityObject = self.init(entity, attributes[0])
         } catch {
             callback(error, nil); return
         }
@@ -49,7 +48,6 @@ extension EntityObject {
     }
     
     static func asyncInitMany(
-        _ session: Session,
         _ entity: Entity,
         _ callback: @escaping (Error?, [Self]?) -> Void,
         _ error: Error?,
@@ -68,7 +66,7 @@ extension EntityObject {
             )
             var workingObjects = [Self]()
             for attribute in attributes {
-                workingObjects.append(Self(session, entity, attribute))
+                workingObjects.append(Self(entity, attribute))
             }
             entityObjects = workingObjects
         } catch {
@@ -80,7 +78,6 @@ extension EntityObject {
     }
     
     static func asyncInitSolo(
-        _ session: Session,
         _ entity: Entity,
         _ callback: @escaping (Error?, Self?) -> Void,
         _ error: Error?,
@@ -96,7 +93,7 @@ extension EntityObject {
                 attributesType.self,
                 from: dataToDecode
             )
-            entityObject = self.init(session, entity, attributes)
+            entityObject = self.init(entity, attributes)
         } catch {
             callback(error, nil); return
         }

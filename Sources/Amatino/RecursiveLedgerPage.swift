@@ -86,8 +86,7 @@ public class RecursiveLedgerPage: AmatinoObject, Sequence {
                 let _ = loadObjectResponse(
                     error,
                     data,
-                    callback,
-                    RecursiveLedgerPage.self
+                    callback
                 )
         })
     }

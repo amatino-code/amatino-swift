@@ -10,11 +10,9 @@ import Foundation
 public final class Account: EntityObject {
     
     internal init (
-        _ session: Session,
         _ entity: Entity,
         _ attributes: Account.Attributes
         ) {
-        self.session = session
         self.entity = entity
         self.attributes = attributes
         return
@@ -25,7 +23,7 @@ public final class Account: EntityObject {
     internal static let path = "/accounts"
     internal static let urlKey = "account_id"
     
-    public let session: Session
+    public var session: Session { get { return entity.session }}
     public let entity: Entity
     
     public var id: Int { get { return attributes.id } }
@@ -41,7 +39,6 @@ public final class Account: EntityObject {
     public var colour: Colour { get { return attributes.colour} }
     
     public static func create(
-        session: Session,
         entity: Entity,
         name: String,
         type: AccountType,
@@ -55,12 +52,11 @@ public final class Account: EntityObject {
             description: description,
             globalUnit: globalUnit
         )
-        let _ = try Account.create(session, entity, arguments, callback)
+        let _ = try Account.create(entity, arguments, callback)
         return
     }
     
     public static func create(
-        session: Session,
         entity: Entity,
         name: String,
         description: String,
@@ -74,12 +70,11 @@ public final class Account: EntityObject {
             globalUnit: globalUnit,
             parent: parent
         )
-        let _ = try Account.create(session, entity, arguments, callback)
+        let _ = try Account.create(entity, arguments, callback)
         return
     }
     
     private static func create(
-        _ session: Session,
         _ entity: Entity,
         _ arguments: Account.CreateArguments,
         _ callback: @escaping (Error?, Account?) -> Void
@@ -89,12 +84,11 @@ public final class Account: EntityObject {
         let _ = try AmatinoRequest(
             path: path,
             data: requestData,
-            session: session,
+            session: entity.session,
             urlParameters: urlParameters,
             method: .POST,
             callback: { (error, data) in
                 let _ = asyncInit(
-                    session,
                     entity,
                     callback,
                     error,
@@ -104,7 +98,6 @@ public final class Account: EntityObject {
     }
     
     public static func createMany(
-        session: Session,
         entity: Entity,
         arguments: [Account.CreateArguments],
         callback: @escaping (Error?, [Account]?) -> Void
@@ -114,12 +107,11 @@ public final class Account: EntityObject {
         let _ = try AmatinoRequest(
             path: path,
             data: requestData,
-            session: session,
+            session: entity.session,
             urlParameters: urlParameters,
             method: .POST,
             callback: { (error, data) in
                 let _ = asyncInitMany(
-                    session,
                     entity,
                     callback,
                     error,
@@ -129,7 +121,6 @@ public final class Account: EntityObject {
     }
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         accountId: Int,
         callback: @escaping (Error?, Account?) -> Void
@@ -142,12 +133,11 @@ public final class Account: EntityObject {
         let _ = try AmatinoRequest(
             path: path,
             data: nil,
-            session: session,
+            session: entity.session,
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
                 let _ = asyncInit(
-                    session,
                     entity,
                     callback,
                     error,
@@ -157,7 +147,6 @@ public final class Account: EntityObject {
     }
     
     public static func retrieveMany(
-        session: Session,
         entity: Entity,
         accountIds: [Int],
         callback: @escaping (Error?, [Account]?) -> Void
@@ -167,12 +156,11 @@ public final class Account: EntityObject {
         let _ = try AmatinoRequest(
             path: path,
             data: nil,
-            session: session,
+            session: entity.session,
             urlParameters: urlParameters,
             method: .GET,
             callback: { (error, data) in
                 let _ = asyncInitMany(
-                    session,
                     entity,
                     callback,
                     error,
@@ -245,7 +233,6 @@ public final class Account: EntityObject {
             method: .PUT,
             callback: { (error, data) in
                 let _ = Account.asyncInit(
-                    self.session,
                     self.entity,
                     callback,
                     error,

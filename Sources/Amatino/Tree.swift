@@ -10,11 +10,9 @@ import Foundation
 public final class Tree: EntityObject {
 
     internal init(
-        _ session: Session,
         _ entity: Entity,
         _ attributes: Tree.Attributes
         ) {
-        self.session = session
         self.entity = entity
         self.attributes = attributes
         return
@@ -25,7 +23,7 @@ public final class Tree: EntityObject {
     private static let path =  "/trees"
     
     public let entity: Entity
-    public let session: Session
+    public var session: Session { get { return entity.session } }
 
     public var balanceTime: Date { get { return attributes.balanceTime } }
     public var generatedTime: Date { get { return attributes.generatedTime } }
@@ -36,24 +34,30 @@ public final class Tree: EntityObject {
     private var entityid: String { get { return attributes.entityId } }
     
     public static func retrieve(
-        session: Session,
         entity: Entity,
         globalUnit: GlobalUnit,
         balanceTime: Date? = nil,
         callback: @escaping (_: Error?, _: Tree?) -> Void
-        ) throws {
+        )  {
         
         let arguments = Tree.RetrievalArguments(
             balanceTime: balanceTime ?? Date(),
             globalUnitId: globalUnit.id,
             customUnitId: nil
         )
-        let _ = try Tree.executeRetrieval(session, entity, arguments, callback)
+        do {
+            let _ = try Tree.executeRetrieval(
+                entity,
+                arguments,
+                callback
+            )
+        } catch {
+            callback(error, nil)
+        }
         return
     }
     
     private static func executeRetrieval(
-        _ session: Session,
         _ entity: Entity,
         _ arguments: Tree.RetrievalArguments,
         _ callback: @escaping (_: Error?, _: Tree?) -> Void
@@ -61,12 +65,11 @@ public final class Tree: EntityObject {
         let _ = try AmatinoRequest(
             path: Tree.path,
             data: RequestData(data: arguments, overrideListing: true),
-            session: session,
+            session: entity.session,
             urlParameters: UrlParameters(singleEntity: entity),
             method: .GET,
             callback: { (error, data) in
                 let _ = asyncInitSolo(
-                    session,
                     entity,
                     callback,
                     error,
