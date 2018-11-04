@@ -10,7 +10,7 @@ import Foundation
 
 public class GlobalUnitError: AmatinoError {}
 
-public class GlobalUnit: AmatinoObject, Unit  {
+public class GlobalUnit: AmatinoObject {
     
     internal static let urlKey = "global_unit_id"
     internal static let path = "/units"

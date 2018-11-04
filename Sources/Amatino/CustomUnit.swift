@@ -6,14 +6,12 @@
 //
 import Foundation
 
-public final class CustomUnit: EntityObject, Unit  {
+public final class CustomUnit: EntityObject  {
 
     internal init(
-        _ session: Session,
         _ entity: Entity,
         _ attributes: CustomUnit.Attributes
         ) {
-        self.session = session
         self.entity = entity
         self.attributes = attributes
         return
@@ -32,7 +30,7 @@ public final class CustomUnit: EntityObject, Unit  {
     internal static let path = "/custom_units"
     
     public let entity: Entity
-    public let session: Session
+    public var session: Session { get { return entity.session } }
     
     public var code: String { get { return attributes.code } }
     public var id: Int { get { return attributes.id } }
@@ -42,7 +40,6 @@ public final class CustomUnit: EntityObject, Unit  {
     public var exponent: Int { get { return attributes.exponent} }
     
     public static func create(
-        session: Session,
         entity: Entity,
         code: String,
         name: String,
@@ -62,11 +59,11 @@ public final class CustomUnit: EntityObject, Unit  {
             let _ = try AmatinoRequest(
                 path: CustomUnit.path,
                 data: RequestData(data: arguments),
-                session: session,
+                session: entity.session,
                 urlParameters: UrlParameters(singleEntity: entity),
                 method: .POST,
                 callback: { (error, data) in
-                    let _ = asyncInit(session, entity, callback, error, data)
+                    let _ = asyncInit(entity, callback, error, data)
             })
         } catch {
             callback(error, nil)
@@ -74,7 +71,6 @@ public final class CustomUnit: EntityObject, Unit  {
     }
     
     public static func createMany(
-        session: Session,
         entity: Entity,
         arguments: [CustomUnit.CreationArguments],
         callback: @escaping (Error?, [CustomUnit]?) -> Void
@@ -83,12 +79,11 @@ public final class CustomUnit: EntityObject, Unit  {
             let _ = try AmatinoRequest(
                 path: CustomUnit.path,
                 data: RequestData(arrayData: arguments),
-                session: session,
+                session: entity.session,
                 urlParameters: UrlParameters(singleEntity: entity),
                 method: .POST,
                 callback: { (error, data) in
                     let _ = asyncInitMany(
-                        session,
                         entity,
                         callback,
                         error,
@@ -120,12 +115,11 @@ public final class CustomUnit: EntityObject, Unit  {
             let _ = try AmatinoRequest(
                 path: CustomUnit.path,
                 data: RequestData(data: arguments),
-                session: session,
+                session: entity.session,
                 urlParameters: UrlParameters(singleEntity: entity),
                 method: .PUT,
                 callback: { (error, data) in
                     let _ = CustomUnit.asyncInit(
-                        self.session,
                         self.entity,
                         callback,
                         error,
