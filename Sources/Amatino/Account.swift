@@ -52,7 +52,11 @@ public final class Account: EntityObject {
             description: description,
             globalUnit: globalUnit
         )
-        let _ = try Account.create(entity, arguments, callback)
+        let _ = try Account.create(
+            entity: entity,
+            arguments: arguments,
+            callback: callback
+        )
         return
     }
     
@@ -70,14 +74,18 @@ public final class Account: EntityObject {
             globalUnit: globalUnit,
             parent: parent
         )
-        let _ = try Account.create(entity, arguments, callback)
+        let _ = try Account.create(
+            entity: entity,
+            arguments: arguments,
+            callback: callback
+        )
         return
     }
     
-    private static func create(
-        _ entity: Entity,
-        _ arguments: Account.CreateArguments,
-        _ callback: @escaping (Error?, Account?) -> Void
+    public static func create(
+        entity: Entity,
+        arguments: Account.CreateArguments,
+        callback: @escaping (Error?, Account?) -> Void
         ) throws {
         let requestData = try RequestData(data: arguments)
         let urlParameters = UrlParameters(singleEntity: entity)
