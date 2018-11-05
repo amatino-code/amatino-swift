@@ -23,32 +23,37 @@ class GlobalUnitList: Sequence {
     public static func retrieve(
         session: Session,
         callback: @escaping (Error?, GlobalUnitList?) -> Void
-        ) throws {
-        
-        let _ = try AmatinoRequest(
-            path: path,
-            data: nil,
-            session: session,
-            urlParameters: nil,
-            method: .GET,
-            callback: { (error, data) in
-                guard error == nil else { callback(error, nil); return }
-                let decodedUnits: [GlobalUnit]
-                let decoder = JSONDecoder()
-                do {
-                    decodedUnits = try decoder.decode(
-                        [GlobalUnit].self,
-                        from: data!
-                    )
-                } catch {
-                    callback(error, nil)
-                    return
-                }
-                let globalUnitList = GlobalUnitList(units: decodedUnits)
-                callback(nil, globalUnitList)
-                return
-        })
-        
+        ) {
+
+        do {
+            let _ = try AmatinoRequest(
+                path: path,
+                data: nil,
+                session: session,
+                urlParameters: nil,
+                method: .GET,
+                callback: { (error, data) in
+                    guard error == nil else { callback(error, nil); return }
+                    let decodedUnits: [GlobalUnit]
+                    let decoder = JSONDecoder()
+                    do {
+                        decodedUnits = try decoder.decode(
+                            [GlobalUnit].self,
+                            from: data!
+                        )
+                    } catch {
+                        callback(error, nil)
+                        return
+                    }
+                    let globalUnitList = GlobalUnitList(units: decodedUnits)
+                    callback(nil, globalUnitList)
+            })
+        } catch {
+            callback(error, nil)
+        }
+
+        return
+
     }
     
     public func unitWith(code: String) -> GlobalUnit? {
