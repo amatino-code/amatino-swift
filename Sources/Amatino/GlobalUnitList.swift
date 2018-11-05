@@ -7,7 +7,7 @@
 
 import Foundation
 
-class GlobalUnitList {
+class GlobalUnitList: Sequence {
     
     private static let path = "/units/list"
     
@@ -59,6 +59,28 @@ class GlobalUnitList {
             }
         }
         return nil
+    }
+    
+    public func makeIterator() -> Iterator {
+        return Iterator(units)
+    }
+    
+    public struct Iterator: IteratorProtocol {
+        let units: [GlobalUnit]
+        var index = 0
+        
+        init(_ units: [GlobalUnit]) {
+            self.units = units
+        }
+        
+        public mutating func next() -> GlobalUnit? {
+            guard index + 1 <= units.count else {
+                return nil
+            }
+            let unitToReturn = units[index]
+            index += 1
+            return unitToReturn
+        }
     }
 
 }
