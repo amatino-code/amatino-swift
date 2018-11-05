@@ -67,14 +67,20 @@ public final class Account: EntityObject {
         globalUnit: GlobalUnit,
         parent: Account,
         callback: @escaping (Error?, Account?) -> Void
-        ) throws {
-        let arguments = try Account.CreateArguments(
-            name: name,
-            description: description,
-            globalUnit: globalUnit,
-            parent: parent
-        )
-        let _ = try Account.create(
+        ) {
+        let arguments: Account.CreateArguments
+        do {
+            arguments = try Account.CreateArguments(
+                name: name,
+                description: description,
+                globalUnit: globalUnit,
+                parent: parent
+            )
+        } catch {
+            callback(error, nil)
+            return
+        }
+        let _ = Account.create(
             entity: entity,
             arguments: arguments,
             callback: callback
@@ -86,23 +92,28 @@ public final class Account: EntityObject {
         entity: Entity,
         arguments: Account.CreateArguments,
         callback: @escaping (Error?, Account?) -> Void
-        ) throws {
-        let requestData = try RequestData(data: arguments)
+        ) {
         let urlParameters = UrlParameters(singleEntity: entity)
-        let _ = try AmatinoRequest(
-            path: path,
-            data: requestData,
-            session: entity.session,
-            urlParameters: urlParameters,
-            method: .POST,
-            callback: { (error, data) in
-                let _ = asyncInit(
-                    entity,
-                    callback,
-                    error,
-                    data
-                )
-        })
+        do {
+            let requestData = try RequestData(data: arguments)
+            let _ = try AmatinoRequest(
+                path: path,
+                data: requestData,
+                session: entity.session,
+                urlParameters: urlParameters,
+                method: .POST,
+                callback: { (error, data) in
+                    let _ = asyncInit(
+                        entity,
+                        callback,
+                        error,
+                        data
+                    )
+            })
+        } catch {
+            callback(error, nil)
+        }
+
     }
     
     public static func createMany(
@@ -158,23 +169,30 @@ public final class Account: EntityObject {
         entity: Entity,
         accountIds: [Int],
         callback: @escaping (Error?, [Account]?) -> Void
-        ) throws {
+        ) {
         let targets = UrlTarget.createSequence(key: urlKey, values: accountIds)
         let urlParameters = UrlParameters(entity: entity, targets: targets)
-        let _ = try AmatinoRequest(
-            path: path,
-            data: nil,
-            session: entity.session,
-            urlParameters: urlParameters,
-            method: .GET,
-            callback: { (error, data) in
-                let _ = asyncInitMany(
-                    entity,
-                    callback,
-                    error,
-                    data
-                )
-        })
+        do {
+            let _ = try AmatinoRequest(
+                path: path,
+                data: nil,
+                session: entity.session,
+                urlParameters: urlParameters,
+                method: .GET,
+                callback: { (error, data) in
+                    let _ = asyncInitMany(
+                        entity,
+                        callback,
+                        error,
+                        data
+                    )
+            })
+        } catch {
+            callback(error, nil)
+        }
+        
+        return
+
     }
     
     public func update(
@@ -186,20 +204,24 @@ public final class Account: EntityObject {
         colour: Colour?,
         globalUnit: GlobalUnit,
         callback: @escaping (Error?, Account?) -> Void
-        ) throws {
-        
-        let arguments = UpdateArguments(
-            existing: self,
-            name: name,
-            type: type,
-            parent: parent,
-            customUnit: nil,
-            globalUnit: globalUnit,
-            counterParty: counterParty,
-            description: description,
-            colour: colour
-        )
-        let _ = try executeUpdate(arguments, callback)
+        ) {
+        do {
+            let arguments = UpdateArguments(
+                existing: self,
+                name: name,
+                type: type,
+                parent: parent,
+                customUnit: nil,
+                globalUnit: globalUnit,
+                counterParty: counterParty,
+                description: description,
+                colour: colour
+            )
+            let _ = try executeUpdate(arguments, callback)
+        } catch {
+            callback(error, nil)
+        }
+
         return
     }
     
@@ -233,20 +255,26 @@ public final class Account: EntityObject {
         _ arguments: UpdateArguments,
         _ callback: @escaping (Error?, Account?) -> Void
         ) throws {
-        let _ = try AmatinoRequest(
-            path: Account.path,
-            data: RequestData(data: arguments),
-            session: session,
-            urlParameters: UrlParameters(singleEntity: entity),
-            method: .PUT,
-            callback: { (error, data) in
-                let _ = Account.asyncInit(
-                    self.entity,
-                    callback,
-                    error,
-                    data
-                )
-        })
+        do {
+            let _ = try AmatinoRequest(
+                path: Account.path,
+                data: RequestData(data: arguments),
+                session: session,
+                urlParameters: UrlParameters(singleEntity: entity),
+                method: .PUT,
+                callback: { (error, data) in
+                    let _ = Account.asyncInit(
+                        self.entity,
+                        callback,
+                        error,
+                        data
+                    )
+            })
+        } catch {
+            callback(error, nil)
+        }
+        return
+
     }
     
     public func delete(
