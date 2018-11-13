@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class Tree: EntityObject {
+public final class Tree: EntityObject, Sequence {
 
     internal init(
         _ entity: Entity,
@@ -30,9 +30,19 @@ public final class Tree: EntityObject {
     public var globalUnitId: Int? { get { return attributes.globalUnitId } }
     public var customUnitId: Int? { get { return attributes.customUnitId } }
     public var accounts: Array<Node> { get { return attributes.accounts } }
+    public var flatAccounts: Array<Node> {
+        get {
+            let recursedChildren = accounts.map { $0.flatChildren }
+            let flattenedAccounts = recursedChildren.reduce(
+                Array<Node>(),
+                { x, y in x + y }
+            )
+            return accounts + flattenedAccounts
+        }
+    }
     
     private var entityid: String { get { return attributes.entityId } }
-    
+        
     public static func retrieve(
         entity: Entity,
         globalUnit: GlobalUnit,
@@ -136,6 +146,28 @@ public final class Tree: EntityObject {
             return
         }
         
+    }
+    
+    public func makeIterator() -> Iterator {
+        return Iterator(accounts)
+    }
+    
+    public struct Iterator: IteratorProtocol {
+        let accounts: [Node]
+        var index = 0
+        
+        init(_ accounts: [Node]) {
+            self.accounts = accounts
+        }
+        
+        public mutating func next() -> Node? {
+            guard index + 1 <= accounts.count else {
+                return nil
+            }
+            let nodeToReturn = accounts[index]
+            index += 1
+            return nodeToReturn
+        }
     }
     
 }
