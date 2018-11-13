@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class Account: EntityObject {
+public final class Account: EntityObject, AccountRepresentative {
     
     internal init (
         _ entity: Entity,
@@ -383,10 +383,11 @@ public final class Account: EntityObject {
         
         public let maxNameLength = 1024
         public let maxDescriptionLength = 1024
+        public let minNameLength = 1
         
         private let name: String
         private let type: AccountType
-        private let parentAccount: Account?
+        private let parentAccountId: Int?
         private let globalUnit: GlobalUnit?
         private let customUnit: CustomUnit?
         private let counterPartyEntity: Entity?
@@ -398,7 +399,10 @@ public final class Account: EntityObject {
         }}
         internal var maxDescriptionError: String { get {
             return "Max description length \(maxDescriptionLength) characters"
-            }}
+        }}
+        internal var minNameError: String { get {
+            return "Min name length \(minNameLength) characters"
+        }}
         
         public init(
             name: String,
@@ -413,7 +417,7 @@ public final class Account: EntityObject {
             self.type = type
             self.customUnit = nil
             self.counterPartyEntity = nil
-            self.parentAccount = nil
+            self.parentAccountId = nil
             self.colour = nil
             
             try checkName(name: name)
@@ -435,7 +439,7 @@ public final class Account: EntityObject {
             self.type = type
             self.customUnit = customUnit
             self.counterPartyEntity = nil
-            self.parentAccount = nil
+            self.parentAccountId = nil
             self.colour = nil
             
             try checkName(name: name)
@@ -448,7 +452,7 @@ public final class Account: EntityObject {
             name: String,
             description: String,
             customUnit: CustomUnit,
-            parent: Account
+            parent: AccountRepresentative
             ) throws {
             
             self.name = name
@@ -457,7 +461,7 @@ public final class Account: EntityObject {
             self.type = parent.type
             self.customUnit = customUnit
             self.counterPartyEntity = nil
-            self.parentAccount = parent
+            self.parentAccountId = parent.id
             self.colour = nil
             
             try checkName(name: name)
@@ -470,7 +474,7 @@ public final class Account: EntityObject {
             name: String,
             description: String,
             globalUnit: GlobalUnit,
-            parent: Account
+            parent: AccountRepresentative
             ) throws {
             
             self.name = name
@@ -479,7 +483,7 @@ public final class Account: EntityObject {
             self.type = parent.type
             self.customUnit = nil
             self.counterPartyEntity = nil
-            self.parentAccount = parent
+            self.parentAccountId = parent.id
             self.colour = nil
             
             try checkName(name: name)
@@ -492,6 +496,9 @@ public final class Account: EntityObject {
             guard name.count < maxNameLength else {
                 throw ConstraintError(.nameLength, maxNameError)
             }
+            guard name.count > minNameLength else {
+                throw ConstraintError(.nameLength, minNameError)
+            }
         }
         
         private func checkDescription(description: String) throws -> Void {
@@ -503,7 +510,7 @@ public final class Account: EntityObject {
         enum JSONObjectKeys: String, CodingKey {
             case name
             case type = "type"
-            case parentAccount = "parent_account_id"
+            case parentAccountId = "parent_account_id"
             case globalUnitId = "global_unit_id"
             case customUnitId = "custom_unit_id"
             case counterPartyEntity = "counterparty_entity_id"
@@ -516,7 +523,7 @@ public final class Account: EntityObject {
             try container.encode(name, forKey: .name)
             try container.encode(description, forKey: .description)
             try container.encode(type, forKey: .type)
-            try container.encode(parentAccount?.id, forKey: .parentAccount)
+            try container.encode(parentAccountId, forKey: .parentAccountId)
             try container.encode(globalUnit?.id, forKey: .globalUnitId)
             try container.encode(customUnit?.id, forKey: .customUnitId)
             try container.encode(

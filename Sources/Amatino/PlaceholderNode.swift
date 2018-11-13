@@ -9,7 +9,7 @@ import Foundation
 
 public class PlaceholderNode: Node, Decodable {
     
-    public let accountId: Int
+    public let id: Int
     public let name: String
     public let type: AccountType
     public let depth: Int
@@ -19,7 +19,7 @@ public class PlaceholderNode: Node, Decodable {
         let container = try decoder.container(
             keyedBy: TreeNode.JSONObjectKeys.self
         )
-        accountId = try container.decode(Int.self, forKey: .accountId)
+        id = try container.decode(Int.self, forKey: .accountId)
         name = try container.decode(String.self, forKey: .name)
         type = try container.decode(AccountType.self, forKey: .type)
         depth = try container.decode(Int.self, forKey: .depth)
