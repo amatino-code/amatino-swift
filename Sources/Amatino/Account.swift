@@ -52,7 +52,7 @@ public final class Account: EntityObject {
             description: description,
             globalUnit: globalUnit
         )
-        let _ = try Account.create(
+        let _ = Account.create(
             entity: entity,
             arguments: arguments,
             callback: callback
