@@ -45,7 +45,10 @@ class GlobalUnitList: Sequence {
                         callback(error, nil)
                         return
                     }
-                    let globalUnitList = GlobalUnitList(units: decodedUnits)
+                    let nameSortedUnits = decodedUnits.sorted {
+                        ($0.priority, $0.name) < ($1.priority, $1.name)
+                    }
+                    let globalUnitList = GlobalUnitList(units: nameSortedUnits)
                     callback(nil, globalUnitList)
             })
         } catch {
