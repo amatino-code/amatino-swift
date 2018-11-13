@@ -33,6 +33,27 @@ extension AccountType {
     }
     
     static let allNames = ["Asset", "Liablity", "Equity", "Income", "Expense"]
-    static let allCases: [AccountType] = [.asset]
+    static let allCases: [AccountType] = [
+        .asset, .liability, .income, .expense, .equity
+    ]
+    
+    public static func typeFor(name: String) -> AccountType? {
+        
+        let normalisedName = name.lowercased()
+        switch normalisedName {
+        case "income":
+            return .income
+        case "expense":
+            return .expense
+        case "asset":
+            return .asset
+        case "equity":
+            return .equity
+        case "liability":
+            return .liability
+        default:
+            return nil
+        }
+    }
 
 }
