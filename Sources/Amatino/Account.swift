@@ -65,7 +65,7 @@ public final class Account: EntityObject, AccountRepresentative {
         name: String,
         description: String,
         globalUnit: GlobalUnit,
-        parent: Account,
+        parent: AccountRepresentative,
         callback: @escaping (Error?, Account?) -> Void
         ) {
         let arguments: Account.CreateArguments
@@ -143,26 +143,31 @@ public final class Account: EntityObject, AccountRepresentative {
         entity: Entity,
         accountId: Int,
         callback: @escaping (Error?, Account?) -> Void
-        ) throws {
+        ) {
         let target = UrlTarget(
             stringValue: String(accountId),
             key: Account.urlKey
         )
         let urlParameters = UrlParameters(entity: entity, targets: [target])
-        let _ = try AmatinoRequest(
-            path: path,
-            data: nil,
-            session: entity.session,
-            urlParameters: urlParameters,
-            method: .GET,
-            callback: { (error, data) in
-                let _ = asyncInit(
-                    entity,
-                    callback,
-                    error,
-                    data
-                )
-        })
+        do {
+            let _ = try AmatinoRequest(
+                path: path,
+                data: nil,
+                session: entity.session,
+                urlParameters: urlParameters,
+                method: .GET,
+                callback: { (error, data) in
+                    let _ = asyncInit(
+                        entity,
+                        callback,
+                        error,
+                        data
+                    )
+            })
+        } catch {
+            callback(error, nil)
+        }
+        return
     }
     
     public static func retrieveMany(
@@ -198,7 +203,7 @@ public final class Account: EntityObject, AccountRepresentative {
     public func update(
         name: String,
         description: String,
-        parent: Account?,
+        parent: AccountRepresentative?,
         type: AccountType,
         counterParty: Entity?,
         colour: Colour?,
@@ -228,13 +233,13 @@ public final class Account: EntityObject, AccountRepresentative {
     public func update(
         name: String,
         description: String,
-        parent: Account?,
+        parent: AccountRepresentative?,
         type: AccountType,
         counterParty: Entity?,
         colour: Colour?,
         customUnit: CustomUnit,
         callback: @escaping (Error?, Account?) -> Void
-        ) throws {
+        ) {
         
         let arguments = UpdateArguments(
             existing: self,
@@ -247,7 +252,11 @@ public final class Account: EntityObject, AccountRepresentative {
             description: description,
             colour: colour
         )
-        let _ = try executeUpdate(arguments, callback)
+        do {
+            let _ = try executeUpdate(arguments, callback)
+        } catch {
+            callback(error, nil)
+        }
         return
     }
     
@@ -278,11 +287,11 @@ public final class Account: EntityObject, AccountRepresentative {
     }
     
     public func delete(
-        entryReplacement: Account,
-        newChildParent: Account? = nil,
+        entryReplacement: AccountRepresentative,
+        newChildParent: AccountRepresentative? = nil,
         callback: @escaping  (Error?) -> Void
         ) throws {
-        let arguments = DelectionArguments(
+        let arguments = DeletionArguments(
             target: self,
             entryReplacement: entryReplacement,
             deleteRecursively: false,
@@ -293,10 +302,10 @@ public final class Account: EntityObject, AccountRepresentative {
     }
     
     public func deleteRecursively(
-        entryReplacement: Account,
+        entryReplacement: AccountRepresentative,
         callback: @escaping  (Error?) -> Void
         ) throws {
-        let arguments = DelectionArguments(
+        let arguments = DeletionArguments(
             target: self,
             entryReplacement: entryReplacement,
             deleteRecursively: true,
@@ -307,7 +316,7 @@ public final class Account: EntityObject, AccountRepresentative {
     }
     
     internal func executeDeletion(
-        _ arguments: DelectionArguments,
+        _ arguments: DeletionArguments,
         _ callback: @escaping(Error?) -> Void
         ) throws {
         let _ = try AmatinoRequest(
@@ -541,7 +550,7 @@ public final class Account: EntityObject, AccountRepresentative {
         let existing: Account
         let name: String
         let type: AccountType
-        let parent: Account?
+        let parent: AccountRepresentative?
         let customUnit: CustomUnit?
         let globalUnit: GlobalUnit?
         let counterParty: Entity?
@@ -578,12 +587,12 @@ public final class Account: EntityObject, AccountRepresentative {
     
     }
     
-    internal struct DelectionArguments: Encodable {
+    internal struct DeletionArguments: Encodable {
         
-        let target: Account
-        let entryReplacement: Account
+        let target: AccountRepresentative
+        let entryReplacement: AccountRepresentative
         let deleteRecursively: Bool
-        let newChildParent: Account?
+        let newChildParent: AccountRepresentative?
         
         enum JSONObjectKeys: String, CodingKey {
             case target = "target_account_id"
