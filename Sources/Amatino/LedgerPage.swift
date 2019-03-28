@@ -153,7 +153,7 @@ public class LedgerPage: AmatinoObject, Sequence {
         let order: LedgerOrder
         
         public init (
-            account: Account,
+            account: AccountRepresentative,
             start: Date? = nil,
             end: Date? = nil,
             page: Int? = nil,
@@ -163,14 +163,14 @@ public class LedgerPage: AmatinoObject, Sequence {
             self.start = start
             self.end = end
             self.page = page
-            globalUnitDenominationId = account.globalUnitId
-            customUnitDenominationId = account.customUnitId
+            globalUnitDenominationId = nil
+            customUnitDenominationId = nil
             self.order = order
             return
         }
 
         public init(
-            account: Account,
+            account: AccountRepresentative,
             globalUnit: GlobalUnit,
             start: Date? = nil,
             end: Date? = nil,
@@ -186,9 +186,10 @@ public class LedgerPage: AmatinoObject, Sequence {
             customUnitDenominationId = nil
             return
         }
+
         
         public init(
-            account: Account,
+            account: AccountRepresentative,
             customUnit: CustomUnit,
             start: Date? = nil,
             end: Date? = nil,
