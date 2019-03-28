@@ -9,7 +9,7 @@ import Foundation
 
 internal class AmatinoRequest {
     
-    private let agent = "Amatino Swift 0.0.9"
+    private let agent = "Amatino Swift 0.0.11"
     private let apiEndpoint = "https://api.amatino.io"
     private static let apiSession = URLSession(
         configuration: URLSessionConfiguration.ephemeral
