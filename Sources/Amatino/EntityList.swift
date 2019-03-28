@@ -147,9 +147,11 @@ public class EntityList: Sequence {
         internal let page: Int
         internal let numberOfPages: Int
         internal let entityAttributes: [Entity.Attributes]
+        internal let generated: Date
         
         enum JSONObjectKeys: String, CodingKey {
             case numberOfPages = "number_of_pages"
+            case generated = "generated_time"
             case page = "page_number"
             case entities
         }
@@ -157,6 +159,11 @@ public class EntityList: Sequence {
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: JSONObjectKeys.self)
             page = try container.decode(Int.self, forKey: .page)
+            let rawGenerated = try container.decode(
+                String.self,
+                forKey: .generated
+            )
+            generated = try AmatinoDate(fromString: rawGenerated).decodedDate
             numberOfPages = try container.decode(
                 Int.self,
                 forKey: .numberOfPages
