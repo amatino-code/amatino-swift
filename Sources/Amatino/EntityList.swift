@@ -24,6 +24,7 @@ public class EntityList: Sequence {
     public let page: Int
     public let numberOfPages: Int
     public let entities: [Entity]
+    public let generated: Date
     
     public var morePagesAvailable: Bool {
         if numberOfPages > page {
@@ -181,6 +182,7 @@ public class EntityList: Sequence {
         self.numberOfPages = list.numberOfPages
         self.page = list.page
         self.scope = scope
+        self.generated = list.generated
         return
     }
     
