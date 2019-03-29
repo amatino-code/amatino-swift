@@ -64,8 +64,9 @@ extension UrlTarget: CustomStringConvertible {
 
 extension UrlTarget: Hashable {
     
-    var hashValue: Int {
-        return key.hashValue ^ value.hashValue &* 59241211
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(key)
+        hasher.combine(value)
     }
     
     static func == (lhs: UrlTarget, rhs: UrlTarget) -> Bool {
