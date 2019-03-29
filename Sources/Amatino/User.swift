@@ -109,6 +109,51 @@ public class User {
         }
     }
     
+    public static func retrieveMany(
+        authenticatedBy session: Session,
+        withIds ids: [Int],
+        callback: @escaping (_: Error?, _: [User]?) -> Void
+    ) {
+        do {
+            let targets = ids.map({UrlTarget.init(
+                integerValue: $0,
+                key: User.idKey
+            )})
+            let _ = try AmatinoRequest(
+                path: User.path,
+                data: nil,
+                session: session,
+                urlParameters: UrlParameters(targetsOnly: targets),
+                method: .GET,
+                callback: { (error, data) in
+                    let _ = User.asyncInitMany(session, error, data, callback)
+            })
+        } catch {
+            callback(error, nil)
+        }
+    }
+    
+    public static func retrieve(
+        authenticatedBy session: Session,
+        withId id: Int,
+        callback: @escaping (_: Error?, _: User?) -> Void
+    ) {
+        let _ = User.retrieveMany(
+            authenticatedBy: session,
+            withIds: [id],
+            callback: { (error, users) in
+                guard let users = users else {
+                    callback(
+                        error ?? AmatinoError(.inconsistentInternalState),
+                        nil
+                    )
+                    return
+                }
+                callback(nil, users[0])
+        })
+        return
+    }
+    
     private static func asyncInit(
         _ session: Session,
         _ error: Error?,
