@@ -67,21 +67,30 @@ public class User {
                 named: name,
                 knownAs: handle
             )
-            User.create(
+            User.createMany(
                 authenticatedBy: session,
-                withArguments: arguments,
-                callback: callback
-            )
+                withArguments: [arguments],
+                callback: { (error, users) in
+                    guard let users = users else {
+                        callback(
+                            error ?? AmatinoError(.inconsistentInternalState),
+                            nil
+                        )
+                        return
+                    }
+                    callback(nil, users[0])
+                    return
+            })
         } catch {
             callback(error, nil)
             return
         }
     }
     
-    public static func create(
+    public static func createMany(
         authenticatedBy session: Session,
-        withArguments arguments: User.CreateArguments,
-        callback: @escaping (_: Error?, _: User?) -> Void
+        withArguments arguments: [User.CreateArguments],
+        callback: @escaping (_: Error?, _: [User]?) -> Void
     ) {
         do {
             let requestData = try RequestData(data: arguments)
@@ -92,7 +101,7 @@ public class User {
                 urlParameters: nil,
                 method: .POST,
                 callback: {(error, data) in
-                    let _ = User.asyncInit(session, error, data, callback)
+                    let _ = User.asyncInitMany(session, error, data, callback)
             })
         } catch {
             callback(error, nil)
