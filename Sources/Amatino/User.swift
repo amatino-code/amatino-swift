@@ -153,7 +153,25 @@ public class User {
         })
         return
     }
-    
+
+    public func delete(callback: @escaping (_: Error?) -> Void) {
+        let target = UrlTarget(integerValue: self.id, key: User.idKey)
+        do {
+            let _ = try AmatinoRequest(
+                path: User.path,
+                data: nil,
+                session: self.session,
+                urlParameters: UrlParameters(targetsOnly: [target]),
+                method: .DELETE,
+                callback: { (error, _) in
+                    callback(error)
+            })
+        } catch {
+            callback(error)
+        }
+        return
+    }
+
     private static func asyncInit(
         _ session: Session,
         _ error: Error?,
