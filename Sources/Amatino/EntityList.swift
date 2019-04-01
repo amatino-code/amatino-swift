@@ -75,7 +75,7 @@ public class EntityList: Sequence {
             return
         }
     }
-    
+
     public func nextPage(callback: @escaping (Error?, EntityList?) -> Void) {
 
         guard self.morePagesAvailable else { callback(nil, nil); return}
@@ -153,7 +153,7 @@ public class EntityList: Sequence {
         enum JSONObjectKeys: String, CodingKey {
             case numberOfPages = "number_of_pages"
             case generated = "generated_time"
-            case page = "page_number"
+            case page = "page"
             case entities
         }
         
