@@ -47,7 +47,7 @@ public final class Performance: EntityObject {
         globalUnit: GlobalUnit,
         depth: Int? = nil,
         callback: @escaping (Error?, Performance?) -> Void
-        ) throws {
+        ) {
         let arguments = Performance.RetrievalArguments(
             startTime: startTime,
             endTime: endTime,
@@ -55,7 +55,7 @@ public final class Performance: EntityObject {
             customUnitId: nil,
             depth: depth
         )
-        try Performance.executeRetrieval(entity, arguments, callback)
+        Performance.executeRetrieval(entity, arguments, callback)
         return
     }
     
@@ -66,7 +66,7 @@ public final class Performance: EntityObject {
         customUnit: CustomUnit,
         depth: Int? = nil,
         callback: @escaping (Error?, Performance?) -> Void
-        ) throws {
+        ) {
         let arguments = Performance.RetrievalArguments(
             startTime: startTime,
             endTime: endTime,
@@ -74,7 +74,7 @@ public final class Performance: EntityObject {
             customUnitId: customUnit.id,
             depth: depth
         )
-        try Performance.executeRetrieval(entity, arguments, callback)
+        Performance.executeRetrieval(entity, arguments, callback)
         return
     }
     
@@ -82,22 +82,25 @@ public final class Performance: EntityObject {
         _ entity: Entity,
         _ arguments: Performance.RetrievalArguments,
         _ callback: @escaping (Error?, Performance?) -> Void
-        ) throws {
-        
-        let _ = try AmatinoRequest(
-            path: Performance.path,
-            data: try RequestData(data: arguments, overrideListing: true),
-            session: entity.session,
-            urlParameters: UrlParameters(singleEntity: entity),
-            method: .GET
-        ) { (error, data) in
-            let _ = asyncInitSolo(
-                entity,
-                callback,
-                error,
-                data
-            )
-            return
+        ) {
+        do {
+            let _ = try AmatinoRequest(
+                path: Performance.path,
+                data: try RequestData(data: arguments, overrideListing: true),
+                session: entity.session,
+                urlParameters: UrlParameters(singleEntity: entity),
+                method: .GET
+            ) { (error, data) in
+                let _ = asyncInitSolo(
+                    entity,
+                    callback,
+                    error,
+                    data
+                )
+                return
+            }
+        } catch {
+            callback(error, nil)
         }
     }
     

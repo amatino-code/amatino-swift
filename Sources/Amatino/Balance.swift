@@ -15,10 +15,9 @@ class Balance: AccountBalance {
         entity: Entity,
         account: Account,
         callback: @escaping (Error?, Balance?) -> Void
-        ) throws {
-        
+        ) {
         let arguments = Balance.RetrieveArguments(account: account)
-        let _ = try Balance.retrieve(
+        let _ = Balance.retrieve(
             entity: entity,
             arguments: arguments,
             callback: callback
@@ -31,17 +30,17 @@ class Balance: AccountBalance {
         account: Account,
         balanceTime: Date,
         callback: @escaping (Error?, Balance?) -> Void
-        ) throws {
-        
+        ) {
         let arguments = Balance.RetrieveArguments(
             account: account,
             balanceTime: balanceTime
         )
-        let _ = try Balance.retrieve(
+        let _ = Balance.retrieve(
             entity: entity,
             arguments: arguments,
             callback: callback
         )
+
         return
     }
     
@@ -49,20 +48,24 @@ class Balance: AccountBalance {
         entity: Entity,
         arguments: Balance.RetrieveArguments,
         callback: @escaping (Error?, Balance?) -> Void
-        ) throws {
+        ) {
+        do {
+            let urlParameters = UrlParameters(singleEntity: entity)
+            let requestData = try RequestData(data: arguments)
+            let _ = try AmatinoRequest(
+                path: path,
+                data: requestData,
+                session: entity.session,
+                urlParameters: urlParameters,
+                method: .GET,
+                callback: { (error, data) in
+                    let _ = loadResponse(error, data, callback)
+                    return
+            })
+        } catch {
+            callback(error, nil)
+        }
 
-        let urlParameters = UrlParameters(singleEntity: entity)
-        let requestData = try RequestData(data: arguments)
-        let _ = try AmatinoRequest(
-            path: path,
-            data: requestData,
-            session: entity.session,
-            urlParameters: urlParameters,
-            method: .GET,
-            callback: { (error, data) in
-                let _ = loadResponse(error, data, callback)
-                return
-        })
         return
     }
     
