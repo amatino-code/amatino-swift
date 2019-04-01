@@ -119,7 +119,7 @@ public class EntityList: Sequence {
         _ callback: @escaping (Error?, EntityList?) -> Void
     ) {
         guard let dataToDecode: Data = data else {
-            callback(AmatinoError(.inconsistentInternalState), nil)
+            callback(AmatinoError(.inconsistentState), nil)
             return
         }
 

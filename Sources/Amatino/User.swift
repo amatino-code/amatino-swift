@@ -83,7 +83,7 @@ public class User {
                 callback: { (error, users) in
                     guard let users = users else {
                         callback(
-                            error ?? AmatinoError(.inconsistentInternalState),
+                            error ?? AmatinoError(.inconsistentState),
                             nil
                         )
                         return
@@ -154,7 +154,7 @@ public class User {
             callback: { (error, users) in
                 guard let users = users else {
                     callback(
-                        error ?? AmatinoError(.inconsistentInternalState),
+                        error ?? AmatinoError(.inconsistentState),
                         nil
                     )
                     return
@@ -192,7 +192,7 @@ public class User {
             (error, users) in
             guard let users = users else {
                 callback(
-                    error ?? AmatinoError(.inconsistentInternalState),
+                    error ?? AmatinoError(.inconsistentState),
                     nil
                 ); return
             }
@@ -210,7 +210,7 @@ public class User {
 
         guard let data = data else {
             callback(
-                (error ?? AmatinoError(.inconsistentInternalState)),
+                (error ?? AmatinoError(.inconsistentState)),
                 nil
             ); return
         }

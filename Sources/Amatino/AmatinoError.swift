@@ -29,7 +29,7 @@ public class AmatinoError: Error, CustomStringConvertible {
         Amatino Swift was not able to understand the response sent by the \
         Amatino API. If this happens repeatedly, there may be a bug in the API.
         """
-        case inconsistentInternalState = """
+        case inconsistentState = """
         Amatino Swift has entered an unexpected state from which it cannot \
         recover. Please consider filing a bug report on GitHub.
         """

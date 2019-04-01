@@ -158,7 +158,7 @@ public class Entity: Equatable {
 
         guard let data = data else {
             callback(
-                (error ?? AmatinoError(.inconsistentInternalState)),
+                (error ?? AmatinoError(.inconsistentState)),
                 nil
             ); return
         }
@@ -187,7 +187,7 @@ public class Entity: Equatable {
             session, error, data, { (error, entities) in
                 guard let entities = entities else {
                     callback(
-                        error ?? AmatinoError(.inconsistentInternalState),
+                        error ?? AmatinoError(.inconsistentState),
                         nil
                     ); return
                 }

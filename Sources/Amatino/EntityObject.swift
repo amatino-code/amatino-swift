@@ -31,7 +31,7 @@ extension EntityObject {
         do {
             guard error == nil else { callback(error, nil); return }
             guard let dataToDecode: Data = data else {
-                callback(AmatinoError(.inconsistentInternalState), nil); return
+                callback(AmatinoError(.inconsistentState), nil); return
             }
             let attributes = try JSONDecoder().decode(
                 [attributesType].self,
@@ -58,7 +58,7 @@ extension EntityObject {
         do {
             guard error == nil else { callback(error, nil); return }
             guard let dataToDecode: Data = data else {
-                callback(AmatinoError(.inconsistentInternalState), nil); return
+                callback(AmatinoError(.inconsistentState), nil); return
             }
             let attributes = try JSONDecoder().decode(
                 [attributesType].self,
@@ -87,7 +87,7 @@ extension EntityObject {
         do {
             guard error == nil else { callback(error, nil); return }
             guard let dataToDecode: Data = data else {
-                callback(AmatinoError(.inconsistentInternalState), nil); return
+                callback(AmatinoError(.inconsistentState), nil); return
             }
             let attributes = try JSONDecoder().decode(
                 attributesType.self,

@@ -12,23 +12,23 @@ public enum LedgerOrder {
     case oldestFirst
 }
 
-public class Ledger: Sequence {
-    
+public class Ledger: Sequence, Denominated {
+
     internal static let path: String = "/accounts/ledger"
 
     private var loadedRows: [LedgerRow]
     private var latestLoadedPage: Int
 
-    private let session: Session
-    private let entity: Entity
+    internal let session: Session
+    internal let entity: Entity
     private let account: AccountRepresentative
 
     public let start: Date
     public let end: Date
     public let generated: Date
     public let recursive: Bool
-    public let globalUnitDenominationId: Int?
-    public let customUnitDenominationId: Int?
+    public let globalUnitId: Int?
+    public let customUnitId: Int?
     public let order: LedgerOrder
 
     public var count: Int {
@@ -92,7 +92,7 @@ public class Ledger: Sequence {
                     let decoder = JSONDecoder()
                     let ledger: LedgerPage
                     guard let dataToDecode: Data = data else {
-                        let state = AmatinoError(.inconsistentInternalState)
+                        let state = AmatinoError(.inconsistentState)
                         callback(state, nil)
                         return
                     }
@@ -116,101 +116,53 @@ public class Ledger: Sequence {
     }
     
     public static func retrieve(
-        account: Account,
-        start: Date? = nil,
-        end: Date? = nil,
-        order: LedgerOrder = .oldestFirst,
-        callback: @escaping (Error?, Ledger?) -> Void
+        for account: Account,
+        denominatedIn denomination: Denomination? = nil,
+        startingAt start: Date? = nil,
+        endingAt end: Date? = nil,
+        inOrder order: LedgerOrder = .oldestFirst,
+        then callback: @escaping (Error?, Ledger?) -> Void
         ) {
+        
+        let arguments = LedgerPage.RetrievalArguments(
+            account: account,
+            denominatedIn: denomination,
+            startingAt: start,
+            endingAt: end,
+            inOrder: order
+        )
+        Ledger.retrieve(
+            account, account.entity, arguments, callback
+        )
+        return
+    }
+    
+    public static func retrieve(
+        for account: Account,
+        denominatedIn denomination: Denomination? = nil,
+        startingAt start: Date? = nil,
+        endingAt end: Date? = nil,
+        inOrder order: LedgerOrder = .oldestFirst,
+        then callback: @escaping (Result<Ledger, Error>) -> Void
+        ) {
+        
+        Ledger.retrieve(
+            for: account,
+            denominatedIn: denomination,
+            startingAt: start,
+            endingAt: end,
+            inOrder: order
+        ) { (error, ledger) in
+            guard let ledger = ledger else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(ledger))
+        }
+        return
+    }
+    
 
-        let arguments = LedgerPage.RetrievalArguments(
-            account: account,
-            start: start,
-            end: end,
-            order: order
-        )
-        Ledger.retrieve(account, account.entity, arguments, callback)
-        return
-    }
-    
-    public static func retrieve(
-        account: Account,
-        denomination: GlobalUnit,
-        start: Date? = nil,
-        end: Date? = nil,
-        order: LedgerOrder = .oldestFirst,
-        callback: @escaping (Error?, Ledger?) -> Void
-        ) {
-        
-        let arguments = LedgerPage.RetrievalArguments(
-            account: account,
-            globalUnit: denomination,
-            start: start,
-            end: end,
-            order: order
-        )
-        Ledger.retrieve(account, account.entity, arguments, callback)
-        return
-    }
-    
-    public static func retrieve(
-        account: AccountRepresentative,
-        denomination: CustomUnit,
-        start: Date? = nil,
-        end: Date? = nil,
-        order: LedgerOrder = .oldestFirst,
-        callback: @escaping (Error?, Ledger?) -> Void
-        ) {
-        
-        let arguments = LedgerPage.RetrievalArguments(
-            account: account,
-            customUnit: denomination,
-            start: start,
-            end: end,
-            order: order
-        )
-        Ledger.retrieve(account, denomination.entity, arguments, callback)
-    }
-    
-    public static func retrieve(
-        account: AccountRepresentative,
-        entity: Entity,
-        denomination: GlobalUnit,
-        start: Date? = nil,
-        end: Date? = nil,
-        order: LedgerOrder = .oldestFirst,
-        callback: @escaping (Error?, Ledger?) -> Void
-        ) {
-        
-        let arguments = LedgerPage.RetrievalArguments(
-            account: account,
-            globalUnit: denomination,
-            start: start,
-            end: end,
-            order: order
-        )
-        Ledger.retrieve(account, entity, arguments, callback)
-        return
-    }
-    
-    public static func retrieve(
-        account: AccountRepresentative,
-        entity: Entity,
-        start: Date? = nil,
-        end: Date? = nil,
-        order: LedgerOrder = .oldestFirst,
-        callback: @escaping (Error?, Ledger?) -> Void
-        ) {
-        
-        let arguments = LedgerPage.RetrievalArguments(
-            account: account,
-            start: start,
-            end: end,
-            order: order
-        )
-        Ledger.retrieve(account, entity, arguments, callback)
-        return
-    }
 
     private static func retrieve(
         _ account: AccountRepresentative,
@@ -281,7 +233,7 @@ public class Ledger: Sequence {
     ) throws -> Ledger {
         guard error == nil else { throw error! }
         guard let dataToDecode: Data = data else {
-            throw AmatinoError(.inconsistentInternalState)
+            throw AmatinoError(.inconsistentState)
         }
         let decoder = JSONDecoder()
         let ledgerPage = try decoder.decode(
@@ -302,8 +254,8 @@ public class Ledger: Sequence {
         end = attributes.end
         generated = attributes.generated
         recursive = attributes.recursive
-        globalUnitDenominationId = attributes.globalUnitDenominationId
-        customUnitDenominationId = attributes.customUnitDenominationId
+        globalUnitId = attributes.globalUnitDenominationId
+        customUnitId = attributes.customUnitDenominationId
         loadedRows = attributes.rows
         latestLoadedPage = attributes.page
         order = attributes.order

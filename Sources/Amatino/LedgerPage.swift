@@ -32,7 +32,7 @@ public class LedgerPage: AmatinoObject, Sequence {
     subscript(index: Int) -> LedgerRow {
         return rows[index]
     }
-    
+
     public var earliest: LedgerRow? {
         get {
             switch order {
@@ -154,55 +154,38 @@ public class LedgerPage: AmatinoObject, Sequence {
         
         public init (
             account: AccountRepresentative,
-            start: Date? = nil,
-            end: Date? = nil,
+            denominatedIn denomination: Denomination? = nil,
+            startingAt start: Date? = nil,
+            endingAt end: Date? = nil,
             page: Int? = nil,
-            order: LedgerOrder = .oldestFirst
+            inOrder order: LedgerOrder = .oldestFirst
         ) {
             accountId = account.id
             self.start = start
             self.end = end
             self.page = page
-            globalUnitDenominationId = nil
-            customUnitDenominationId = nil
             self.order = order
-            return
-        }
-
-        public init(
-            account: AccountRepresentative,
-            globalUnit: GlobalUnit,
-            start: Date? = nil,
-            end: Date? = nil,
-            page: Int? = nil,
-            order: LedgerOrder = .oldestFirst
-            ) {
-            accountId = account.id
-            self.start = start
-            self.end = end
-            self.page = page
-            self.order = order
-            globalUnitDenominationId = globalUnit.id
-            customUnitDenominationId = nil
-            return
-        }
-
-        
-        public init(
-            account: AccountRepresentative,
-            customUnit: CustomUnit,
-            start: Date? = nil,
-            end: Date? = nil,
-            page: Int? = nil,
-            order: LedgerOrder = .oldestFirst
-            ) {
-            accountId = account.id
-            self.start = start
-            self.end = end
-            self.page = page
-            self.order = order
-            globalUnitDenominationId = nil
-            customUnitDenominationId = customUnit.id
+            
+            if denomination == nil {
+                globalUnitDenominationId = nil
+                customUnitDenominationId = nil
+                return
+            }
+            
+            let customUnitId: Int?
+            let globalUnitId: Int?
+            
+            if let customUnit = denomination as? CustomUnit {
+                globalUnitId = nil
+                customUnitId = customUnit.id
+            } else if let globalUnit = denomination as? GlobalUnit {
+                customUnitId = nil
+                globalUnitId = globalUnit.id
+            } else {
+                fatalError("Unknown denominating type")
+            }
+            globalUnitDenominationId = globalUnitId
+            customUnitDenominationId = customUnitId
             return
         }
 
