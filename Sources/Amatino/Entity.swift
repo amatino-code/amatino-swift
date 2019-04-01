@@ -37,17 +37,14 @@ public class Entity: Equatable {
     public var active: Bool { get { return attributes.active} }
     
     public static func create(
-        session: Session,
-        name: String,
-        callback: @escaping (_: Error?, _: Entity?) -> Void
+        authenticatedBy session: Session,
+        withName name: String,
+        inRegion region: Region? = nil,
+        then callback: @escaping (_: Error?, _: Entity?) -> Void
     ) {
         do {
             let arguments = try Entity.CreateArguments(name: name)
-            Entity.create(
-                session: session,
-                arguments: arguments,
-                callback: callback
-            )
+            Entity.create(session, arguments, callback)
         } catch {
             callback(error, nil)
             return
@@ -56,9 +53,28 @@ public class Entity: Equatable {
     }
     
     public static func create(
-        session: Session,
-        arguments: Entity.CreateArguments,
-        callback: @escaping (_: Error?, _: Entity?) -> Void
+        authenticatedBy session: Session,
+        withName name: String,
+        inRegion region: Region? = nil,
+        then callback: @escaping (Result<Entity, Error>) -> Void
+    ) {
+        Entity.create(
+            authenticatedBy: session,
+            withName: name,
+            inRegion: region
+        ) { (error, entity) in
+            guard let entity = entity else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(entity))
+        }
+    }
+    
+    private static func create(
+        _ session: Session,
+        _ arguments: Entity.CreateArguments,
+        _ callback: @escaping (_: Error?, _: Entity?) -> Void
         ) {
         do {
             let requestData = try RequestData(data: arguments)
@@ -110,7 +126,26 @@ public class Entity: Equatable {
         }
     }
     
-    public func delete(_ callback: @escaping (Error?, Entity?) -> Void) {
+    public static func retrieve(
+        authenticatedBy session: Session,
+        withId entityId: String,
+        then callback: @escaping (Result<Entity, Error>) -> Void
+    ) {
+        Entity.retrieve(
+            authenticatedBy: session,
+            withId: entityId) { (error, entity) in
+                guard let entity = entity else {
+                    callback(
+                        .failure(error ?? AmatinoError(.inconsistentState))
+                    )
+                    return
+                }
+                callback(.success(entity))
+                return
+        }
+    }
+    
+    public func delete(then callback: @escaping (Error?, Entity?) -> Void) {
         let parameters = UrlParameters(singleEntity: self)
         do {
             let _ = try AmatinoRequest(
@@ -133,6 +168,19 @@ public class Entity: Equatable {
         }
 
         return
+    }
+    
+    public func delete(
+        then callback: @escaping (Result<Entity, Error>) -> Void
+    ) {
+        self.delete { (error, entity) in
+            guard let entity = entity else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(entity))
+            return
+        }
     }
     
     internal static func decodeMany(
@@ -248,43 +296,16 @@ public class Entity: Equatable {
         
         let name: Name
         let description: Description
-        let region: Region?
         let regionId: Int?
         
         public init(
             name: String,
-            description: String,
-            region: Region?
-            ) throws {
-            
+            description: String? = nil,
+            region: Region? = nil
+        ) throws {
             self.name = try Name(name)
-            self.description = try Description(description)
-            self.region = region
+            self.description = try Description(description ?? "")
             regionId = region?.id
-            return
-        }
-        
-        public init(name: String, description: String) throws {
-            self.name = try Name(name)
-            self.description = try Description(description)
-            self.region = nil
-            self.regionId = nil
-            return
-        }
-        
-        public init(name: String, region: Region?) throws {
-            self.name = try Name(name)
-            self.description = Description()
-            self.region = region
-            self.regionId = region?.id
-            return
-        }
-        
-        public init(name: String) throws {
-            self.name = try Name(name)
-            self.region = nil
-            self.regionId = nil
-            self.description = Description()
             return
         }
         
