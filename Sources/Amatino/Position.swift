@@ -48,14 +48,14 @@ public final class Position: EntityObject {
         balanceTime: Date? = nil,
         depth: Int? = nil,
         callback: @escaping (Error?, Position?) -> Void
-        ) throws {
+        ) {
         let arguments = Position.RetrievalArguments(
             balanceTime: balanceTime,
             globalUnitId: globalUnit.id,
             customUnitId: nil,
             depth: depth
         )
-        try Position.executeRetrieval(entity, arguments, callback)
+        Position.executeRetrieval(entity, arguments, callback)
         return
     }
     
@@ -65,14 +65,14 @@ public final class Position: EntityObject {
         balanceTime: Date? = nil,
         depth: Int? = nil,
         callback: @escaping (Error?, Position?) -> Void
-        ) throws {
+        ) {
         let arguments = Position.RetrievalArguments(
             balanceTime: balanceTime,
             globalUnitId: nil,
             customUnitId: customUnit.id,
             depth: depth
         )
-        try Position.executeRetrieval(entity, arguments, callback)
+        Position.executeRetrieval(entity, arguments, callback)
         return
     }
     
@@ -80,22 +80,25 @@ public final class Position: EntityObject {
         _ entity: Entity,
         _ arguments: Position.RetrievalArguments,
         _ callback: @escaping (Error?, Position?) -> Void
-        ) throws {
-        
-        let _ = try AmatinoRequest(
-            path: Position.path,
-            data: try RequestData(data: arguments, overrideListing: true),
-            session: entity.session,
-            urlParameters: UrlParameters(singleEntity: entity),
-            method: .GET
-        ) { (error, data) in
-            let _ = asyncInitSolo(
-                entity,
-                callback,
-                error,
-                data
-            )
-            return
+        ) {
+        do {
+            let _ = try AmatinoRequest(
+                path: Position.path,
+                data: try RequestData(data: arguments, overrideListing: true),
+                session: entity.session,
+                urlParameters: UrlParameters(singleEntity: entity),
+                method: .GET
+            ) { (error, data) in
+                let _ = asyncInitSolo(
+                    entity,
+                    callback,
+                    error,
+                    data
+                )
+                return
+            }
+        } catch {
+            callback(error, nil)
         }
     }
     
