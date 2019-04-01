@@ -39,12 +39,12 @@ public final class Account: EntityObject, AccountRepresentative {
     public var colour: Colour { get { return attributes.colour} }
     
     public static func create(
-        entity: Entity,
-        name: String,
+        in entity: Entity,
+        named name: String,
         type: AccountType,
         description: String,
         globalUnit: GlobalUnit,
-        callback: @escaping (Error?, Account?) -> Void
+        then callback: @escaping (Error?, Account?) -> Void
         ) throws {
         let arguments = try Account.CreateArguments(
             name: name,
@@ -53,20 +53,20 @@ public final class Account: EntityObject, AccountRepresentative {
             globalUnit: globalUnit
         )
         let _ = Account.create(
-            entity: entity,
+            in: entity,
             arguments: arguments,
-            callback: callback
+            then: callback
         )
         return
     }
     
     public static func create(
-        entity: Entity,
-        name: String,
+        in entity: Entity,
+        named name: String,
         description: String,
         globalUnit: GlobalUnit,
         parent: AccountRepresentative,
-        callback: @escaping (Error?, Account?) -> Void
+        then callback: @escaping (Error?, Account?) -> Void
         ) {
         let arguments: Account.CreateArguments
         do {
@@ -81,17 +81,17 @@ public final class Account: EntityObject, AccountRepresentative {
             return
         }
         let _ = Account.create(
-            entity: entity,
+            in: entity,
             arguments: arguments,
-            callback: callback
+            then: callback
         )
         return
     }
     
     public static func create(
-        entity: Entity,
+        in entity: Entity,
         arguments: Account.CreateArguments,
-        callback: @escaping (Error?, Account?) -> Void
+        then callback: @escaping (Error?, Account?) -> Void
         ) {
         let urlParameters = UrlParameters(singleEntity: entity)
         do {
@@ -117,9 +117,9 @@ public final class Account: EntityObject, AccountRepresentative {
     }
     
     public static func createMany(
-        entity: Entity,
+        in entity: Entity,
         arguments: [Account.CreateArguments],
-        callback: @escaping (Error?, [Account]?) -> Void
+        then callback: @escaping (Error?, [Account]?) -> Void
         ) throws {
         let requestData = try RequestData(arrayData: arguments)
         let urlParameters = UrlParameters(singleEntity: entity)
@@ -140,9 +140,9 @@ public final class Account: EntityObject, AccountRepresentative {
     }
     
     public static func retrieve(
-        entity: Entity,
-        accountId: Int,
-        callback: @escaping (Error?, Account?) -> Void
+        from entity: Entity,
+        withId accountId: Int,
+        then callback: @escaping (Error?, Account?) -> Void
         ) {
         let target = UrlTarget(
             stringValue: String(accountId),
@@ -171,9 +171,9 @@ public final class Account: EntityObject, AccountRepresentative {
     }
     
     public static func retrieveMany(
-        entity: Entity,
-        accountIds: [Int],
-        callback: @escaping (Error?, [Account]?) -> Void
+        from entity: Entity,
+        withId accountIds: [Int],
+        then callback: @escaping (Error?, [Account]?) -> Void
         ) {
         let targets = UrlTarget.createSequence(key: urlKey, values: accountIds)
         let urlParameters = UrlParameters(entity: entity, targets: targets)

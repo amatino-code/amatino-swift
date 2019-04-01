@@ -27,7 +27,7 @@ public class Entity: Equatable {
     private let attributes: Entity.Attributes
     
     public var id: String { get { return attributes.id} }
-    public var ownerId: Int64 { get { return attributes.ownerId } }
+    public var ownerId: Int { get { return attributes.ownerId } }
     public var name: String { get { return attributes.name } }
     internal var permissionsGraph: [String:[String:[String:Bool]]]? {
         get { return attributes.permissionsGraph }
@@ -84,10 +84,10 @@ public class Entity: Equatable {
     }
     
     public static func retrieve(
-        session: Session,
-        entityId: String,
-        callback: @escaping (_: Error?, _: Entity?) -> Void
-        ) {
+        authenticatedBy session: Session,
+        withId entityId: String,
+        then callback: @escaping (_: Error?, _: Entity?) -> Void
+    ) {
         let target = UrlTarget(forEntityId: entityId)
         do {
             let _ = try AmatinoRequest(
@@ -207,7 +207,7 @@ public class Entity: Equatable {
     internal struct Attributes: Decodable {
         
         let id: String
-        let ownerId: Int64
+        let ownerId: Int
         let name: String
         internal let permissionsGraph: [String:[String:[String:Bool]]]?
         let description: String?
@@ -217,7 +217,7 @@ public class Entity: Equatable {
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: JSONObjectKeys.self)
             id = try container.decode(String.self, forKey: .id)
-            ownerId = try container.decode(Int64.self, forKey: .ownerId)
+            ownerId = try container.decode(Int.self, forKey: .ownerId)
             name = try container.decode(String.self, forKey: .name)
             permissionsGraph = try container.decode(
                 [String:[String:[String:Bool]]]?.self,

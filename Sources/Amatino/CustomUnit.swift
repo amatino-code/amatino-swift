@@ -6,7 +6,7 @@
 //
 import Foundation
 
-public final class CustomUnit: EntityObject  {
+public final class CustomUnit: EntityObject, Denomination  {
 
     internal init(
         _ entity: Entity,

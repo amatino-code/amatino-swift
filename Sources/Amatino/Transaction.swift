@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class Transaction: EntityObject {
+public final class Transaction: EntityObject, Denominated {
 
     internal init(
         _ entity: Entity,
@@ -29,24 +29,24 @@ public final class Transaction: EntityObject {
     public let entity: Entity
     public var session: Session { get { return entity.session } }
 
-    public var id: Int64 { get { return attributes.id } }
+    public var id: Int { get { return attributes.id } }
     public var transactionTime: Date { get { return attributes.transactionTime}}
     public var versionTime: Date { get { return attributes.versionTime} }
     public var description: String { get { return attributes.description } }
-    public var version: Int64 { get { return attributes.version } }
-    public var globalUnitId: Int64? { get { return attributes.globalUnitId } }
-    public var customUnitId: Int64? { get { return attributes.customUnitId } }
-    public var authorId: Int64? { get { return attributes.authorId } }
+    public var version: Int { get { return attributes.version } }
+    public var globalUnitId: Int? { get { return attributes.globalUnitId } }
+    public var customUnitId: Int? { get { return attributes.customUnitId } }
+    public var authorId: Int? { get { return attributes.authorId } }
     public var active: Bool { get { return attributes.active } }
     public var entries: [Entry] { get { return attributes.entries } }
     
     public static func create (
-        entity: Entity,
+        in entity: Entity,
         transactionTime: Date,
         description: String,
         globalUnit: GlobalUnit,
         entries: [Entry],
-        callback: @escaping (_: Error?, _: Transaction?) -> Void
+        then callback: @escaping (_: Error?, _: Transaction?) -> Void
         ) {
 
         do {
@@ -66,9 +66,9 @@ public final class Transaction: EntityObject {
     }
     
     public static func createMany(
-        entity: Entity,
+        in entity: Entity,
         arguments: [Transaction.CreateArguments],
-        callback: @escaping (_: Error?, _: [Transaction]?) -> Void
+        then callback: @escaping (_: Error?, _: [Transaction]?) -> Void
         ) {
         do {
             guard arguments.count <= maxArguments else {
@@ -126,9 +126,9 @@ public final class Transaction: EntityObject {
     }
     
     public static func retrieve(
-        entity: Entity,
-        transactionId: Int64,
-        callback: @escaping (_: Error?, _: Transaction?) -> Void
+        from entity: Entity,
+        withId transactionId: Int,
+        then callback: @escaping (_: Error?, _: Transaction?) -> Void
         ) {
         
         do {
@@ -162,7 +162,7 @@ public final class Transaction: EntityObject {
         description: String,
         globalUnit: GlobalUnit,
         entries: [Entry],
-        callback: @escaping(_: Error?, _: Transaction?) -> Void
+        then callback: @escaping(_: Error?, _: Transaction?) -> Void
         ) {
         do {
             let arguments = try UpdateArguments(
@@ -184,7 +184,7 @@ public final class Transaction: EntityObject {
         description: String,
         customUnit: CustomUnit,
         entries: [Entry],
-        callback: @escaping(_: Error?, _: Transaction?) -> Void
+        then callback: @escaping(_: Error?, _: Transaction?) -> Void
         ) {
         do {
             let arguments = try UpdateArguments(
@@ -228,7 +228,7 @@ public final class Transaction: EntityObject {
     }
 
     public func delete(
-        callback: @escaping(_: Error?, _: Transaction?) -> Void
+        then callback: @escaping(_: Error?, _: Transaction?) -> Void
         ) {
         do {
             let target = UrlTarget(integerValue: id, key: Transaction.urlKey)
@@ -255,20 +255,20 @@ public final class Transaction: EntityObject {
     
     internal struct Attributes: Decodable {
         
-        let id: Int64
+        let id: Int
         let transactionTime: Date
         let versionTime: Date
         let description: String
-        let version: Int64
-        let globalUnitId: Int64?
-        let customUnitId: Int64?
-        let authorId: Int64
+        let version: Int
+        let globalUnitId: Int?
+        let customUnitId: Int?
+        let authorId: Int
         let active: Bool
         let entries: [Entry]
 
         internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: JSONObjectKeys.self)
-            id = try container.decode(Int64.self, forKey: .id)
+            id = try container.decode(Int.self, forKey: .id)
             let rawTransactionTime = try container.decode(
                 String.self,
                 forKey: .transactionTime
@@ -288,10 +288,10 @@ public final class Transaction: EntityObject {
             }
             versionTime = vTime
             description = try container.decode(String.self, forKey: .description)
-            version = try container.decode(Int64.self, forKey: .version)
-            globalUnitId = try container.decode(Int64?.self, forKey: .globalUnitId)
-            customUnitId = try container.decode(Int64?.self, forKey: .customUnitId)
-            authorId = try container.decode(Int64.self, forKey: .authorId)
+            version = try container.decode(Int.self, forKey: .version)
+            globalUnitId = try container.decode(Int?.self, forKey: .globalUnitId)
+            customUnitId = try container.decode(Int?.self, forKey: .customUnitId)
+            authorId = try container.decode(Int.self, forKey: .authorId)
             active = try container.decode(Bool.self, forKey: .active)
             entries = try container.decode([Entry].self, forKey: .entries)
             return
@@ -313,7 +313,7 @@ public final class Transaction: EntityObject {
     
     internal struct UpdateArguments: Encodable {
         
-        private let id: Int64
+        private let id: Int
         private let transactionTime: Date?
         private let description: Description
         private let globalUnitId: Int?
@@ -494,12 +494,12 @@ public final class Transaction: EntityObject {
     
     public struct RetrieveArguments: Encodable {
         
-        let id: Int64
+        let id: Int
         let customUnitId: Int?
         let globalUnitId: Int?
         let version: Int?
         
-        public init(transactionId: Int64) {
+        public init(transactionId: Int) {
             id = transactionId
             customUnitId = nil
             globalUnitId = nil
@@ -507,7 +507,7 @@ public final class Transaction: EntityObject {
             return
         }
         
-        public init(transactionId: Int64, versionId: Int) {
+        public init(transactionId: Int, versionId: Int) {
             id = transactionId
             customUnitId = nil
             globalUnitId = nil
@@ -515,7 +515,7 @@ public final class Transaction: EntityObject {
             return
         }
         
-        public init(transactionId: Int64, globalUnit: GlobalUnit) {
+        public init(transactionId: Int, globalUnit: GlobalUnit) {
             id = transactionId
             customUnitId = nil
             globalUnitId = globalUnit.id
@@ -523,7 +523,7 @@ public final class Transaction: EntityObject {
             return
         }
         
-        public init(transactionId: Int64, customUnit: CustomUnit) {
+        public init(transactionId: Int, customUnit: CustomUnit) {
             id = transactionId
             customUnitId = customUnit.id
             globalUnitId = nil
@@ -531,7 +531,7 @@ public final class Transaction: EntityObject {
             return
         }
         
-        public init(transactionId: Int64, globalUnit: GlobalUnit, versionId: Int) {
+        public init(transactionId: Int, globalUnit: GlobalUnit, versionId: Int) {
             id = transactionId
             customUnitId = nil
             globalUnitId = globalUnit.id
@@ -539,7 +539,7 @@ public final class Transaction: EntityObject {
             return
         }
         
-        public init(transactionId: Int64, customUnit: CustomUnit, versionId: Int) {
+        public init(transactionId: Int, customUnit: CustomUnit, versionId: Int) {
             id = transactionId
             customUnitId = customUnit.id
             globalUnitId = nil

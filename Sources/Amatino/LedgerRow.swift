@@ -9,7 +9,7 @@ import Foundation
 
 public struct LedgerRow: Decodable {
     
-    let transactionId: Int64
+    let transactionId: Int
     let transactionTime: Date
     let description: String
     let opposingAccountId: Int?
@@ -23,7 +23,7 @@ public struct LedgerRow: Decodable {
     
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
-        transactionId = try container.decode(Int64.self)
+        transactionId = try container.decode(Int.self)
         let formatter = DateFormatter()
         formatter.dateFormat = RequestData.dateStringFormat
         let rawTransactionTime = try container.decode(String.self)

@@ -51,7 +51,7 @@ class EntityTests: AmatinoTest {
             callback: { (error, entity) in
                 XCTAssertNotNil(entity)
                 let _ = Entity.retrieve(
-                    session: self.session!,
+                    authenticatedBy session: self.session!,
                     entityId: entity!.id,
                     callback: { (error, retrievedEntity) in
                         XCTAssertNil(error)

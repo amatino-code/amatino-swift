@@ -166,7 +166,7 @@ class TransactionTests: AmatinoTest {
     func testRetrieveTransaction() {
         let expectation = XCTestExpectation(description: "Retrieve Transaction")
         
-        func retrieveTransaction(_ transactionId: Int64) {
+        func retrieveTransaction(_ transactionId: Int) {
             let _ = Transaction.retrieve(
                 entity: entity!,
                 transactionId: transactionId,

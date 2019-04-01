@@ -403,6 +403,9 @@ class PopulatedEntityTest: DerivedObjectTest {
                 guard newTree.accounts.count > 0 else {
                     XCTFail(); treeExpectation.fulfill(); return
                 }
+                for node in tree!.flatAccounts {
+                    print(node.name)
+                }
                 treeExpectation.fulfill(); return
         })
         wait(for: [treeExpectation], timeout: 5)
