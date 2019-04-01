@@ -52,6 +52,16 @@ public class User {
             case handle = "handle"
             case avatar_url = "avatar_url"
         }
+        
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: JSONObjectKeys.self)
+            id = try container.decode(Int.self, forKey: .id)
+            email = try container.decode(String?.self, forKey: .email)
+            name = try container.decode(String?.self, forKey: .name)
+            handle = try container.decode(String?.self, forKey: .handle)
+            avatarUrl = try container.decode(String?.self, forKey: .avatar_url)
+            return
+        }
     }
     
     public static func create(
@@ -93,7 +103,7 @@ public class User {
         callback: @escaping (_: Error?, _: [User]?) -> Void
     ) {
         do {
-            let requestData = try RequestData(data: arguments)
+            let requestData = try RequestData(arrayData: arguments)
             let _ = try AmatinoRequest(
                 path: User.path,
                 data: requestData,
