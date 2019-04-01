@@ -23,9 +23,9 @@ public class GlobalUnit: AmatinoObject, Denomination {
     public let exponent: Int
     
     public static func retrieve(
-        unitId: Int,
-        session: Session,
-        callback: @escaping (_: Error?, _: GlobalUnit?) -> Void
+        withId unitId: Int,
+        authenticatedBy session: Session,
+        then callback: @escaping (_: Error?, _: GlobalUnit?) -> Void
     ) -> Void {
         
         let target = UrlTarget(integerValue: unitId, key: urlKey)

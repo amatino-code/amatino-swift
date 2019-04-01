@@ -40,13 +40,13 @@ public final class CustomUnit: EntityObject, Denomination  {
     public var exponent: Int { get { return attributes.exponent} }
     
     public static func create(
-        entity: Entity,
+        in entity: Entity,
         code: String,
-        name: String,
+        named name: String,
         priority: Int,
         description: String,
         exponent: Int,
-        callback: @escaping (Error?, CustomUnit?) -> Void
+        then callback: @escaping (Error?, CustomUnit?) -> Void
         ) {
         do {
             let arguments = try CustomUnit.CreationArguments(
@@ -71,9 +71,9 @@ public final class CustomUnit: EntityObject, Denomination  {
     }
     
     public static func retrieve(
-        entity: Entity,
-        id: Int,
-        callback: @escaping (Error?, CustomUnit?) -> Void
+        from entity: Entity,
+        withId id: Int,
+        then callback: @escaping (Error?, CustomUnit?) -> Void
         ) {
         let target = UrlTarget(integerValue: id, key: urlKey)
         do {
@@ -98,9 +98,9 @@ public final class CustomUnit: EntityObject, Denomination  {
     }
     
     public static func createMany(
-        entity: Entity,
+        in entity: Entity,
         arguments: [CustomUnit.CreationArguments],
-        callback: @escaping (Error?, [CustomUnit]?) -> Void
+        then callback: @escaping (Error?, [CustomUnit]?) -> Void
         ) {
         do {
             let _ = try AmatinoRequest(
@@ -128,7 +128,7 @@ public final class CustomUnit: EntityObject, Denomination  {
         priority: Int,
         description: String,
         exponent: Int,
-        callback: @escaping (Error?, CustomUnit?) -> Void
+        then callback: @escaping (Error?, CustomUnit?) -> Void
         ) {
         do {
             let arguments = try CustomUnit.UpdateArguments(

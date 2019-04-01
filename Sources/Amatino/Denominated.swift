@@ -24,16 +24,15 @@ extension Denominated {
         
         if let globalUnitId = globalUnitId {
             GlobalUnit.retrieve(
-                unitId:
-                globalUnitId,
-                session: session,
-                callback: callback
+                withId: globalUnitId,
+                authenticatedBy: session,
+                then: callback
             )
         } else if let customUnitId = customUnitId {
             CustomUnit.retrieve(
-                entity: self.entity,
-                id: customUnitId,
-                callback: callback
+                from: self.entity,
+                withId: customUnitId,
+                then: callback
             )
         } else {
             fatalError("Unknown unit type")
