@@ -121,7 +121,7 @@ class PopulatedEntityTest: DerivedObjectTest {
                         )
                     ]
                 )
-                let _ = try Transaction.createMany(
+                let _ = Transaction.createMany(
                     entity: entity!,
                     arguments: [tx1, tx2, tx3, tx4],
                     callback: { (error, transactions) in

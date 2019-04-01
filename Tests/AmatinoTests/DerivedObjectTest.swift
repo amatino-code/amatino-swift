@@ -96,7 +96,7 @@ class DerivedObjectTest: AmatinoTest {
                         )
                     ]
                 )
-                let _ = try Transaction.createMany(
+                let _ = Transaction.createMany(
                     entity: entity,
                     arguments: [tx1Arguments, tx2Arguments, tx3Arguments],
                     callback: { (error, transactions) in

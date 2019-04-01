@@ -113,62 +113,51 @@ class TransactionTests: AmatinoTest {
     
     func dummyTransaction(callback: @escaping (Error?, Transaction?) -> Void) {
 
-        do {
-            let entries = [
-                Entry(side: .debit, account: cashAccount!, amount: Decimal(42)),
-                Entry(
-                    side: .credit,
-                    account: revenueAccount!,
-                    amount: Decimal(42)
-                )
-            ]
-            let _ = try Transaction.create(
-                entity: entity!,
-                transactionTime: Date(),
-                description: "Amatino Swift test transaction",
-                globalUnit: unit!,
-                entries: entries,
-                callback: { (error, transaction) in
-                    callback(error, transaction)
-                    return
-            })
-            return
-        } catch {
-            callback(error, nil)
-            return
-        }
+        let entries = [
+            Entry(side: .debit, account: cashAccount!, amount: Decimal(42)),
+            Entry(
+                side: .credit,
+                account: revenueAccount!,
+                amount: Decimal(42)
+            )
+        ]
+        let _ = Transaction.create(
+            entity: entity!,
+            transactionTime: Date(),
+            description: "Amatino Swift test transaction",
+            globalUnit: unit!,
+            entries: entries,
+            callback: { (error, transaction) in
+                callback(error, transaction)
+                return
+        })
+        return
     }
 
     func testCreateTransaction() {
         let expectation = XCTestExpectation(description: "Create Transaction")
         
-        do {
-            let entries = [
-                Entry(side: .debit, account: cashAccount!, amount: Decimal(42)),
-                Entry(
-                    side: .credit,
-                    account: revenueAccount!,
-                    amount: Decimal(42)
-                )
-            ]
-            let _ = try Transaction.create(
-                entity: entity!,
-                transactionTime: Date(),
-                description: "Amatino Swift test transaction creation",
-                globalUnit: unit!,
-                entries: entries,
-                callback: { (error, transaction) in
-                    XCTAssertNil(error)
-                    XCTAssertNotNil(transaction)
-                    expectation.fulfill()
-                    return
-            })
+        let entries = [
+            Entry(side: .debit, account: cashAccount!, amount: Decimal(42)),
+            Entry(
+                side: .credit,
+                account: revenueAccount!,
+                amount: Decimal(42)
+            )
+        ]
+        let _ = Transaction.create(
+            entity: entity!,
+            transactionTime: Date(),
+            description: "Amatino Swift test transaction creation",
+            globalUnit: unit!,
+            entries: entries,
+            callback: { (error, transaction) in
+                XCTAssertNil(error)
+                XCTAssertNotNil(transaction)
+                expectation.fulfill()
+                return
+        })
             
-        } catch {
-            XCTFail()
-            expectation.fulfill()
-            return
-        }
         
         wait(for: [expectation], timeout: 5)
         return
@@ -178,49 +167,37 @@ class TransactionTests: AmatinoTest {
         let expectation = XCTestExpectation(description: "Retrieve Transaction")
         
         func retrieveTransaction(_ transactionId: Int64) {
-            do {
-                let _ = try Transaction.retrieve(
-                    entity: entity!,
-                    transactionId: transactionId,
-                    callback: { (error, transaction) in
-                        XCTAssertNil(error)
-                        XCTAssertNotNil(transaction)
-                        expectation.fulfill()
-                        return
-                })
-            } catch {
-                XCTFail()
-                expectation.fulfill()
-                return
-            }
-        }
-        
-        do {
-            let entries = [
-                Entry(side: .debit, account: cashAccount!, amount: Decimal(42)),
-                Entry(
-                    side: .credit,
-                    account: revenueAccount!,
-                    amount: Decimal(42)
-                )
-            ]
-            let _ = try Transaction.create(
+            let _ = Transaction.retrieve(
                 entity: entity!,
-                transactionTime: Date(),
-                description: "Amatino Swift test transaction retrieval",
-                globalUnit: unit!,
-                entries: entries,
+                transactionId: transactionId,
                 callback: { (error, transaction) in
                     XCTAssertNil(error)
                     XCTAssertNotNil(transaction)
-                    retrieveTransaction(transaction!.id)
+                    expectation.fulfill()
                     return
             })
-        } catch {
-            XCTFail()
-            expectation.fulfill()
-            return
         }
+
+        let entries = [
+            Entry(side: .debit, account: cashAccount!, amount: Decimal(42)),
+            Entry(
+                side: .credit,
+                account: revenueAccount!,
+                amount: Decimal(42)
+            )
+        ]
+        let _ = Transaction.create(
+            entity: entity!,
+            transactionTime: Date(),
+            description: "Amatino Swift test transaction retrieval",
+            globalUnit: unit!,
+            entries: entries,
+            callback: { (error, transaction) in
+                XCTAssertNil(error)
+                XCTAssertNotNil(transaction)
+                retrieveTransaction(transaction!.id)
+                return
+        })
         
         wait(for: [expectation], timeout: 8)
         return
@@ -240,32 +217,27 @@ class TransactionTests: AmatinoTest {
                 XCTFail(); expectation.fulfill()
                 return
             }
-            do {
-                try transaction.update(
-                    transactionTime: transaction.transactionTime,
-                    description: newDescription,
-                    globalUnit: self.unit!,
-                    entries: transaction.entries,
-                    callback: { (error, transaction) in
-                        guard error == nil else {
-                            XCTFail(); expectation.fulfill()
-                            return
-                        }
-                        guard let updatedTx: Transaction = transaction else {
-                            XCTFail(); expectation.fulfill()
-                            return
-                        }
-                        guard updatedTx.description == newDescription else {
-                            XCTFail(); expectation.fulfill()
-                            return
-                        }
-                        expectation.fulfill()
+            transaction.update(
+                transactionTime: transaction.transactionTime,
+                description: newDescription,
+                globalUnit: self.unit!,
+                entries: transaction.entries,
+                callback: { (error, transaction) in
+                    guard error == nil else {
+                        XCTFail(); expectation.fulfill()
                         return
-                })
-            } catch {
-                XCTFail(); expectation.fulfill()
-                return
-            }
+                    }
+                    guard let updatedTx: Transaction = transaction else {
+                        XCTFail(); expectation.fulfill()
+                        return
+                    }
+                    guard updatedTx.description == newDescription else {
+                        XCTFail(); expectation.fulfill()
+                        return
+                    }
+                    expectation.fulfill()
+                    return
+            })
             
         }
         
@@ -286,41 +258,28 @@ class TransactionTests: AmatinoTest {
                 XCTFail(); expectation.fulfill()
                 return
             }
-            do {
-                try transaction.delete { (error, delTransaction) in
-                    guard error == nil else {
-                        XCTFail(); expectation.fulfill()
-                        return
-                    }
-                    do {
-                        try Transaction.retrieve(
-                            entity: self.entity!,
-                            transactionId: transaction.id,
-                            callback: { (error, transaction) in
-                                guard let amatinoError = error as? AmatinoError
-                                        else {
-                                    XCTFail(); expectation.fulfill()
-                                    return
-                                }
-                                guard amatinoError.kind == .notFound else {
-                                    XCTFail(); expectation.fulfill()
-                                    return
-                                }
-                            expectation.fulfill()
-                            return
-                        })
-                    } catch {
-                        XCTFail(); expectation.fulfill()
-                        expectation.fulfill()
-                        return
-                    }
-                    
+            transaction.delete { (error, delTransaction) in
+                guard error == nil else {
+                    XCTFail(); expectation.fulfill()
+                    return
                 }
-            } catch {
-                XCTFail(); expectation.fulfill()
-                return
+                Transaction.retrieve(
+                    entity: self.entity!,
+                    transactionId: transaction.id,
+                    callback: { (error, transaction) in
+                        guard let amatinoError = error as? AmatinoError
+                                else {
+                            XCTFail(); expectation.fulfill()
+                            return
+                        }
+                        guard amatinoError.kind == .notFound else {
+                            XCTFail(); expectation.fulfill()
+                            return
+                        }
+                    expectation.fulfill()
+                    return
+                })
             }
-            
         }
         
         wait(for: [expectation], timeout: 8)

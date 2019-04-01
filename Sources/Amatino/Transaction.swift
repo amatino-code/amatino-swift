@@ -47,15 +47,21 @@ public final class Transaction: EntityObject {
         globalUnit: GlobalUnit,
         entries: [Entry],
         callback: @escaping (_: Error?, _: Transaction?) -> Void
-        ) throws {
+        ) {
 
-        let arguments = try CreateArguments(
-            transactionTime: transactionTime,
-            description: description,
-            globalUnit: globalUnit,
-            entries: entries
-        )
-        let _ = try executeCreate(entity, arguments, callback)
+        do {
+            let arguments = try CreateArguments(
+                transactionTime: transactionTime,
+                description: description,
+                globalUnit: globalUnit,
+                entries: entries
+            )
+            let _ = executeCreate(entity, arguments, callback)
+        } catch {
+            callback(error, nil)
+            return
+        }
+
         return
     }
     
@@ -63,80 +69,92 @@ public final class Transaction: EntityObject {
         entity: Entity,
         arguments: [Transaction.CreateArguments],
         callback: @escaping (_: Error?, _: [Transaction]?) -> Void
-        ) throws {
-        
-        guard arguments.count <= maxArguments else {
-            throw ConstraintError(.tooManyArguments)
+        ) {
+        do {
+            guard arguments.count <= maxArguments else {
+                throw ConstraintError(.tooManyArguments)
+            }
+            let urlParameters = UrlParameters(singleEntity: entity)
+            let requestData = try RequestData(arrayData: arguments)
+            let _ = try AmatinoRequest(
+                path: path,
+                data: requestData,
+                session: entity.session,
+                urlParameters: urlParameters,
+                method: .POST,
+                callback: { (error, data) in
+                    let _ = asyncInitMany(
+                        entity,
+                        callback,
+                        error,
+                        data
+                    )
+                    return
+            })
+        } catch {
+            callback(error, nil)
+            return
         }
-        let urlParameters = UrlParameters(singleEntity: entity)
-        let requestData = try RequestData(arrayData: arguments)
-        let _ = try AmatinoRequest(
-            path: path,
-            data: requestData,
-            session: entity.session,
-            urlParameters: urlParameters,
-            method: .POST,
-            callback: { (error, data) in
-                let _ = asyncInitMany(
-                    entity,
-                    callback,
-                    error,
-                    data
-                )
-                return
-        })
     }
 
     private static func executeCreate(
         _ entity: Entity,
         _ arguments: Transaction.CreateArguments,
         _ callback: @escaping (_: Error?, _: Transaction?) -> Void
-        ) throws {
-        let requestData = try RequestData(data: arguments)
-        let _ = try AmatinoRequest(
-            path: Transaction.path,
-            data: requestData,
-            session: entity.session,
-            urlParameters: UrlParameters(singleEntity: entity),
-            method: .POST,
-            callback: { (error, data) in
-                let _ = asyncInit(
-                    entity,
-                    callback,
-                    error,
-                    data
-                )
-                return
-        })
+        ) {
+        do {
+            let requestData = try RequestData(data: arguments)
+            let _ = try AmatinoRequest(
+                path: Transaction.path,
+                data: requestData,
+                session: entity.session,
+                urlParameters: UrlParameters(singleEntity: entity),
+                method: .POST,
+                callback: { (error, data) in
+                    let _ = asyncInit(
+                        entity,
+                        callback,
+                        error,
+                        data
+                    )
+                    return
+            })
+        } catch {
+            callback(error, nil)
+            return
+        }
     }
     
     public static func retrieve(
         entity: Entity,
         transactionId: Int64,
         callback: @escaping (_: Error?, _: Transaction?) -> Void
-        ) throws {
+        ) {
         
-        let arguments = Transaction.RetrieveArguments(
-            transactionId: transactionId
-        )
-        let urlParameters = UrlParameters(singleEntity: entity)
-        let requestData = try RequestData(data: arguments)
-        let _ = try AmatinoRequest(
-            path: path,
-            data: requestData,
-            session: entity.session,
-            urlParameters: urlParameters,
-            method: .GET,
-            callback: { (error, data) in
-                let _ = asyncInit(
-                    entity,
-                    callback,
-                    error,
-                    data
-                )
-                return
-        })
-        
+        do {
+            let arguments = Transaction.RetrieveArguments(
+                transactionId: transactionId
+            )
+            let urlParameters = UrlParameters(singleEntity: entity)
+            let requestData = try RequestData(data: arguments)
+            let _ = try AmatinoRequest(
+                path: path,
+                data: requestData,
+                session: entity.session,
+                urlParameters: urlParameters,
+                method: .GET,
+                callback: { (error, data) in
+                    let _ = asyncInit(
+                        entity,
+                        callback,
+                        error,
+                        data
+                    )
+                    return
+            })
+        } catch {
+            callback(error, nil)
+        }
     }
     
     public func update(
@@ -145,15 +163,19 @@ public final class Transaction: EntityObject {
         globalUnit: GlobalUnit,
         entries: [Entry],
         callback: @escaping(_: Error?, _: Transaction?) -> Void
-        ) throws {
-        let arguments = try UpdateArguments(
-            transaction: self,
-            transactionTime: transactionTime,
-            description: description,
-            globalUnit: globalUnit,
-            entries: entries
-        )
-        let _ = try executeUpdate(arguments: arguments, callback: callback)
+        ) {
+        do {
+            let arguments = try UpdateArguments(
+                transaction: self,
+                transactionTime: transactionTime,
+                description: description,
+                globalUnit: globalUnit,
+                entries: entries
+            )
+            let _ = executeUpdate(arguments: arguments, callback: callback)
+        } catch {
+            callback(error, nil)
+        }
         return
     }
     
@@ -163,58 +185,72 @@ public final class Transaction: EntityObject {
         customUnit: CustomUnit,
         entries: [Entry],
         callback: @escaping(_: Error?, _: Transaction?) -> Void
-        ) throws {
-        let arguments = try UpdateArguments(
-            transaction: self,
-            transactionTime: transactionTime,
-            description: description,
-            customUnit: customUnit,
-            entries: entries
-        )
-        let _ = try executeUpdate(arguments: arguments, callback: callback)
+        ) {
+        do {
+            let arguments = try UpdateArguments(
+                transaction: self,
+                transactionTime: transactionTime,
+                description: description,
+                customUnit: customUnit,
+                entries: entries
+            )
+            let _ = executeUpdate(arguments: arguments, callback: callback)
+        } catch {
+            callback(error, nil)
+        }
         return
     }
     
     private func executeUpdate(
         arguments: UpdateArguments,
         callback: @escaping(_: Error?, _: Transaction?) -> Void
-        ) throws {
-        let _ = try AmatinoRequest(
-            path: Transaction.path,
-            data: try RequestData(data: arguments),
-            session: session,
-            urlParameters: UrlParameters(singleEntity: entity),
-            method: .PUT,
-            callback: { (error, data) in
-                let _ = Transaction.asyncInit(
-                    self.entity,
-                    callback,
-                    error,
-                    data
-                )
-                return
-        })
+        ) {
+        do {
+            let _ = try AmatinoRequest(
+                path: Transaction.path,
+                data: try RequestData(data: arguments),
+                session: session,
+                urlParameters: UrlParameters(singleEntity: entity),
+                method: .PUT,
+                callback: { (error, data) in
+                    let _ = Transaction.asyncInit(
+                        self.entity,
+                        callback,
+                        error,
+                        data
+                    )
+                    return
+            })
+        } catch {
+            callback(error, nil)
+        }
+        return
     }
 
     public func delete(
         callback: @escaping(_: Error?, _: Transaction?) -> Void
-        ) throws {
-        let target = UrlTarget(integerValue: id, key: Transaction.urlKey)
-        let urlParameters = UrlParameters(entity: entity, targets: [target])
-        let _ = try AmatinoRequest(
-            path: Transaction.path,
-            data: nil,
-            session: session,
-            urlParameters: urlParameters,
-            method: .DELETE,
-            callback: { (error, data) in
-                let _ = Transaction.asyncInit(
-                    self.entity,
-                    callback,
-                    error,
-                    data
-                )
-        })
+        ) {
+        do {
+            let target = UrlTarget(integerValue: id, key: Transaction.urlKey)
+            let urlParameters = UrlParameters(entity: entity, targets: [target])
+            let _ = try AmatinoRequest(
+                path: Transaction.path,
+                data: nil,
+                session: session,
+                urlParameters: urlParameters,
+                method: .DELETE,
+                callback: { (error, data) in
+                    let _ = Transaction.asyncInit(
+                        self.entity,
+                        callback,
+                        error,
+                        data
+                    )
+            })
+        } catch {
+            callback(error, nil)
+        }
+        return
     }
     
     internal struct Attributes: Decodable {
