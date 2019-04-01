@@ -42,10 +42,10 @@ public final class Transaction: EntityObject, Denominated {
     
     public static func create (
         in entity: Entity,
-        transactionTime: Date,
+        at transactionTime: Date,
         description: String,
         denominatedIn denomination: Denomination,
-        entries: [Entry],
+        composedOf entries: [Entry],
         then callback: @escaping (_: Error?, _: Transaction?) -> Void
         ) {
 
@@ -63,6 +63,30 @@ public final class Transaction: EntityObject, Denominated {
         }
 
         return
+    }
+    
+    public static func create (
+        in entity: Entity,
+        at transactionTime: Date,
+        description: String,
+        denominatedIn denomination: Denomination,
+        composedOf entries: [Entry],
+        then callback: @escaping (Result<Transaction, Error>) -> Void
+    ) {
+        Transaction.create(
+            in: entity,
+            at: transactionTime,
+            description: description,
+            denominatedIn: denomination,
+            composedOf: entries
+        ) { (error, transaction) in
+            guard let transaction = transaction else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(transaction))
+            return
+        }
     }
     
     public static func createMany(
