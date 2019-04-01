@@ -128,12 +128,16 @@ public final class Transaction: EntityObject, Denominated {
     public static func retrieve(
         from entity: Entity,
         withId transactionId: Int,
+        denominatedIn denomination: Denomination? = nil,
+        atVersion version: Int? = nil,
         then callback: @escaping (_: Error?, _: Transaction?) -> Void
         ) {
         
         do {
             let arguments = Transaction.RetrieveArguments(
-                transactionId: transactionId
+                transactionId: transactionId,
+                denomination: denomination,
+                version: version
             )
             let urlParameters = UrlParameters(singleEntity: entity)
             let requestData = try RequestData(data: arguments)
@@ -157,20 +161,80 @@ public final class Transaction: EntityObject, Denominated {
         }
     }
     
+    public static func retrieve(
+        from entity: Entity,
+        withId transactionId: Int,
+        denominatedIn denomination: Denomination? = nil,
+        atVersion version: Int? = nil,
+        then callback: @escaping (Result<Transaction, Error>) -> Void
+        ) {
+        Transaction.retrieve(
+            from: entity,
+            withId: transactionId,
+            denominatedIn: denomination,
+            atVersion: version
+        ) { (error, transaction) in
+            guard let transaction = transaction else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(transaction))
+        }
+        return
+    }
+    
     public func update(
-        transactionTime: Date,
-        description: String,
-        globalUnit: GlobalUnit,
-        entries: [Entry],
+        transactionTime: Date? = nil,
+        description: String? = nil,
+        denomination: Denomination? = nil,
+        entries: [Entry]? = nil,
         then callback: @escaping(_: Error?, _: Transaction?) -> Void
         ) {
         do {
+            let globalUnitId: Int?
+            let customUnitId: Int?
+            let updateDescription: String
+            let updateEntries: [Entry]
+            let updateTime: Date
+            
+            if let transactionTime = transactionTime {
+                updateTime = transactionTime
+            } else {
+                updateTime = self.transactionTime
+            }
+            
+            if denomination == nil {
+                globalUnitId = self.globalUnitId
+                customUnitId = self.customUnitId
+            } else if let globalUnit = denomination as? GlobalUnit {
+                globalUnitId = globalUnit.id
+                customUnitId = nil
+            } else if let customUnit = denomination as? CustomUnit {
+                globalUnitId = nil
+                customUnitId = customUnit.id
+            } else {
+                fatalError("unknown denomination type")
+            }
+            
+            if let entries = entries {
+                updateEntries = entries
+            } else {
+                updateEntries = self.entries
+            }
+            
+            if let description = description {
+                updateDescription = description
+            } else {
+                updateDescription = self.description
+            }
+
             let arguments = try UpdateArguments(
                 transaction: self,
-                transactionTime: transactionTime,
-                description: description,
-                globalUnit: globalUnit,
-                entries: entries
+                transactionTime: updateTime,
+                description: updateDescription,
+                customUnitId: customUnitId,
+                globalUnitId: globalUnitId,
+                entries: updateEntries
             )
             let _ = executeUpdate(arguments: arguments, callback: callback)
         } catch {
@@ -180,26 +244,28 @@ public final class Transaction: EntityObject, Denominated {
     }
     
     public func update(
-        transactionTime: Date,
-        description: String,
-        customUnit: CustomUnit,
-        entries: [Entry],
-        then callback: @escaping(_: Error?, _: Transaction?) -> Void
-        ) {
-        do {
-            let arguments = try UpdateArguments(
-                transaction: self,
-                transactionTime: transactionTime,
-                description: description,
-                customUnit: customUnit,
-                entries: entries
-            )
-            let _ = executeUpdate(arguments: arguments, callback: callback)
-        } catch {
-            callback(error, nil)
+        transactionTime: Date? = nil,
+        description: String? = nil,
+        denomination: Denomination? = nil,
+        entries: [Entry]? = nil,
+        then callback: @escaping (Result<Transaction, Error>) -> Void
+    ) {
+        self.update(
+            transactionTime: transactionTime,
+            description: description,
+            denomination: denomination,
+            entries: entries) { (error, transaction) in
+                guard let transaction = transaction else {
+                    callback(.failure(
+                        error ?? AmatinoError(.inconsistentState))
+                    )
+                    return
+                }
+                callback(.success(transaction))
+                return
         }
-        return
     }
+    
     
     private func executeUpdate(
         arguments: UpdateArguments,
@@ -251,6 +317,19 @@ public final class Transaction: EntityObject, Denominated {
             callback(error, nil)
         }
         return
+    }
+    
+    public func delete (
+        then callback: @escaping(Result<Transaction, Error>) -> Void
+    ) {
+        self.delete { (error, transaction) in
+            guard let transaction = transaction else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(transaction))
+            return
+        }
     }
     
     internal struct Attributes: Decodable {
@@ -322,35 +401,47 @@ public final class Transaction: EntityObject, Denominated {
         
         init (
             transaction: Transaction,
-            transactionTime: Date?,
-            description: String?,
-            globalUnit: GlobalUnit?,
+            transactionTime: Date,
+            description: String,
+            denomination: Denomination,
             entries: Array<Entry>
             ) throws {
             
             self.id = transaction.id
             self.description = try Description(description)
             self.transactionTime = transactionTime
-            self.globalUnitId = globalUnit?.id
-            self.customUnitId = nil
+            let globalUnitId: Int?
+            let customUnitId: Int?
+            if let globalUnit = denomination as? GlobalUnit {
+                globalUnitId = globalUnit.id
+                customUnitId = nil
+            } else if let customUnit = denomination as? CustomUnit {
+                globalUnitId = nil
+                customUnitId = customUnit.id
+            } else {
+                fatalError("unknown denomination type")
+            }
+            self.globalUnitId = globalUnitId
+            self.customUnitId = customUnitId
             self.entries = entries
-            
+
             return
         }
         
-        init (
+        internal init (
             transaction: Transaction,
-            transactionTime: Date?,
-            description: String?,
-            customUnit: CustomUnit?,
-            entries: Array<Entry>?
+            transactionTime: Date,
+            description: String,
+            customUnitId: Int?,
+            globalUnitId: Int?,
+            entries: Array<Entry>
             ) throws {
             
             self.id = transaction.id
             self.description = try Description(description)
             self.transactionTime = transactionTime
-            self.globalUnitId = nil
-            self.customUnitId = customUnit?.id
+            self.globalUnitId = globalUnitId
+            self.customUnitId = customUnitId
             self.entries = entries
             
             return
@@ -495,51 +586,55 @@ public final class Transaction: EntityObject, Denominated {
         let globalUnitId: Int?
         let version: Int?
         
-        public init(transactionId: Int) {
+        public init(
+            transactionId: Int,
+            denomination: Denomination? = nil,
+            version: Int? = nil
+            ) {
             id = transactionId
-            customUnitId = nil
+            self.version = version
+            if denomination == nil {
+                self.globalUnitId = nil
+                self.customUnitId = nil
+                return
+            }
+            let customUnitId: Int?
+            let globalUnitId: Int?
+            if let customUnit = denomination as? CustomUnit {
+                globalUnitId = nil
+                customUnitId = customUnit.id
+            } else if let globalUnit = denomination as? GlobalUnit {
+                customUnitId = nil
+                globalUnitId = globalUnit.id
+            } else {
+                fatalError("Unknown denominating type")
+            }
+            self.globalUnitId = globalUnitId
+            self.customUnitId = customUnitId
+            return
+        }
+        
+        public init(
+            transactionId: Int,
+            customUnitId: Int,
+            version: Int? = nil
+        ) {
+            self.version = version
+            id = transactionId
             globalUnitId = nil
-            version = nil
+            self.customUnitId = customUnitId
             return
         }
         
-        public init(transactionId: Int, versionId: Int) {
+        public init(
+            transactionId: Int,
+            globalUnitId: Int,
+            version: Int? = nil
+        ) {
+            self.version = version
             id = transactionId
+            self.globalUnitId = globalUnitId
             customUnitId = nil
-            globalUnitId = nil
-            version = versionId
-            return
-        }
-        
-        public init(transactionId: Int, globalUnit: GlobalUnit) {
-            id = transactionId
-            customUnitId = nil
-            globalUnitId = globalUnit.id
-            version = nil
-            return
-        }
-        
-        public init(transactionId: Int, customUnit: CustomUnit) {
-            id = transactionId
-            customUnitId = customUnit.id
-            globalUnitId = nil
-            version = nil
-            return
-        }
-        
-        public init(transactionId: Int, globalUnit: GlobalUnit, versionId: Int) {
-            id = transactionId
-            customUnitId = nil
-            globalUnitId = globalUnit.id
-            version = versionId
-            return
-        }
-        
-        public init(transactionId: Int, customUnit: CustomUnit, versionId: Int) {
-            id = transactionId
-            customUnitId = customUnit.id
-            globalUnitId = nil
-            version = versionId
             return
         }
         
