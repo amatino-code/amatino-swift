@@ -201,25 +201,19 @@ class DerivedObjectTest: AmatinoTest {
         }
         
         func createEntity(_ session: Session) {
-            do {
-                let _ = try Entity.create(
-                    session: session,
-                    name: "Amatino Swift test entity") { (error, entity) in
-                        guard self.responsePassing(
-                            error,
-                            entity,
-                            expectations
-                        ) else {
-                            return
-                        }
-                        self.entity = entity
-                        entityExpectation.fulfill()
-                        retrieveUnit(session, entity!)
-                }
-            } catch {
-                XCTFail()
-                entityExpectation.fulfill()
-                return
+            let _ = Entity.create(
+                session: session,
+                name: "Amatino Swift test entity") { (error, entity) in
+                    guard self.responsePassing(
+                        error,
+                        entity,
+                        expectations
+                    ) else {
+                        return
+                    }
+                    self.entity = entity
+                    entityExpectation.fulfill()
+                    retrieveUnit(session, entity!)
             }
         }
         

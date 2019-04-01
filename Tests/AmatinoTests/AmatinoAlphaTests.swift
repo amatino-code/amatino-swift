@@ -53,7 +53,7 @@ class AmatinoAlphaTests: XCTestCase {
         session: Session,
         callback: @escaping (_: Error?, _: Entity?) -> Void
         ) throws {
-        let _ = try Entity.create(
+        let _ = Entity.create(
             session: session,
             name: "My First Entity",
             callback: callback

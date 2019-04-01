@@ -47,24 +47,19 @@ class AccountTests: AmatinoTest {
         }
         
         func createEntity(_: Session) {
-            do {
-                let _ = try Entity.create(
-                    session: session!,
-                    name: "Amatino Swift test entity") { (error, entity) in
-                        do {
-                            let _ = try self.assertNil(error)
-                            let _ = try self.assertNotNil(entity)
-                        } catch {
-                            self.failWith(error, expectations)
-                            return
-                        }
-                        self.entity = entity
-                        entityExpectation.fulfill()
-                        retrieveUnit(self.session!, self.entity!)
-                }
-            } catch {
-                XCTFail()
-                entityExpectation.fulfill()
+            let _ = Entity.create(
+                session: session!,
+                name: "Amatino Swift test entity") { (error, entity) in
+                    do {
+                        let _ = try self.assertNil(error)
+                        let _ = try self.assertNotNil(entity)
+                    } catch {
+                        self.failWith(error, expectations)
+                        return
+                    }
+                    self.entity = entity
+                    entityExpectation.fulfill()
+                    retrieveUnit(self.session!, self.entity!)
             }
         }
         

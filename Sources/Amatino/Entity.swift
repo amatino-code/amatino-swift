@@ -40,7 +40,7 @@ public class Entity: Equatable {
         session: Session,
         name: String,
         callback: @escaping (_: Error?, _: Entity?) -> Void
-        ) throws {
+    ) {
         do {
             let arguments = try Entity.CreateArguments(name: name)
             Entity.create(
@@ -87,22 +87,27 @@ public class Entity: Equatable {
         session: Session,
         entityId: String,
         callback: @escaping (_: Error?, _: Entity?) -> Void
-        ) throws {
+        ) {
         let target = UrlTarget(forEntityId: entityId)
-        let _ = try AmatinoRequest(
-            path: Entity.path,
-            data: nil,
-            session: session,
-            urlParameters: UrlParameters(targetsOnly: [target]),
-            method: .GET,
-            callback: { (error, data) in
-                let _ = Entity.asyncInit(
-                    session: session,
-                    error: error,
-                    data: data,
-                    callback: callback
-                )
-        })
+        do {
+            let _ = try AmatinoRequest(
+                path: Entity.path,
+                data: nil,
+                session: session,
+                urlParameters: UrlParameters(targetsOnly: [target]),
+                method: .GET,
+                callback: { (error, data) in
+                    let _ = Entity.asyncInit(
+                        session: session,
+                        error: error,
+                        data: data,
+                        callback: callback
+                    )
+            })
+        } catch {
+            callback(error, nil)
+            return
+        }
     }
     
     public func delete(_ callback: @escaping (Error?, Entity?) -> Void) {
