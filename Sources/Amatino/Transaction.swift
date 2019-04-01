@@ -44,7 +44,7 @@ public final class Transaction: EntityObject, Denominated {
         in entity: Entity,
         transactionTime: Date,
         description: String,
-        globalUnit: GlobalUnit,
+        denominatedIn denomination: Denomination,
         entries: [Entry],
         then callback: @escaping (_: Error?, _: Transaction?) -> Void
         ) {
@@ -53,7 +53,7 @@ public final class Transaction: EntityObject, Denominated {
             let arguments = try CreateArguments(
                 transactionTime: transactionTime,
                 description: description,
-                globalUnit: globalUnit,
+                denomination: denomination,
                 entries: entries
             )
             let _ = executeCreate(entity, arguments, callback)
@@ -391,33 +391,29 @@ public final class Transaction: EntityObject, Denominated {
         init (
             transactionTime: Date,
             description: String,
-            globalUnit: GlobalUnit,
+            denomination: Denomination,
             entries: Array<Entry>
             ) throws {
             
-            self.description = try Description(description)
-            self.transactionTime = transactionTime
-            self.globalUnitId = globalUnit.id
-            self.customUnitId = nil
-            self.entries = entries
-            let _ = try checkEntries(entries: entries)
-            return
-        }
-        
-        init (
-            transactionTime: Date,
-            description: String,
-            customUnit: CustomUnit,
-            entries: Array<Entry>
-            ) throws {
+            let globalUnitId: Int?
+            let customUnitId: Int?
+            
+            if let globalUnit = denomination as? GlobalUnit {
+                globalUnitId = globalUnit.id
+                customUnitId = nil
+            } else if let customUnit = denomination as? CustomUnit {
+                globalUnitId = nil
+                customUnitId = customUnit.id
+            } else {
+                fatalError("unknown denomination type")
+            }
             
             self.description = try Description(description)
             self.transactionTime = transactionTime
-            self.globalUnitId = nil
-            self.customUnitId = customUnit.id
+            self.globalUnitId = globalUnitId
+            self.customUnitId = customUnitId
             self.entries = entries
             let _ = try checkEntries(entries: entries)
-            
             return
         }
         
