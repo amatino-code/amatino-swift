@@ -36,27 +36,22 @@ class AncillaryTests: AmatinoTest {
         let expectation = XCTestExpectation(description: "Retrieve units")
         
         func retrieveList(session: Session) {
-            do {
-                let _ = try GlobalUnitList.retrieve(
-                    session: session,
-                    callback: { (error, units) in
-                        guard error == nil else {
-                            XCTFail()
-                            expectation.fulfill()
-                            return
-                        }
-                        guard units != nil else {
-                            XCTFail()
-                            expectation.fulfill()
-                            return
-                        }
+            let _ = GlobalUnitList.retrieve(
+                session: session,
+                callback: { (error, units) in
+                    guard error == nil else {
+                        XCTFail()
                         expectation.fulfill()
                         return
-                })
-            } catch {
-                XCTFail()
-                expectation.fulfill()
-            }
+                    }
+                    guard units != nil else {
+                        XCTFail()
+                        expectation.fulfill()
+                        return
+                    }
+                    expectation.fulfill()
+                    return
+            })
 
         }
         

@@ -143,30 +143,23 @@ class PopulatedEntityTest: DerivedObjectTest {
         }
         
         func createCashChild() {
-            do {
-                let _ = try Account.create(
-                    entity: entity!,
-                    name: "T1.1 Cash",
-                    description: "Test cash child",
-                    globalUnit: unit!,
-                    parent: cashAccount!,
-                    callback: { (error, newAccount) in
-                        guard error == nil else {
-                            XCTFail()
-                            cashChildExpectation.fulfill()
-                            return
-                        }
-                        self.cashAccountChild = newAccount!
+            let _ = Account.create(
+                entity: entity!,
+                name: "T1.1 Cash",
+                description: "Test cash child",
+                globalUnit: unit!,
+                parent: cashAccount!,
+                callback: { (error, newAccount) in
+                    guard error == nil else {
+                        XCTFail()
                         cashChildExpectation.fulfill()
-                        let _ = createExtraTransactions()
                         return
-                })
-                
-            } catch {
-                XCTFail()
-                cashChildExpectation.fulfill()
-                return
-            }
+                    }
+                    self.cashAccountChild = newAccount!
+                    cashChildExpectation.fulfill()
+                    let _ = createExtraTransactions()
+                    return
+            })
         }
         
         let _ = createCashChild()
@@ -217,38 +210,32 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         let ledgerExpectation = XCTestExpectation(description: "Ledger")
         
-        do {
-            let _ = try Ledger.retrieve(
-                account: cashAccount!,
-                callback: { (error, newLedger) in
-                    guard error == nil else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
-                    guard let ledger: Ledger = newLedger else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
-                    guard ledger.latest?.balance == self.cashBalance else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
-                    guard ledger.count == 6 else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
+        Ledger.retrieve(
+            account: cashAccount!,
+            callback: { (error, newLedger) in
+                guard error == nil else {
+                    XCTFail()
                     ledgerExpectation.fulfill()
                     return
-            })
-        } catch {
-            XCTFail()
-            ledgerExpectation.fulfill()
-            return
-        }
+                }
+                guard let ledger: Ledger = newLedger else {
+                    XCTFail()
+                    ledgerExpectation.fulfill()
+                    return
+                }
+                guard ledger.latest?.balance == self.cashBalance else {
+                    XCTFail()
+                    ledgerExpectation.fulfill()
+                    return
+                }
+                guard ledger.count == 6 else {
+                    XCTFail()
+                    ledgerExpectation.fulfill()
+                    return
+                }
+                ledgerExpectation.fulfill()
+                return
+        })
 
         wait(for: [ledgerExpectation], timeout: 5)
         return
@@ -338,45 +325,33 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         let ledgerExpectation = XCTestExpectation(description: "Ledger")
         
-        do {
-            let _ = try Ledger.retrieve(
-                account: cashAccount!,
-                callback: { (error, newLedger) in
-                    guard error == nil else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
-                    guard let ledger: Ledger = newLedger else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
-                    do {
-                        let _ = try ledger.nextPage() { (error, rows) in
-                        
-                        }
-                        let _ = try ledger.nextPage(
-                            callback: { (error, rows) in
-                                guard error == nil else {
-                                    XCTFail()
-                                    ledgerExpectation.fulfill()
-                                    return
-                                }
-                        })
-                    } catch {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
+        let _ = Ledger.retrieve(
+            account: cashAccount!,
+            callback: { (error, newLedger) in
+                guard error == nil else {
+                    XCTFail()
                     ledgerExpectation.fulfill()
                     return
-            })
-        } catch {
-            XCTFail()
-            ledgerExpectation.fulfill()
-            return
-        }
+                }
+                guard let ledger: Ledger = newLedger else {
+                    XCTFail()
+                    ledgerExpectation.fulfill()
+                    return
+                }
+                let _ = ledger.nextPage() { (error, rows) in
+                
+                }
+                let _ = ledger.nextPage(
+                    callback: { (error, rows) in
+                        guard error == nil else {
+                            XCTFail()
+                            ledgerExpectation.fulfill()
+                            return
+                        }
+                })
+                ledgerExpectation.fulfill()
+                return
+        })
         
         wait(for: [ledgerExpectation], timeout: 5)
         return
@@ -385,36 +360,29 @@ class PopulatedEntityTest: DerivedObjectTest {
     func testRetrieveLedgerTimeframe() {
         let ledgerExpectation = XCTestExpectation(description: "Ledger")
         
-        do {
-            let _ = try Ledger.retrieve(
-                account: cashAccount!,
-                start: Date(timeIntervalSinceNow: (-3600*24*2)),
-                end: Date(timeIntervalSinceNow: (-3600*24*1)),
-                callback: { (error, newLedger) in
-                    guard error == nil else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
-                    guard let ledger: Ledger = newLedger else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
-                    guard ledger.count == 3 else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
+        let _ = Ledger.retrieve(
+            account: cashAccount!,
+            start: Date(timeIntervalSinceNow: (-3600*24*2)),
+            end: Date(timeIntervalSinceNow: (-3600*24*1)),
+            callback: { (error, newLedger) in
+                guard error == nil else {
+                    XCTFail()
                     ledgerExpectation.fulfill()
                     return
-            })
-        } catch {
-            XCTFail()
-            ledgerExpectation.fulfill()
-            return
-        }
-        
+                }
+                guard let ledger: Ledger = newLedger else {
+                    XCTFail()
+                    ledgerExpectation.fulfill()
+                    return
+                }
+                guard ledger.count == 3 else {
+                    XCTFail()
+                    ledgerExpectation.fulfill()
+                    return
+                }
+                ledgerExpectation.fulfill()
+                return
+        })        
         wait(for: [ledgerExpectation], timeout: 5)
         return
     }

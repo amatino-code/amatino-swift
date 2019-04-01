@@ -124,26 +124,20 @@ class AccountTests: AmatinoTest {
         let expectation = XCTestExpectation(description: "Retrieve Account")
         
         func retrieveAccount(_ accountId: Int) {
-            do {
-                let _ = try Account.retrieve(
-                    entity: entity!,
-                    accountId: accountId,
-                    callback: { (error, account) in
-                        do {
-                            let _ = try self.assertNil(error)
-                            let _ = try self.assertNotNil(account)
-                        } catch {
-                            self.failWith(error, [expectation])
-                            return
-                        }
-                        expectation.fulfill()
+            let _ = Account.retrieve(
+                entity: entity!,
+                accountId: accountId,
+                callback: { (error, account) in
+                    do {
+                        let _ = try self.assertNil(error)
+                        let _ = try self.assertNotNil(account)
+                    } catch {
+                        self.failWith(error, [expectation])
                         return
-                })
-            } catch {
-                XCTFail()
-                expectation.fulfill()
-                return
-            }
+                    }
+                    expectation.fulfill()
+                    return
+            })
         }
         
         do {
@@ -181,34 +175,29 @@ class AccountTests: AmatinoTest {
         let replacementName = "Updated Account"
         
         func updateAccount(_ account: Account) {
-            do {
-                let _ = try account.update(
-                    name: "Updated Account",
-                    description: account.description,
-                    parent: nil,
-                    type: account.type,
-                    counterParty: nil,
-                    colour: nil,
-                    globalUnit: unit!,
-                    callback: { (error, account) in
-                        guard error == nil else {
-                            let cast = error as? AmatinoError
-                            print(cast?.description ?? "Unknown Error")
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        guard let updatedAccount: Account = account else {
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        guard updatedAccount.name == replacementName else {
-                            print("Account name: \(updatedAccount.name)")
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        expectation.fulfill(); return
-                })
-            } catch {
-                print((error as? AmatinoError)?.description ?? "Unknown Err.")
-                XCTFail(); expectation.fulfill(); return
-            }
+            let _ = account.update(
+                name: "Updated Account",
+                description: account.description,
+                parent: nil,
+                type: account.type,
+                counterParty: nil,
+                colour: nil,
+                globalUnit: unit!,
+                callback: { (error, account) in
+                    guard error == nil else {
+                        let cast = error as? AmatinoError
+                        print(cast?.description ?? "Unknown Error")
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard let updatedAccount: Account = account else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard updatedAccount.name == replacementName else {
+                        print("Account name: \(updatedAccount.name)")
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    expectation.fulfill(); return
+            })
         }
         
         func executeProcedure() {
@@ -247,26 +236,22 @@ class AccountTests: AmatinoTest {
         let expectation = XCTestExpectation(description: "Delete Account")
         
         func lookupDeletedAccount(_ account: Account) {
-            do {
-                let _ = try Account.retrieve(
-                    entity: entity!,
-                    accountId: account.id,
-                    callback: { (error, account) in
-                        guard account == nil else {
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        guard let amError = error as? AmatinoError else {
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        guard amError.kind == .notFound else {
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        expectation.fulfill()
-                        return
-                })
-            } catch {
-                
-            }
+            let _ = Account.retrieve(
+                entity: entity!,
+                accountId: account.id,
+                callback: { (error, account) in
+                    guard account == nil else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard let amError = error as? AmatinoError else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard amError.kind == .notFound else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    expectation.fulfill()
+                    return
+            })
         }
         
         func deleteAccount(_ cash: Account, _ bank: Account) {
