@@ -18,7 +18,7 @@ class EntityTests: AmatinoTest {
         let _ = Session.create(
             email: dummyUserEmail(),
             secret: dummyUserSecret(),
-            callback: { (error, session) in
+            then: { (error, session) in
                 XCTAssertNil(error)
                 XCTAssertNotNil(session)
                 self.session = session
@@ -32,8 +32,8 @@ class EntityTests: AmatinoTest {
         XCTAssertNotNil(session)
         let expectation = XCTestExpectation(description: "Create entity")
         let _ = Entity.create(
-            session: session!,
-            name: "Amatino Swift test entity") { (error, entity) in
+            authenticatedBy: session!,
+            withName: "Amatino Swift test entity") { (error, entity) in
                 XCTAssertNil(error)
                 XCTAssertNotNil(entity)
                 expectation.fulfill()
@@ -46,14 +46,14 @@ class EntityTests: AmatinoTest {
         XCTAssertNotNil(session)
         let expectation = XCTestExpectation(description: "Retrieve Entity")
         let _ = Entity.create(
-            session: session!,
-            name: "Amatino Swift test entity, retrieval",
-            callback: { (error, entity) in
+            authenticatedBy: session!,
+            withName: "Amatino Swift test entity, retrieval",
+            then: { (error, entity) in
                 XCTAssertNotNil(entity)
                 let _ = Entity.retrieve(
-                    authenticatedBy session: self.session!,
-                    entityId: entity!.id,
-                    callback: { (error, retrievedEntity) in
+                    authenticatedBy: self.session!,
+                    withId: entity!.id,
+                    then: { (error, retrievedEntity) in
                         XCTAssertNil(error)
                         XCTAssertNotNil(retrievedEntity)
                         expectation.fulfill()
@@ -73,15 +73,16 @@ class EntityTests: AmatinoTest {
         let expectations = [createExpectation, listExpectation]
 
         let _ = Entity.create(
-            session: session,
-            name: "Amatino Swift test entity") { (error, entity) in
+            authenticatedBy: session,
+            withName: "Amatino Swift test entity") { (error, entity) in
                 XCTAssertNil(error)
                 XCTAssertNotNil(entity)
                 createExpectation.fulfill()
                 print("Entity created")
                 let _ = EntityList.retrieve(
-                    session: session, scope: .all,
-                    callback: { (error, list) in
+                    authenticatedBy: session,
+                    inScope: .all,
+                    then: { (error, list) in
                         guard error == nil else {
                             self.failWith(error!, expectations)
                             return

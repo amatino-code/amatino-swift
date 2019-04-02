@@ -28,9 +28,9 @@ class CustomUnitTests: AmatinoTest {
 
         func retrieveUnit(_: Session) {
             let _ = GlobalUnit.retrieve(
-                unitId: 5,
-                session: session!,
-                callback: { (error, globalUnit) in
+                withId: 5,
+                authenticatedBy: session!,
+                then: { (error, globalUnit) in
                     do {
                         let _ = try self.assertNil(error)
                         let _ = try self.assertNotNil(globalUnit)
@@ -46,8 +46,8 @@ class CustomUnitTests: AmatinoTest {
         func createEntity(_: Session) {
 
             let _ = Entity.create(
-                session: session!,
-                name: "Amatino Swift test entity") { (error, entity) in
+                authenticatedBy: session!,
+                withName: "Amatino Swift test entity") { (error, entity) in
                     XCTAssertNil(error)
                     XCTAssertNotNil(entity)
                     self.entity = entity
@@ -58,7 +58,7 @@ class CustomUnitTests: AmatinoTest {
         let _ = Session.create(
             email: dummyUserEmail(),
             secret: dummyUserSecret(),
-            callback: { (error, session) in
+            then: { (error, session) in
                 guard self.responsePassing(error, session, expectations) else {
                     return
                 }
@@ -84,13 +84,13 @@ class CustomUnitTests: AmatinoTest {
         }
         
         CustomUnit.create(
-            entity: entity!,
+            in: entity!,
             code: "BTC",
-            name: "Bitcoin",
+            named: "Bitcoin",
             priority: 50,
             description: "Crypto juice",
             exponent: 4,
-            callback: creationCallback
+            then: creationCallback
         )
         
         wait(for: [expectation], timeout: 8, enforceOrder: false)
@@ -114,9 +114,9 @@ class CustomUnitTests: AmatinoTest {
             }
             create.fulfill()
             CustomUnit.retrieve(
-                entity: entity!,
-                id: unit.id,
-                callback: retrieveCallback
+                from: entity!,
+                withId: unit.id,
+                then: retrieveCallback
             )
         }
         
@@ -129,13 +129,13 @@ class CustomUnitTests: AmatinoTest {
         }
         
         CustomUnit.create(
-            entity: entity!,
+            in: entity!,
             code: "BTC",
-            name: "Bitcoin",
+            named: "Bitcoin",
             priority: 50,
             description: "Crypto juice",
             exponent: 4,
-            callback: creationCallback
+            then: creationCallback
         )
         
         wait(for: expectations, timeout: 8, enforceOrder: false)
@@ -166,7 +166,7 @@ class CustomUnitTests: AmatinoTest {
                 priority: 60,
                 description: updateDescription,
                 exponent: 5,
-                callback: updateCallback
+                then: updateCallback
             )
         }
 
@@ -179,13 +179,13 @@ class CustomUnitTests: AmatinoTest {
         }
         
         CustomUnit.create(
-            entity: entity!,
+            in: entity!,
             code: "BTC",
-            name: "Bitcoin",
+            named: "Bitcoin",
             priority: 50,
             description: "Crypto juice",
             exponent: 4,
-            callback: creationCallback
+            then: creationCallback
         )
         
         wait(for: expectations, timeout: 8, enforceOrder: false)

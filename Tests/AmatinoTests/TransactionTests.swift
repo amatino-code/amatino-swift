@@ -40,19 +40,19 @@ class TransactionTests: AmatinoTest {
                     name: "Cash",
                     type: .asset,
                     description: "Test asset account",
-                    globalUnit: unit
+                    denomination: unit
                 )
                 let revenueAccountArguments = try Account.CreateArguments(
                     name: "Revenue",
                     type: .income,
                     description: "Test income account",
-                    globalUnit: unit
+                    denomination: unit
                 )
                 let arguments = [revenueAccountArguments, cashAccountArguments]
-                let _ = try Account.createMany(
-                    entity: entity,
+                let _ = Account.createMany(
+                    in: entity,
                     arguments: arguments,
-                    callback: { (error, accounts) in
+                    then: { (error, accounts) in
                         XCTAssertNil(error)
                         XCTAssertNotNil(accounts)
                         self.cashAccount = accounts![0]
@@ -72,9 +72,9 @@ class TransactionTests: AmatinoTest {
         
         func retrieveUnit(_: Session, _: Entity) {
             let _ = GlobalUnit.retrieve(
-                unitId: 5,
-                session: session!,
-                callback: { (error, globalUnit) in
+                withId: 5,
+                authenticatedBy: session!,
+                then: { (error, globalUnit) in
                     XCTAssertNil(error)
                     XCTAssertNotNil(globalUnit)
                     self.unit = globalUnit!
@@ -86,8 +86,8 @@ class TransactionTests: AmatinoTest {
         
         func createEntity(_: Session) {
             let _ = Entity.create(
-                session: session!,
-                name: "Amatino Swift test entity") { (error, entity) in
+                authenticatedBy: session!,
+                withName: "Amatino Swift test entity") { (error, entity) in
                     XCTAssertNil(error)
                     XCTAssertNotNil(entity)
                     self.entity = entity
@@ -99,7 +99,7 @@ class TransactionTests: AmatinoTest {
         let _ = Session.create(
             email: dummyUserEmail(),
             secret: dummyUserSecret(),
-            callback: { (error, session) in
+            then: { (error, session) in
                 XCTAssertNil(error)
                 XCTAssertNotNil(session)
                 self.session = session
@@ -122,12 +122,12 @@ class TransactionTests: AmatinoTest {
             )
         ]
         let _ = Transaction.create(
-            entity: entity!,
-            transactionTime: Date(),
+            in: entity!,
+            at: Date(),
             description: "Amatino Swift test transaction",
-            globalUnit: unit!,
-            entries: entries,
-            callback: { (error, transaction) in
+            denominatedIn: unit!,
+            composedOf: entries,
+            then: { (error, transaction) in
                 callback(error, transaction)
                 return
         })
@@ -146,12 +146,12 @@ class TransactionTests: AmatinoTest {
             )
         ]
         let _ = Transaction.create(
-            entity: entity!,
-            transactionTime: Date(),
+            in: entity!,
+            at: Date(),
             description: "Amatino Swift test transaction creation",
-            globalUnit: unit!,
-            entries: entries,
-            callback: { (error, transaction) in
+            denominatedIn: unit!,
+            composedOf: entries,
+            then: { (error, transaction) in
                 XCTAssertNil(error)
                 XCTAssertNotNil(transaction)
                 expectation.fulfill()
@@ -168,9 +168,9 @@ class TransactionTests: AmatinoTest {
         
         func retrieveTransaction(_ transactionId: Int) {
             let _ = Transaction.retrieve(
-                entity: entity!,
-                transactionId: transactionId,
-                callback: { (error, transaction) in
+                from: entity!,
+                withId: transactionId,
+                then: { (error, transaction) in
                     XCTAssertNil(error)
                     XCTAssertNotNil(transaction)
                     expectation.fulfill()
@@ -187,12 +187,12 @@ class TransactionTests: AmatinoTest {
             )
         ]
         let _ = Transaction.create(
-            entity: entity!,
-            transactionTime: Date(),
+            in: entity!,
+            at: Date(),
             description: "Amatino Swift test transaction retrieval",
-            globalUnit: unit!,
-            entries: entries,
-            callback: { (error, transaction) in
+            denominatedIn: unit!,
+            composedOf: entries,
+            then: { (error, transaction) in
                 XCTAssertNil(error)
                 XCTAssertNotNil(transaction)
                 retrieveTransaction(transaction!.id)
@@ -220,9 +220,9 @@ class TransactionTests: AmatinoTest {
             transaction.update(
                 transactionTime: transaction.transactionTime,
                 description: newDescription,
-                globalUnit: self.unit!,
+                denomination: self.unit!,
                 entries: transaction.entries,
-                callback: { (error, transaction) in
+                then: { (error, transaction) in
                     guard error == nil else {
                         XCTFail(); expectation.fulfill()
                         return
@@ -264,9 +264,9 @@ class TransactionTests: AmatinoTest {
                     return
                 }
                 Transaction.retrieve(
-                    entity: self.entity!,
-                    transactionId: transaction.id,
-                    callback: { (error, transaction) in
+                    from: self.entity!,
+                    withId: transaction.id,
+                    then: { (error, transaction) in
                         guard let amatinoError = error as? AmatinoError
                                 else {
                             XCTFail(); expectation.fulfill()

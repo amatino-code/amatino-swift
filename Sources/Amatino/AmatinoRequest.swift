@@ -101,7 +101,7 @@ internal class AmatinoRequest {
   
         
         let fullURL: String
-        
+
         if urlParameters != nil {
             fullURL = apiEndpoint + path + urlParameters!.paramString
         } else {

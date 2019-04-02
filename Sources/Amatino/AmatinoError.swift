@@ -50,7 +50,7 @@ public class AmatinoError: Error, CustomStringConvertible {
         case genericServerError = """
         The Amatino API replied with a generic error response, indicating that \
         it has failed internally. Either Amatino is experiencing temporary \
-        disruption, or there is a bug in API.
+        disruption, or there is a bug in the API.
         """
         case constraintViolated = """
         Input data violates a constraint. For example, a description may be \

@@ -19,7 +19,7 @@ class AncillaryTests: AmatinoTest {
         let _ = Session.create(
             email: dummyUserEmail(),
             secret: dummyUserSecret(),
-            callback: { (error, session) in
+            then: { (error, session) in
                 XCTAssertNil(error)
                 XCTAssertNotNil(session)
                 expectation.fulfill()
@@ -37,8 +37,8 @@ class AncillaryTests: AmatinoTest {
         
         func retrieveList(session: Session) {
             let _ = GlobalUnitList.retrieve(
-                session: session,
-                callback: { (error, units) in
+                authenticatedBy: session,
+                then: { (error, units) in
                     guard error == nil else {
                         XCTFail()
                         expectation.fulfill()
@@ -61,7 +61,7 @@ class AncillaryTests: AmatinoTest {
             let _ = Session.create(
                 email: dummyUserEmail(),
                 secret: dummyUserSecret(),
-                callback: { (error, session) in
+                then: { (error, session) in
                     if let newSession: Session = session {
                         retrieveList(session: newSession)
                         return

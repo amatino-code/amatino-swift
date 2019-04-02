@@ -35,7 +35,7 @@ public final class Balance: EntityObject, Denominated {
 
     public static func retrieve(
         for account: Account,
-        denominatedIn denomination: Denomination,
+        denominatedIn denomination: Denomination? = nil,
         at time: Date? = nil,
         then callback: @escaping (Error?, Balance?) -> Void
     ) {
@@ -54,7 +54,7 @@ public final class Balance: EntityObject, Denominated {
     
     public static func retrieve(
         for account: Account,
-        denominatedIn denomination: Denomination,
+        denominatedIn denomination: Denomination? = nil,
         at time: Date? = nil,
         then callback: @escaping (Result<Balance, Error>) -> Void
     ) {
@@ -177,7 +177,10 @@ public final class Balance: EntityObject, Denominated {
         ) {
             self.accountId = accountId
             self.balanceTime = balanceTime ?? Date()
-            if let customUnit = denomination as? CustomUnit {
+            if denomination == nil {
+                globalUnitId = nil
+                customUnitId = nil
+            } else if let customUnit = denomination as? CustomUnit {
                 self.customUnitId = customUnit.id
                 self.globalUnitId = nil
             } else if let globalUnit = denomination as? GlobalUnit {

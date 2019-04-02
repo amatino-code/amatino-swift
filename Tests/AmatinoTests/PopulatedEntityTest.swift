@@ -30,7 +30,7 @@ class PopulatedEntityTest: DerivedObjectTest {
             tx1 = try Transaction.CreateArguments(
                 transactionTime: Date(timeIntervalSinceNow: (-3600*25*3)),
                 description: "Test transaction 4",
-                globalUnit: unit!,
+                denomination: unit!,
                 entries: [
                     Entry(
                         side: .debit,
@@ -47,7 +47,7 @@ class PopulatedEntityTest: DerivedObjectTest {
             tx2 = try Transaction.CreateArguments(
                 transactionTime: Date(timeIntervalSinceNow: (-3600*24*1)),
                 description: "Test transaction 5",
-                globalUnit: unit!,
+                denomination: unit!,
                 entries: [
                     Entry(
                         side: .debit,
@@ -64,7 +64,7 @@ class PopulatedEntityTest: DerivedObjectTest {
             tx3 = try Transaction.CreateArguments(
                 transactionTime: Date(timeIntervalSinceNow: (-3600*24*1)),
                 description: "Test transaction 6",
-                globalUnit: unit!,
+                denomination: unit!,
                 entries: [
                     Entry(
                         side: .debit,
@@ -102,7 +102,7 @@ class PopulatedEntityTest: DerivedObjectTest {
                 let tx4 = try Transaction.CreateArguments(
                     transactionTime: Date(timeIntervalSinceNow: (-3600*24*1)),
                     description: "Test transaction 7",
-                    globalUnit: unit!,
+                    denomination: unit!,
                     entries: [
                         Entry(
                             side: .debit,
@@ -122,9 +122,9 @@ class PopulatedEntityTest: DerivedObjectTest {
                     ]
                 )
                 let _ = Transaction.createMany(
-                    entity: entity!,
+                    in: entity!,
                     arguments: [tx1, tx2, tx3, tx4],
-                    callback: { (error, transactions) in
+                    then: { (error, transactions) in
                         guard error == nil else {
                             XCTFail()
                             extraTxExpectation.fulfill()
@@ -144,12 +144,12 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         func createCashChild() {
             let _ = Account.create(
-                entity: entity!,
-                name: "T1.1 Cash",
+                in: entity!,
+                named: "T1.1 Cash",
                 description: "Test cash child",
-                globalUnit: unit!,
-                parent: cashAccount!,
-                callback: { (error, newAccount) in
+                asChildOf: cashAccount!,
+                denominatedIn: unit!,
+                then: { (error, newAccount) in
                     guard error == nil else {
                         XCTFail()
                         cashChildExpectation.fulfill()
@@ -211,8 +211,8 @@ class PopulatedEntityTest: DerivedObjectTest {
         let ledgerExpectation = XCTestExpectation(description: "Ledger")
         
         Ledger.retrieve(
-            account: cashAccount!,
-            callback: { (error, newLedger) in
+            for: cashAccount!,
+            then: { (error, newLedger) in
                 guard error == nil else {
                     XCTFail()
                     ledgerExpectation.fulfill()
@@ -262,6 +262,8 @@ class PopulatedEntityTest: DerivedObjectTest {
                         return
                     }
                     guard page.latest?.balance == self.recurseCashBalance else {
+                        print("Recursive cash balance: \(self.recurseCashBalance)")
+                        print("Latest page balance: \(String(describing: page.latest?.balance))")
                         XCTFail()
                         pageExpectation.fulfill()
                         return
@@ -282,41 +284,35 @@ class PopulatedEntityTest: DerivedObjectTest {
         
         let ledgerExpectation = XCTestExpectation(description: "R. Ledger")
         
-        do {
-            let _ = try RecursiveLedger.retrieve(
-                account: cashAccount!,
-                callback: { (error, newLedger) in
-                    XCTAssertNil(error)
-                    XCTAssertNotNil(newLedger)
-                    guard error == nil else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
-                    guard let ledger: RecursiveLedger = newLedger else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
-                    let balance = ledger.latest?.balance
-                    guard balance == self.recurseCashBalance else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
-                    guard ledger.count == 7 else {
-                        XCTFail()
-                        ledgerExpectation.fulfill()
-                        return
-                    }
+        let _ = RecursiveLedger.retrieve(
+            for: cashAccount!,
+            then: { (error, newLedger) in
+                XCTAssertNil(error)
+                XCTAssertNotNil(newLedger)
+                guard error == nil else {
+                    XCTFail()
                     ledgerExpectation.fulfill()
                     return
-            })
-        } catch {
-            XCTFail()
-            ledgerExpectation.fulfill()
-            return
-        }
+                }
+                guard let ledger: RecursiveLedger = newLedger else {
+                    XCTFail()
+                    ledgerExpectation.fulfill()
+                    return
+                }
+                let balance = ledger.latest?.balance
+                guard balance == self.recurseCashBalance else {
+                    XCTFail()
+                    ledgerExpectation.fulfill()
+                    return
+                }
+                guard ledger.count == 7 else {
+                    XCTFail()
+                    ledgerExpectation.fulfill()
+                    return
+                }
+                ledgerExpectation.fulfill()
+                return
+        })
         wait(for: [ledgerExpectation], timeout: 5)
         return
     }
@@ -326,8 +322,8 @@ class PopulatedEntityTest: DerivedObjectTest {
         let ledgerExpectation = XCTestExpectation(description: "Ledger")
         
         let _ = Ledger.retrieve(
-            account: cashAccount!,
-            callback: { (error, newLedger) in
+            for: cashAccount!,
+            then: { (error, newLedger) in
                 guard error == nil else {
                     XCTFail()
                     ledgerExpectation.fulfill()
@@ -338,11 +334,11 @@ class PopulatedEntityTest: DerivedObjectTest {
                     ledgerExpectation.fulfill()
                     return
                 }
-                let _ = ledger.nextPage() { (error, rows) in
+                let _ = ledger.retrieveNextPage() { (error, rows) in
                 
                 }
-                let _ = ledger.nextPage(
-                    callback: { (error, rows) in
+                let _ = ledger.retrieveNextPage(
+                    then: { (error, rows) in
                         guard error == nil else {
                             XCTFail()
                             ledgerExpectation.fulfill()
@@ -361,10 +357,10 @@ class PopulatedEntityTest: DerivedObjectTest {
         let ledgerExpectation = XCTestExpectation(description: "Ledger")
         
         let _ = Ledger.retrieve(
-            account: cashAccount!,
-            start: Date(timeIntervalSinceNow: (-3600*24*2)),
-            end: Date(timeIntervalSinceNow: (-3600*24*1)),
-            callback: { (error, newLedger) in
+            for: cashAccount!,
+            startingAt: Date(timeIntervalSinceNow: (-3600*24*2)),
+            endingAt: Date(timeIntervalSinceNow: (-3600*24*1)),
+            then: { (error, newLedger) in
                 guard error == nil else {
                     XCTFail()
                     ledgerExpectation.fulfill()
@@ -391,9 +387,9 @@ class PopulatedEntityTest: DerivedObjectTest {
         let treeExpectation = XCTestExpectation(description: "Retrieve tree")
 
         let _ = Tree.retrieve(
-            entity: entity!,
-            globalUnit: unit!,
-            callback: { (error, tree) in
+            for: entity!,
+            denominatedIn: unit!,
+            then: { (error, tree) in
                 guard error == nil else {
                     XCTFail(); treeExpectation.fulfill(); return
                 }
@@ -415,11 +411,11 @@ class PopulatedEntityTest: DerivedObjectTest {
         let expectation = XCTestExpectation(description: "Retrieve Performance")
 
         let _ = Performance.retrieve(
-            entity: entity!,
-            startTime: Date(timeIntervalSinceNow: (-3600*24*10)),
-            endTime: Date(),
-            globalUnit: unit!,
-            callback: { (error, performance) in
+            for: entity!,
+            startingAt: Date(timeIntervalSinceNow: (-3600*24*10)),
+            endingAt: Date(),
+            denominatedIn: unit!,
+            then: { (error, performance) in
                 guard error == nil else {
                     let cast = error as? AmatinoError
                     print(cast?.description ?? "Unknown Error")
@@ -440,9 +436,9 @@ class PopulatedEntityTest: DerivedObjectTest {
         let expectation = XCTestExpectation(description: "Retrieve Position")
         
         let _ = Position.retrieve(
-            entity: entity!,
-            globalUnit: unit!,
-            callback: { (error, position) in
+            for: entity!,
+            denominatedIn: unit!,
+            then: { (error, position) in
                 guard error == nil else {
                     let cast = error as? AmatinoError
                     print(cast?.description ?? "Unknown Error")

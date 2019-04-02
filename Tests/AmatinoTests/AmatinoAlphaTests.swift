@@ -54,9 +54,9 @@ class AmatinoAlphaTests: XCTestCase {
         callback: @escaping (_: Error?, _: Entity?) -> Void
         ) throws {
         let _ = Entity.create(
-            session: session,
-            name: "My First Entity",
-            callback: callback
+            authenticatedBy: session,
+            withName: "My First Entity",
+            then: callback
         )
         return
     }
@@ -67,7 +67,7 @@ class AmatinoAlphaTests: XCTestCase {
         let _ = Session.create(
             email: testUserEmail(),
             secret: testUserSecret(),
-            callback: callback
+            then: callback
         )
         return
     }
@@ -77,9 +77,9 @@ class AmatinoAlphaTests: XCTestCase {
         callback: @escaping (_: Error?, _: GlobalUnit?) -> Void
         ) throws {
         let _ = GlobalUnit.retrieve(
-            unitId: 5,
-            session: session,
-            callback: callback
+            withId: 5,
+            authenticatedBy: session,
+            then: callback
         )
         return
     }
@@ -94,18 +94,18 @@ class AmatinoAlphaTests: XCTestCase {
             name: "Test Asset",
             type: .asset,
             description: "",
-            globalUnit: unit
+            denomination: unit
         )
         let account2 = try Account.CreateArguments(
             name: "Test Liability",
             type: .liability,
             description: "",
-            globalUnit: unit
+            denomination: unit
         )
-        let _ = try Account.createMany(
-            entity: entity,
+        let _ = Account.createMany(
+            in: entity,
             arguments: [account1, account2],
-            callback: callback
+            then: callback
         )
         
         return
@@ -185,13 +185,13 @@ class AmatinoAlphaTests: XCTestCase {
                     name: "Test Asset",
                     type: .asset,
                     description: "",
-                    globalUnit: unit
+                    denomination: unit
                 )
                 let account2 = try Account.CreateArguments(
                     name: "Test Liability",
                     type: .liability,
                     description: "",
-                    globalUnit: unit
+                    denomination: unit
                 )
                 let _ = try amatinoAlpha.request(
                     path: "/accounts",

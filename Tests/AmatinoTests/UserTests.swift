@@ -18,7 +18,7 @@ class UserTests: AmatinoTest {
         let _ = Session.create(
             email: dummyUserEmail(),
             secret: dummyUserSecret(),
-            callback: { (error, session) in
+            then: { (error, session) in
                 XCTAssertNil(error)
                 XCTAssertNotNil(session)
                 self.session = session

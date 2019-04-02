@@ -127,7 +127,13 @@ public final class Account: EntityObject, AccountRepresentative {
         denominatedIn denomination: Denomination,
         then callback: @escaping (Result<Account, Error>) -> Void
     ) {
-        Account.create(in: entity, named: name, description: description, asChildOf: parent, denominatedIn: denomination) { (error, account) in
+        Account.create(
+            in: entity,
+            named: name,
+            description: description,
+            asChildOf: parent,
+            denominatedIn: denomination
+        ) { (error, account) in
             guard let account = account else {
                 callback(.failure(error ?? AmatinoError(.inconsistentState)))
                 return
@@ -510,7 +516,7 @@ public final class Account: EntityObject, AccountRepresentative {
         internal var minNameError: String { get {
             return "Min name length \(minNameLength) characters"
         }}
-        
+
         public init(
             name: String,
             type: AccountType,
@@ -570,7 +576,7 @@ public final class Account: EntityObject, AccountRepresentative {
             self.type = parent.type
             self.customUnitId = customUnitId
             self.counterPartyEntity = nil
-            self.parentAccountId = nil
+            self.parentAccountId = parent.accountId
             self.colour = nil
             
             try checkName(name: name)
