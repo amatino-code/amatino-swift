@@ -43,38 +43,67 @@ public final class Account: EntityObject, AccountRepresentative {
         named name: String,
         type: AccountType,
         description: String,
-        globalUnit: GlobalUnit,
+        denominatedIn denomination: Denomination,
         then callback: @escaping (Error?, Account?) -> Void
-        ) throws {
-        let arguments = try Account.CreateArguments(
-            name: name,
-            type: type,
-            description: description,
-            globalUnit: globalUnit
-        )
-        let _ = Account.create(
-            in: entity,
-            arguments: arguments,
-            then: callback
-        )
+    ) {
+        do {
+            let arguments = try Account.CreateArguments(
+                name: name,
+                type: type,
+                description: description,
+                denomination: denomination
+            )
+            let _ = Account.create(
+                in: entity,
+                arguments: arguments,
+                then: callback
+            )
+        } catch {
+            callback(error, nil)
+        }
+
         return
     }
     
     public static func create(
         in entity: Entity,
         named name: String,
+        type: AccountType,
         description: String,
-        globalUnit: GlobalUnit,
-        parent: AccountRepresentative,
+        denominatedIn denomination: Denomination,
+        then callback: @escaping (Result<Account, Error>) -> Void
+    ) {
+        Account.create(
+            in: entity,
+            named: name,
+            type: type,
+            description: description,
+            denominatedIn: denomination
+        ) { (error, account) in
+            guard let account = account else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(account))
+            return
+        }
+    }
+    
+    public static func create(
+        in entity: Entity,
+        named name: String,
+        description: String,
+        asChildOf parent: AccountRepresentative,
+        denominatedIn denomination: Denomination,
         then callback: @escaping (Error?, Account?) -> Void
-        ) {
+    ) {
         let arguments: Account.CreateArguments
         do {
             arguments = try Account.CreateArguments(
                 name: name,
+                parent: parent,
                 description: description,
-                globalUnit: globalUnit,
-                parent: parent
+                denomination: denomination
             )
         } catch {
             callback(error, nil)
@@ -89,6 +118,24 @@ public final class Account: EntityObject, AccountRepresentative {
     }
     
     public static func create(
+        in entity: Entity,
+        named name: String,
+        description: String,
+        asChildOf parent: AccountRepresentative,
+        denominatedIn denomination: Denomination,
+        then callback: @escaping (Result<Account, Error>) -> Void
+    ) {
+        Account.create(in: entity, named: name, description: description, asChildOf: parent, denominatedIn: denomination) { (error, account) in
+            guard let account = account else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(account))
+            return
+        }
+    }
+    
+    private static func create(
         in entity: Entity,
         arguments: Account.CreateArguments,
         then callback: @escaping (Error?, Account?) -> Void
@@ -113,30 +160,51 @@ public final class Account: EntityObject, AccountRepresentative {
         } catch {
             callback(error, nil)
         }
-
     }
     
     public static func createMany(
         in entity: Entity,
         arguments: [Account.CreateArguments],
         then callback: @escaping (Error?, [Account]?) -> Void
-        ) throws {
-        let requestData = try RequestData(arrayData: arguments)
-        let urlParameters = UrlParameters(singleEntity: entity)
-        let _ = try AmatinoRequest(
-            path: path,
-            data: requestData,
-            session: entity.session,
-            urlParameters: urlParameters,
-            method: .POST,
-            callback: { (error, data) in
-                let _ = asyncInitMany(
-                    entity,
-                    callback,
-                    error,
-                    data
-                )
-        })
+        ) {
+        do {
+            let requestData = try RequestData(arrayData: arguments)
+            let urlParameters = UrlParameters(singleEntity: entity)
+            let _ = try AmatinoRequest(
+                path: path,
+                data: requestData,
+                session: entity.session,
+                urlParameters: urlParameters,
+                method: .POST,
+                callback: { (error, data) in
+                    let _ = asyncInitMany(
+                        entity,
+                        callback,
+                        error,
+                        data
+                    )
+            })
+        } catch {
+            callback(error, nil)
+        }
+        return
+    }
+    
+    public static func createMany(
+        in entity: Entity,
+        arguments: [Account.CreateArguments],
+        then callback: @escaping (Result<[Account], Error>) -> Void
+    ) {
+        Account.createMany(
+        in: entity, arguments: arguments) { (error, accounts) in
+            guard let accounts = accounts else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(accounts))
+            return
+        }
+        return
     }
     
     public static func retrieve(
@@ -170,9 +238,28 @@ public final class Account: EntityObject, AccountRepresentative {
         return
     }
     
+    public static func retrieve(
+        from entity: Entity,
+        withId accountId: Int,
+        then callback: @escaping (Result<Account, Error>) -> Void
+    ) {
+        Account.retrieve(
+            from: entity,
+            withId: accountId
+        ) { (error, account) in
+            guard let account = account else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(account))
+            return
+        }
+        return
+    }
+    
     public static func retrieveMany(
         from entity: Entity,
-        withId accountIds: [Int],
+        withIds accountIds: [Int],
         then callback: @escaping (Error?, [Account]?) -> Void
         ) {
         let targets = UrlTarget.createSequence(key: urlKey, values: accountIds)
@@ -195,9 +282,25 @@ public final class Account: EntityObject, AccountRepresentative {
         } catch {
             callback(error, nil)
         }
-        
         return
-
+    }
+    
+    public static func retrieveMany(
+        from entity: Entity,
+        withIds accountIds: [Int],
+        then callback: @escaping (Result<[Account], Error>) -> Void
+    ) {
+        Account.retrieveMany(
+            from: entity,
+            withIds: accountIds
+        ) { (error, accounts) in
+            guard let accounts = accounts else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(accounts))
+            return
+        }
     }
     
     public func update(
@@ -205,10 +308,9 @@ public final class Account: EntityObject, AccountRepresentative {
         description: String,
         parent: AccountRepresentative?,
         type: AccountType,
-        counterParty: Entity?,
         colour: Colour?,
-        globalUnit: GlobalUnit,
-        callback: @escaping (Error?, Account?) -> Void
+        denomination: Denomination,
+        then callback: @escaping (Error?, Account?) -> Void
         ) {
         do {
             let arguments = UpdateArguments(
@@ -216,9 +318,7 @@ public final class Account: EntityObject, AccountRepresentative {
                 name: name,
                 type: type,
                 parent: parent,
-                customUnit: nil,
-                globalUnit: globalUnit,
-                counterParty: counterParty,
+                denomination: denomination,
                 description: description,
                 colour: colour
             )
@@ -226,7 +326,6 @@ public final class Account: EntityObject, AccountRepresentative {
         } catch {
             callback(error, nil)
         }
-
         return
     }
     
@@ -235,30 +334,27 @@ public final class Account: EntityObject, AccountRepresentative {
         description: String,
         parent: AccountRepresentative?,
         type: AccountType,
-        counterParty: Entity?,
         colour: Colour?,
-        customUnit: CustomUnit,
-        callback: @escaping (Error?, Account?) -> Void
-        ) {
-        
-        let arguments = UpdateArguments(
-            existing: self,
+        denomination: Denomination,
+        then callback: @escaping (Result<Account, Error>) -> Void
+    ) {
+        self.update(
             name: name,
-            type: type,
-            parent: parent,
-            customUnit: customUnit,
-            globalUnit: nil,
-            counterParty: counterParty,
             description: description,
-            colour: colour
-        )
-        do {
-            let _ = try executeUpdate(arguments, callback)
-        } catch {
-            callback(error, nil)
+            parent: parent,
+            type: type,
+            colour: colour,
+            denomination: denomination
+        ) { (error, account) in
+            guard let account = account else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(account))
+            return
         }
-        return
     }
+
     
     internal func executeUpdate(
         _ arguments: UpdateArguments,
@@ -397,8 +493,8 @@ public final class Account: EntityObject, AccountRepresentative {
         private let name: String
         private let type: AccountType
         private let parentAccountId: Int?
-        private let globalUnit: GlobalUnit?
-        private let customUnit: CustomUnit?
+        private let globalUnitId: Int?
+        private let customUnitId: Int?
         private let counterPartyEntity: Entity?
         private let description: String
         private let colour: Colour?
@@ -417,14 +513,60 @@ public final class Account: EntityObject, AccountRepresentative {
             name: String,
             type: AccountType,
             description: String,
-            globalUnit: GlobalUnit
-            ) throws {
+            denomination: Denomination
+        ) throws {
+            
+            let globalUnitId: Int?
+            let customUnitId: Int?
+            if let customUnit = denomination as? CustomUnit {
+                customUnitId = customUnit.id
+                globalUnitId = nil
+            } else if let globalUnit = denomination as? GlobalUnit {
+                globalUnitId = globalUnit.id
+                customUnitId = nil
+            } else {
+                fatalError("Unknown denomination type")
+            }
             
             self.name = name
             self.description = description
-            self.globalUnit = globalUnit
+            self.globalUnitId = globalUnitId
             self.type = type
-            self.customUnit = nil
+            self.customUnitId = customUnitId
+            self.counterPartyEntity = nil
+            self.parentAccountId = nil
+            self.colour = nil
+    
+            try checkName(name: name)
+            try checkDescription(description: description)
+            
+            return
+        }
+        
+        public init(
+            name: String,
+            parent: AccountRepresentative,
+            description: String,
+            denomination: Denomination
+        ) throws {
+            
+            let globalUnitId: Int?
+            let customUnitId: Int?
+            if let customUnit = denomination as? CustomUnit {
+                customUnitId = customUnit.id
+                globalUnitId = nil
+            } else if let globalUnit = denomination as? GlobalUnit {
+                globalUnitId = globalUnit.id
+                customUnitId = nil
+            } else {
+                fatalError("Unknown denomination type")
+            }
+            
+            self.name = name
+            self.description = description
+            self.globalUnitId = globalUnitId
+            self.type = parent.type
+            self.customUnitId = customUnitId
             self.counterPartyEntity = nil
             self.parentAccountId = nil
             self.colour = nil
@@ -434,72 +576,7 @@ public final class Account: EntityObject, AccountRepresentative {
             
             return
         }
-        
-        public init(
-            name: String,
-            type: AccountType,
-            description: String,
-            customUnit: CustomUnit
-            ) throws {
-            
-            self.name = name
-            self.description = description
-            self.globalUnit = nil
-            self.type = type
-            self.customUnit = customUnit
-            self.counterPartyEntity = nil
-            self.parentAccountId = nil
-            self.colour = nil
-            
-            try checkName(name: name)
-            try checkDescription(description: description)
-            
-            return
-        }
-        
-        public init(
-            name: String,
-            description: String,
-            customUnit: CustomUnit,
-            parent: AccountRepresentative
-            ) throws {
-            
-            self.name = name
-            self.description = description
-            self.globalUnit = nil
-            self.type = parent.type
-            self.customUnit = customUnit
-            self.counterPartyEntity = nil
-            self.parentAccountId = parent.id
-            self.colour = nil
-            
-            try checkName(name: name)
-            try checkDescription(description: description)
-            
-            return
-        }
-        
-        public init(
-            name: String,
-            description: String,
-            globalUnit: GlobalUnit,
-            parent: AccountRepresentative
-            ) throws {
-            
-            self.name = name
-            self.description = description
-            self.globalUnit = globalUnit
-            self.type = parent.type
-            self.customUnit = nil
-            self.counterPartyEntity = nil
-            self.parentAccountId = parent.id
-            self.colour = nil
-            
-            try checkName(name: name)
-            try checkDescription(description: description)
-            
-            return
-        }
+
         
         private func checkName(name: String) throws -> Void {
             guard name.count < maxNameLength else {
@@ -533,8 +610,8 @@ public final class Account: EntityObject, AccountRepresentative {
             try container.encode(description, forKey: .description)
             try container.encode(type, forKey: .type)
             try container.encode(parentAccountId, forKey: .parentAccountId)
-            try container.encode(globalUnit?.id, forKey: .globalUnitId)
-            try container.encode(customUnit?.id, forKey: .customUnitId)
+            try container.encode(globalUnitId, forKey: .globalUnitId)
+            try container.encode(customUnitId, forKey: .customUnitId)
             try container.encode(
                 counterPartyEntity?.id,
                 forKey: .counterPartyEntity
@@ -551,11 +628,43 @@ public final class Account: EntityObject, AccountRepresentative {
         let name: String
         let type: AccountType
         let parent: AccountRepresentative?
-        let customUnit: CustomUnit?
-        let globalUnit: GlobalUnit?
+        let customUnitId: Int?
+        let globalUnitId: Int?
         let counterParty: Entity?
         let description: String
         let colour: Colour?
+        
+        public init (
+            existing: Account,
+            name: String,
+            type: AccountType,
+            parent: AccountRepresentative?,
+            denomination: Denomination,
+            description: String,
+            colour: Colour?
+        ) {
+            counterParty = nil
+            self.existing = existing
+            self.name = name
+            self.type = type
+            self.parent = parent
+            self.description = description
+            self.colour = colour
+            let globalUnitId: Int?
+            let customUnitId: Int?
+            if let customUnit = denomination as? CustomUnit {
+                customUnitId = customUnit.id
+                globalUnitId = nil
+            } else if let globalUnit = denomination as? GlobalUnit {
+                globalUnitId = globalUnit.id
+                customUnitId = nil
+            } else {
+                fatalError("Unknown denomination type")
+            }
+            self.customUnitId = customUnitId
+            self.globalUnitId = globalUnitId
+            return
+        }
         
         enum JSONObjectKeys: String, CodingKey {
             case id = "account_id"
@@ -576,8 +685,8 @@ public final class Account: EntityObject, AccountRepresentative {
             try container.encode(description, forKey: .description)
             try container.encode(type, forKey: .type)
             try container.encode(parent?.id, forKey: .parent)
-            try container.encode(globalUnit?.id, forKey: .globalUnitId)
-            try container.encode(customUnit?.id, forKey: .customUnitId)
+            try container.encode(globalUnitId, forKey: .globalUnitId)
+            try container.encode(customUnitId, forKey: .customUnitId)
             try container.encode(
                 counterParty?.id,
                 forKey: .counterPartyEntity
