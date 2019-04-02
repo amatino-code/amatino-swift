@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class Tree: EntityObject, Sequence {
+public final class Tree: EntityObject, Sequence, Denominated {
 
     internal init(
         _ entity: Entity,

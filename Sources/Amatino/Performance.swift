@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class Performance: EntityObject {
+public final class Performance: EntityObject, Denominated {
     
     internal init(
         _ entity: Entity,
@@ -41,18 +41,17 @@ public final class Performance: EntityObject {
     private var entityId: String { get { return attributes.entityId } }
     
     public static func retrieve(
-        entity: Entity,
-        startTime: Date,
-        endTime: Date,
-        globalUnit: GlobalUnit,
-        depth: Int? = nil,
-        callback: @escaping (Error?, Performance?) -> Void
-        ) {
+        for entity: Entity,
+        startingAt startTime: Date,
+        endingAt endTime: Date,
+        denominatedIn denomination: Denomination,
+        toDepth depth: Int? = nil,
+        then callback: @escaping (Error?, Performance?) -> Void
+    ) {
         let arguments = Performance.RetrievalArguments(
             startTime: startTime,
             endTime: endTime,
-            globalUnitId: globalUnit.id,
-            customUnitId: nil,
+            denomination: denomination,
             depth: depth
         )
         Performance.executeRetrieval(entity, arguments, callback)
@@ -60,24 +59,28 @@ public final class Performance: EntityObject {
     }
     
     public static func retrieve(
-        entity: Entity,
-        startTime: Date,
-        endTime: Date,
-        customUnit: CustomUnit,
-        depth: Int? = nil,
-        callback: @escaping (Error?, Performance?) -> Void
-        ) {
-        let arguments = Performance.RetrievalArguments(
-            startTime: startTime,
-            endTime: endTime,
-            globalUnitId: nil,
-            customUnitId: customUnit.id,
-            depth: depth
-        )
-        Performance.executeRetrieval(entity, arguments, callback)
-        return
+        for entity: Entity,
+        startingAt start: Date,
+        endingAt end: Date,
+        denominatedIn denomination: Denomination,
+        toDepth depth: Int? = nil,
+        then callback: @escaping (Result<Performance, Error>) -> Void
+    ) {
+        Performance.retrieve(
+            for: entity,
+            startingAt: start,
+            endingAt: end,
+            denominatedIn: denomination
+        ) { (error, performance) in
+            guard let performance = performance else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(performance))
+            return
+        }
     }
-    
+
     private static func executeRetrieval(
         _ entity: Entity,
         _ arguments: Performance.RetrievalArguments,
@@ -178,6 +181,26 @@ public final class Performance: EntityObject {
             try container.encode(customUnitId, forKey: .customUnitId)
             try container.encode(depth, forKey: .depth)
             return
+        }
+        
+        public init(
+            startTime: Date,
+            endTime: Date,
+            denomination: Denomination,
+            depth: Int?
+        ) {
+            if let customUnit = denomination as? CustomUnit {
+                self.customUnitId = customUnit.id
+                self.globalUnitId = nil
+            } else if let globalUnit = denomination as? GlobalUnit {
+                self.globalUnitId = globalUnit.id
+                self.customUnitId = nil
+            } else {
+                fatalError("Unknown Denomination type")
+            }
+            self.startTime = startTime
+            self.endTime = endTime
+            self.depth = depth
         }
         
         enum JSONObjectKeys: String, CodingKey {
