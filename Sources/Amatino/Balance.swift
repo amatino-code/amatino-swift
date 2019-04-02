@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class Balance: EntityObject {
+public final class Balance: EntityObject, Denominated {
 
     internal init (
         _ entity: Entity,
@@ -35,8 +35,8 @@ public final class Balance: EntityObject {
 
     public static func retrieve(
         for account: Account,
+        denominatedIn denomination: Denomination,
         at time: Date? = nil,
-        denominatedIn denomination: Denomination? = nil,
         then callback: @escaping (Error?, Balance?) -> Void
     ) {
         let arguments = Balance.RetrieveArguments(
@@ -54,14 +54,14 @@ public final class Balance: EntityObject {
     
     public static func retrieve(
         for account: Account,
+        denominatedIn denomination: Denomination,
         at time: Date? = nil,
-        denominatedIn denomination: Denomination? = nil,
         then callback: @escaping (Result<Balance, Error>) -> Void
     ) {
         Balance.retrieve(
             for: account,
-            at: time,
-            denominatedIn: denomination
+            denominatedIn: denomination,
+            at: time
         ) { (error, balance) in
             guard let balance = balance else {
                 callback(.failure(error ?? AmatinoError(.inconsistentState)))
