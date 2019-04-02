@@ -47,7 +47,7 @@ public final class CustomUnit: EntityObject, Denomination  {
         description: String,
         exponent: Int,
         then callback: @escaping (Error?, CustomUnit?) -> Void
-        ) {
+    ) {
         do {
             let arguments = try CustomUnit.CreationArguments(
                 code: code,
@@ -67,6 +67,26 @@ public final class CustomUnit: EntityObject, Denomination  {
             })
         } catch {
             callback(error, nil)
+        }
+    }
+    
+    public static func create(
+        in entity: Entity,
+        code: String,
+        named name: String,
+        priority: Int,
+        description: String,
+        exponent: Int,
+        then callback: @escaping (Result<CustomUnit, Error>) -> Void
+    ) {
+        CustomUnit.create(
+        in: entity, code: code, named: name, priority: priority, description: description, exponent: exponent) { (error, unit) in
+            guard let unit = unit else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(unit))
+            return
         }
     }
     
@@ -97,6 +117,22 @@ public final class CustomUnit: EntityObject, Denomination  {
         return
     }
     
+    public static func retrieve(
+        from entity: Entity,
+        withId id: Int,
+        then callback: @escaping (Result<CustomUnit, Error>) -> Void
+    ) {
+        CustomUnit.retrieve(
+        from: entity, withId: id) { (error, unit) in
+            guard let unit = unit else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(unit))
+            return
+        }
+    }
+
     public static func createMany(
         in entity: Entity,
         arguments: [CustomUnit.CreationArguments],
@@ -119,6 +155,24 @@ public final class CustomUnit: EntityObject, Denomination  {
             })
         } catch {
             callback(error, nil)
+        }
+    }
+    
+    public static func createMany(
+        in entity: Entity,
+        arguments: [CustomUnit.CreationArguments],
+        then callback: @escaping (Result<[CustomUnit], Error>) -> Void
+    ) {
+        CustomUnit.createMany(
+            in: entity,
+            arguments: arguments
+        ) { (error, units) in
+            guard let units = units else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(units))
+            return
         }
     }
     
@@ -155,6 +209,30 @@ public final class CustomUnit: EntityObject, Denomination  {
             })
         } catch {
             callback(error, nil)
+        }
+    }
+    
+    public func update(
+        code: String,
+        name: String,
+        priority: Int,
+        description: String,
+        exponent: Int,
+        then callback: @escaping (Result<CustomUnit, Error>) -> Void
+    ) {
+        self.update(
+            code: code,
+            name: name,
+            priority: priority,
+            description: description,
+            exponent: exponent
+        ) { (error, unit) in
+            guard let unit = unit else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(unit))
+            return
         }
     }
     
