@@ -10,15 +10,7 @@ import Foundation
 public class AmatinoAlpha
 {
     private let session: Session
-    
-    public static func create(
-        userId: Int,
-        secret: String,
-        callback: (Error?, AmatinoAlpha?) -> Void
-        ) {
-        
-    }
-    
+
     public static func create(
         email: String,
         secret: String,
@@ -27,7 +19,7 @@ public class AmatinoAlpha
         let _ = Session.create(
             email: email,
             secret: secret,
-            callback: {(error: Error?, session: Session?) in
+            then: {(error: Error?, session: Session?) in
                 guard error == nil else {callback(error, nil); return}
                 let alpha = AmatinoAlpha(session: session!)
                 callback(nil, alpha)

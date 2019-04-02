@@ -18,6 +18,24 @@ public class Session {
     public let userId: Int
     public let sessionId: Int
     
+    public func delete(then callback: @escaping (Error?) -> Void) {
+        do {
+            let _ = try AmatinoRequest(
+                path: Session.apiPath,
+                data: nil,
+                session: self,
+                urlParameters: nil,
+                method: .DELETE,
+                callback: { (error, _) in
+                    callback(error)
+                }
+            )
+        } catch {
+            callback(error)
+            return
+        }
+    }
+
     public static func create(
         email: String,
         secret: String,
