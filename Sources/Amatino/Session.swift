@@ -21,7 +21,7 @@ public class Session {
     public static func create(
         email: String,
         secret: String,
-        callback: @escaping (Error?, Session?) -> Void
+        then callback: @escaping (Error?, Session?) -> Void
         ) {
         
         let creationData = CreateArguments(secret: secret, email: email)
@@ -65,6 +65,21 @@ public class Session {
             callback(error, nil)
         }
         return
+    }
+    
+    public static func create(
+        email: String,
+        secret: String,
+        then callback: @escaping (Result<Session, Error>) -> Void
+    ) {
+        Session.create(email: email, secret: secret) { (error, session) in
+            guard let session = session else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(session))
+            return
+        }
     }
     
     internal init (attributes: Attributes) {
