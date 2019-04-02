@@ -47,6 +47,24 @@ public class GlobalUnit: AmatinoObject, Denomination {
         }
     }
     
+    public static func retrieve(
+        withId unitId: Int,
+        authenticatedBy session: Session,
+        then callback: @escaping (Result<GlobalUnit, Error>) -> Void
+    ) {
+        GlobalUnit.retrieve(
+            withId: unitId,
+            authenticatedBy: session
+        ) { (error, unit) in
+            guard let unit = unit else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(unit))
+            return
+        }
+    }
+
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)
