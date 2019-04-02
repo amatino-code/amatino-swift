@@ -48,7 +48,7 @@ class DerivedObjectTest: AmatinoTest {
                 let tx1Arguments = try Transaction.CreateArguments(
                     transactionTime: Date(timeIntervalSinceNow: (-3600*24*2)),
                     description: "Test transaction 1",
-                    globalUnit: usd,
+                    denomination: usd,
                     entries: [
                         Entry(
                             side: .debit,
@@ -65,7 +65,7 @@ class DerivedObjectTest: AmatinoTest {
                 let tx2Arguments = try Transaction.CreateArguments(
                     transactionTime: Date(timeIntervalSinceNow: (-3600*24)),
                     description: "Test transaction 2",
-                    globalUnit: usd,
+                    denomination: usd,
                     entries: [
                         Entry(
                             side: .debit,
@@ -82,7 +82,7 @@ class DerivedObjectTest: AmatinoTest {
                 let tx3Arguments = try Transaction.CreateArguments(
                     transactionTime: Date(),
                     description: "Test transaction 3",
-                    globalUnit: usd,
+                    denomination: usd,
                     entries: [
                         Entry(
                             side: .debit,
@@ -96,10 +96,10 @@ class DerivedObjectTest: AmatinoTest {
                         )
                     ]
                 )
-                let _ = try Transaction.createMany(
-                    entity: entity,
+                let _ = Transaction.createMany(
+                    in: entity,
                     arguments: [tx1Arguments, tx2Arguments, tx3Arguments],
-                    callback: { (error, transactions) in
+                    then: { (error, transactions) in
                         guard self.responsePassing(
                             error,
                             transactions,
@@ -128,29 +128,29 @@ class DerivedObjectTest: AmatinoTest {
                     name: "T1 Cash",
                     type: .asset,
                     description: "Test asset account",
-                    globalUnit: unit
+                    denomination: unit
                 )
                 let revenueAccountArguments = try Account.CreateArguments(
                     name: "T4 Revenue",
                     type: .income,
                     description: "Test income account",
-                    globalUnit: unit
+                    denomination: unit
                 )
                 let liabilityAccountArguments = try Account.CreateArguments(
                     name: "T2 Liability",
                     type: .liability,
                     description: "Test liability account",
-                    globalUnit: unit
+                    denomination: unit
                 )
                 let arguments = [
                     revenueAccountArguments,
                     cashAccountArguments,
                     liabilityAccountArguments
                 ]
-                let _ = try Account.createMany(
-                    entity: entity,
+                let _ = Account.createMany(
+                    in: entity,
                     arguments: arguments,
-                    callback: { (error, accounts) in
+                    then: { (error, accounts) in
                         guard self.responsePassing(
                             error,
                             accounts,
@@ -183,9 +183,9 @@ class DerivedObjectTest: AmatinoTest {
         
         func retrieveUnit(_ : Session, _: Entity) {
             let _ = GlobalUnit.retrieve(
-                unitId: 5,
-                session: session!,
-                callback: { (error, globalUnit) in
+                withId: 5,
+                authenticatedBy: session!,
+                then: { (error, globalUnit) in
                     guard self.responsePassing(
                         error,
                         globalUnit,
@@ -201,32 +201,26 @@ class DerivedObjectTest: AmatinoTest {
         }
         
         func createEntity(_ session: Session) {
-            do {
-                let _ = try Entity.create(
-                    session: session,
-                    name: "Amatino Swift test entity") { (error, entity) in
-                        guard self.responsePassing(
-                            error,
-                            entity,
-                            expectations
-                        ) else {
-                            return
-                        }
-                        self.entity = entity
-                        entityExpectation.fulfill()
-                        retrieveUnit(session, entity!)
-                }
-            } catch {
-                XCTFail()
-                entityExpectation.fulfill()
-                return
+            let _ = Entity.create(
+                authenticatedBy: session,
+                withName: "Amatino Swift test entity") { (error, entity) in
+                    guard self.responsePassing(
+                        error,
+                        entity,
+                        expectations
+                    ) else {
+                        return
+                    }
+                    self.entity = entity
+                    entityExpectation.fulfill()
+                    retrieveUnit(session, entity!)
             }
         }
         
         let _ = Session.create(
             email: dummyUserEmail(),
             secret: dummyUserSecret(),
-            callback: { (error, session) in
+            then: { (error, session) in
                 guard self.responsePassing(error, session, expectations) else {
                     return
                 }

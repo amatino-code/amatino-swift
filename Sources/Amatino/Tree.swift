@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class Tree: EntityObject {
+public final class Tree: EntityObject, Sequence, Denominated {
 
     internal init(
         _ entity: Entity,
@@ -30,20 +30,29 @@ public final class Tree: EntityObject {
     public var globalUnitId: Int? { get { return attributes.globalUnitId } }
     public var customUnitId: Int? { get { return attributes.customUnitId } }
     public var accounts: Array<Node> { get { return attributes.accounts } }
+    public var flatAccounts: Array<Node> {
+        get {
+            let recursedChildren = accounts.map { $0.flatChildren }
+            let flattenedAccounts = recursedChildren.reduce(
+                Array<Node>(),
+                { x, y in x + y }
+            )
+            return accounts + flattenedAccounts
+        }
+    }
     
     private var entityid: String { get { return attributes.entityId } }
-    
+        
     public static func retrieve(
-        entity: Entity,
-        globalUnit: GlobalUnit,
-        balanceTime: Date? = nil,
-        callback: @escaping (_: Error?, _: Tree?) -> Void
-        )  {
+        for entity: Entity,
+        denominatedIn denomination: Denomination,
+        balancingAt balanceTime: Date? = nil,
+        then callback: @escaping (_: Error?, _: Tree?) -> Void
+    )  {
         
         let arguments = Tree.RetrievalArguments(
-            balanceTime: balanceTime ?? Date(),
-            globalUnitId: globalUnit.id,
-            customUnitId: nil
+            denomination: denomination,
+            balanceTime: balanceTime ?? Date()
         )
         do {
             let _ = try Tree.executeRetrieval(
@@ -56,6 +65,26 @@ public final class Tree: EntityObject {
         }
         return
     }
+    
+    public static func retrieve(
+        for entity: Entity,
+        denominatedIn denomination: Denomination,
+        balancingAt balanceTime: Date? = nil,
+        then callback: @escaping (Result<Tree, Error>) -> Void
+    ) {
+        Tree.retrieve(
+            for: entity,
+            denominatedIn: denomination
+        ) { (error, tree) in
+            guard let tree = tree else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(tree))
+            return
+        }
+    }
+
     
     private static func executeRetrieval(
         _ entity: Entity,
@@ -128,6 +157,23 @@ public final class Tree: EntityObject {
             case customUnitId = "custom_unit_denomination"
         }
         
+        public init(
+            denomination: Denomination,
+            balanceTime: Date
+            ) {
+            if let customUnit = denomination as? CustomUnit {
+                self.customUnitId = customUnit.id
+                self.globalUnitId = nil
+            } else if let globalUnit = denomination as? GlobalUnit {
+                self.globalUnitId = globalUnit.id
+                self.customUnitId = nil
+            } else {
+                fatalError("Unknown Denomination type")
+            }
+            self.balanceTime = balanceTime
+            return
+        }
+        
         internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: JSONObjectKeys.self)
             try container.encode(balanceTime, forKey: .balanceTime)
@@ -136,6 +182,28 @@ public final class Tree: EntityObject {
             return
         }
         
+    }
+    
+    public func makeIterator() -> Iterator {
+        return Iterator(accounts)
+    }
+    
+    public struct Iterator: IteratorProtocol {
+        let accounts: [Node]
+        var index = 0
+        
+        init(_ accounts: [Node]) {
+            self.accounts = accounts
+        }
+        
+        public mutating func next() -> Node? {
+            guard index + 1 <= accounts.count else {
+                return nil
+            }
+            let nodeToReturn = accounts[index]
+            index += 1
+            return nodeToReturn
+        }
     }
     
 }

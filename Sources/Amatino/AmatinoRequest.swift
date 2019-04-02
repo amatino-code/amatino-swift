@@ -9,7 +9,7 @@ import Foundation
 
 internal class AmatinoRequest {
     
-    private let agent = "Amatino Swift 0.0.9"
+    private let agent = "Amatino Swift 0.0.11"
     private let apiEndpoint = "https://api.amatino.io"
     private static let apiSession = URLSession(
         configuration: URLSessionConfiguration.ephemeral
@@ -64,7 +64,7 @@ internal class AmatinoRequest {
                     return
                 }
                 guard let httpResponse = response as? HTTPURLResponse else {
-                    callback(AmatinoError(.inconsistentInternalState), nil)
+                    callback(AmatinoError(.inconsistentState), nil)
                     return
                 }
                 guard (200...299).contains(httpResponse.statusCode) else {
@@ -79,7 +79,7 @@ internal class AmatinoRequest {
                     case 500: error = AmatinoError(.genericServerError)
                     case 502, 503, 504: error = AmatinoError(.serviceDisruption)
                     default: error = AmatinoError(
-                        .inconsistentInternalState
+                        .inconsistentState
                         )
                     }
                     callback(error, nil)
@@ -101,7 +101,7 @@ internal class AmatinoRequest {
   
         
         let fullURL: String
-        
+
         if urlParameters != nil {
             fullURL = apiEndpoint + path + urlParameters!.paramString
         } else {
@@ -121,7 +121,7 @@ internal class AmatinoRequest {
         }
 
         guard targetURL != nil else {
-            throw AmatinoError(.inconsistentInternalState)
+            throw AmatinoError(.inconsistentState)
         }
 
         var request = URLRequest(url: targetURL!)

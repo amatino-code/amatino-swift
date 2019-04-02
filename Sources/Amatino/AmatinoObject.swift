@@ -19,7 +19,7 @@ extension AmatinoObject {
         let object: Self
         let objects: [Self]
         guard let dataToDecode: Data = data else {
-            callback(AmatinoError(.inconsistentInternalState), nil)
+            callback(AmatinoError(.inconsistentState), nil)
             return
         }
         do {
@@ -49,7 +49,7 @@ extension AmatinoObject {
         let decoder = JSONDecoder()
         let objects: [Self]
         guard let dataToDecode: Data = data else {
-            callback(AmatinoError(.inconsistentInternalState), nil)
+            callback(AmatinoError(.inconsistentState), nil)
             return
         }
         do {

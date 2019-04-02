@@ -33,7 +33,7 @@ internal class RequestData {
         }
         let dataString = String(data: encodedData, encoding: .utf8)
         guard dataString != nil else {
-            throw AmatinoError(.inconsistentInternalState)
+            throw AmatinoError(.inconsistentState)
         }
         encodedDataString = String(data: encodedData, encoding: .utf8)!
     }
@@ -46,7 +46,7 @@ internal class RequestData {
         encodedData = try encoder.encode(arrayData)
         let dataString = String(data: encodedData, encoding: .utf8)
         guard dataString != nil else {
-            throw AmatinoError(.inconsistentInternalState)
+            throw AmatinoError(.inconsistentState)
         }
         encodedDataString = dataString!
         return

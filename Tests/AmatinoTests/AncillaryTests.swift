@@ -19,7 +19,7 @@ class AncillaryTests: AmatinoTest {
         let _ = Session.create(
             email: dummyUserEmail(),
             secret: dummyUserSecret(),
-            callback: { (error, session) in
+            then: { (error, session) in
                 XCTAssertNil(error)
                 XCTAssertNotNil(session)
                 expectation.fulfill()
@@ -36,27 +36,22 @@ class AncillaryTests: AmatinoTest {
         let expectation = XCTestExpectation(description: "Retrieve units")
         
         func retrieveList(session: Session) {
-            do {
-                let _ = try GlobalUnitList.retrieve(
-                    session: session,
-                    callback: { (error, units) in
-                        guard error == nil else {
-                            XCTFail()
-                            expectation.fulfill()
-                            return
-                        }
-                        guard units != nil else {
-                            XCTFail()
-                            expectation.fulfill()
-                            return
-                        }
+            let _ = GlobalUnitList.retrieve(
+                authenticatedBy: session,
+                then: { (error, units) in
+                    guard error == nil else {
+                        XCTFail()
                         expectation.fulfill()
                         return
-                })
-            } catch {
-                XCTFail()
-                expectation.fulfill()
-            }
+                    }
+                    guard units != nil else {
+                        XCTFail()
+                        expectation.fulfill()
+                        return
+                    }
+                    expectation.fulfill()
+                    return
+            })
 
         }
         
@@ -66,7 +61,7 @@ class AncillaryTests: AmatinoTest {
             let _ = Session.create(
                 email: dummyUserEmail(),
                 secret: dummyUserSecret(),
-                callback: { (error, session) in
+                then: { (error, session) in
                     if let newSession: Session = session {
                         retrieveList(session: newSession)
                         return

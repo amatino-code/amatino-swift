@@ -10,7 +10,7 @@ import Foundation
 
 public class GlobalUnitError: AmatinoError {}
 
-public class GlobalUnit: AmatinoObject {
+public class GlobalUnit: AmatinoObject, Denomination {
     
     internal static let urlKey = "global_unit_id"
     internal static let path = "/units"
@@ -23,9 +23,9 @@ public class GlobalUnit: AmatinoObject {
     public let exponent: Int
     
     public static func retrieve(
-        unitId: Int,
-        session: Session,
-        callback: @escaping (_: Error?, _: GlobalUnit?) -> Void
+        withId unitId: Int,
+        authenticatedBy session: Session,
+        then callback: @escaping (_: Error?, _: GlobalUnit?) -> Void
     ) -> Void {
         
         let target = UrlTarget(integerValue: unitId, key: urlKey)
@@ -47,6 +47,24 @@ public class GlobalUnit: AmatinoObject {
         }
     }
     
+    public static func retrieve(
+        withId unitId: Int,
+        authenticatedBy session: Session,
+        then callback: @escaping (Result<GlobalUnit, Error>) -> Void
+    ) {
+        GlobalUnit.retrieve(
+            withId: unitId,
+            authenticatedBy: session
+        ) { (error, unit) in
+            guard let unit = unit else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(unit))
+            return
+        }
+    }
+
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)

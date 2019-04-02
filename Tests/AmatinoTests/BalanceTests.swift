@@ -14,20 +14,15 @@ class BalanceTests: DerivedObjectTest {
     func testRetrieveBalance() {
         let expectation = XCTestExpectation(description: "Retrieve balance")
         
-        do {
-            let _ = try Balance.retrieve(
-                entity: entity!,
-                account: cashAccount!) { (error, balance) in
-                    XCTAssertNil(error)
-                    XCTAssertNotNil(balance)
-                    expectation.fulfill()
-                    return
-            }
-        } catch {
-            XCTFail()
-            expectation.fulfill()
-            return
-        }
+        let _ = Balance.retrieve(
+            for: cashAccount!,
+            denominatedIn: nil,
+            then: { (error, balance) in
+                XCTAssertNil(error)
+                XCTAssertNotNil(balance)
+                expectation.fulfill()
+                return
+        })
 
         wait(for: [expectation], timeout: 5)
         return
@@ -36,19 +31,12 @@ class BalanceTests: DerivedObjectTest {
     func testRetrieveRecursiveBalance() {
         let expectation = XCTestExpectation(description: "Retrieve R. Balance")
         
-        do {
-            let _ = try RecursiveBalance.retrieve(
-                entity: entity!,
-                account: cashAccount!) { (error, balance) in
-                    XCTAssertNil(error)
-                    XCTAssertNotNil(balance)
-                    expectation.fulfill()
-                    return
-            }
-        } catch {
-            XCTFail()
-            expectation.fulfill()
-            return
+        let _ = RecursiveBalance.retrieve(
+            for: cashAccount!) { (error, balance) in
+                XCTAssertNil(error)
+                XCTAssertNotNil(balance)
+                expectation.fulfill()
+                return
         }
         
         wait(for: [expectation], timeout: 5)

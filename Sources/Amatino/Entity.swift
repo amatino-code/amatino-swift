@@ -27,7 +27,7 @@ public class Entity: Equatable {
     private let attributes: Entity.Attributes
     
     public var id: String { get { return attributes.id} }
-    public var ownerId: Int64 { get { return attributes.ownerId } }
+    public var ownerId: Int { get { return attributes.ownerId } }
     public var name: String { get { return attributes.name } }
     internal var permissionsGraph: [String:[String:[String:Bool]]]? {
         get { return attributes.permissionsGraph }
@@ -37,17 +37,14 @@ public class Entity: Equatable {
     public var active: Bool { get { return attributes.active} }
     
     public static func create(
-        session: Session,
-        name: String,
-        callback: @escaping (_: Error?, _: Entity?) -> Void
-        ) throws {
+        authenticatedBy session: Session,
+        withName name: String,
+        inRegion region: Region? = nil,
+        then callback: @escaping (_: Error?, _: Entity?) -> Void
+    ) {
         do {
             let arguments = try Entity.CreateArguments(name: name)
-            Entity.create(
-                session: session,
-                arguments: arguments,
-                callback: callback
-            )
+            Entity.create(session, arguments, callback)
         } catch {
             callback(error, nil)
             return
@@ -56,9 +53,28 @@ public class Entity: Equatable {
     }
     
     public static func create(
-        session: Session,
-        arguments: Entity.CreateArguments,
-        callback: @escaping (_: Error?, _: Entity?) -> Void
+        authenticatedBy session: Session,
+        withName name: String,
+        inRegion region: Region? = nil,
+        then callback: @escaping (Result<Entity, Error>) -> Void
+    ) {
+        Entity.create(
+            authenticatedBy: session,
+            withName: name,
+            inRegion: region
+        ) { (error, entity) in
+            guard let entity = entity else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(entity))
+        }
+    }
+    
+    private static func create(
+        _ session: Session,
+        _ arguments: Entity.CreateArguments,
+        _ callback: @escaping (_: Error?, _: Entity?) -> Void
         ) {
         do {
             let requestData = try RequestData(data: arguments)
@@ -84,28 +100,52 @@ public class Entity: Equatable {
     }
     
     public static func retrieve(
-        session: Session,
-        entityId: String,
-        callback: @escaping (_: Error?, _: Entity?) -> Void
-        ) throws {
+        authenticatedBy session: Session,
+        withId entityId: String,
+        then callback: @escaping (_: Error?, _: Entity?) -> Void
+    ) {
         let target = UrlTarget(forEntityId: entityId)
-        let _ = try AmatinoRequest(
-            path: Entity.path,
-            data: nil,
-            session: session,
-            urlParameters: UrlParameters(targetsOnly: [target]),
-            method: .GET,
-            callback: { (error, data) in
-                let _ = Entity.asyncInit(
-                    session: session,
-                    error: error,
-                    data: data,
-                    callback: callback
-                )
-        })
+        do {
+            let _ = try AmatinoRequest(
+                path: Entity.path,
+                data: nil,
+                session: session,
+                urlParameters: UrlParameters(targetsOnly: [target]),
+                method: .GET,
+                callback: { (error, data) in
+                    let _ = Entity.asyncInit(
+                        session: session,
+                        error: error,
+                        data: data,
+                        callback: callback
+                    )
+            })
+        } catch {
+            callback(error, nil)
+            return
+        }
     }
     
-    public func delete(_ callback: @escaping (Error?, Entity?) -> Void) {
+    public static func retrieve(
+        authenticatedBy session: Session,
+        withId entityId: String,
+        then callback: @escaping (Result<Entity, Error>) -> Void
+    ) {
+        Entity.retrieve(
+            authenticatedBy: session,
+            withId: entityId) { (error, entity) in
+                guard let entity = entity else {
+                    callback(
+                        .failure(error ?? AmatinoError(.inconsistentState))
+                    )
+                    return
+                }
+                callback(.success(entity))
+                return
+        }
+    }
+    
+    public func delete(then callback: @escaping (Error?, Entity?) -> Void) {
         let parameters = UrlParameters(singleEntity: self)
         do {
             let _ = try AmatinoRequest(
@@ -128,6 +168,19 @@ public class Entity: Equatable {
         }
 
         return
+    }
+    
+    public func delete(
+        then callback: @escaping (Result<Entity, Error>) -> Void
+    ) {
+        self.delete { (error, entity) in
+            guard let entity = entity else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(entity))
+            return
+        }
     }
     
     internal static func decodeMany(
@@ -153,7 +206,7 @@ public class Entity: Equatable {
 
         guard let data = data else {
             callback(
-                (error ?? AmatinoError(.inconsistentInternalState)),
+                (error ?? AmatinoError(.inconsistentState)),
                 nil
             ); return
         }
@@ -182,7 +235,7 @@ public class Entity: Equatable {
             session, error, data, { (error, entities) in
                 guard let entities = entities else {
                     callback(
-                        error ?? AmatinoError(.inconsistentInternalState),
+                        error ?? AmatinoError(.inconsistentState),
                         nil
                     ); return
                 }
@@ -202,7 +255,7 @@ public class Entity: Equatable {
     internal struct Attributes: Decodable {
         
         let id: String
-        let ownerId: Int64
+        let ownerId: Int
         let name: String
         internal let permissionsGraph: [String:[String:[String:Bool]]]?
         let description: String?
@@ -212,7 +265,7 @@ public class Entity: Equatable {
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: JSONObjectKeys.self)
             id = try container.decode(String.self, forKey: .id)
-            ownerId = try container.decode(Int64.self, forKey: .ownerId)
+            ownerId = try container.decode(Int.self, forKey: .ownerId)
             name = try container.decode(String.self, forKey: .name)
             permissionsGraph = try container.decode(
                 [String:[String:[String:Bool]]]?.self,
@@ -243,43 +296,16 @@ public class Entity: Equatable {
         
         let name: Name
         let description: Description
-        let region: Region?
         let regionId: Int?
         
         public init(
             name: String,
-            description: String,
-            region: Region?
-            ) throws {
-            
+            description: String? = nil,
+            region: Region? = nil
+        ) throws {
             self.name = try Name(name)
-            self.description = try Description(description)
-            self.region = region
+            self.description = try Description(description ?? "")
             regionId = region?.id
-            return
-        }
-        
-        public init(name: String, description: String) throws {
-            self.name = try Name(name)
-            self.description = try Description(description)
-            self.region = nil
-            self.regionId = nil
-            return
-        }
-        
-        public init(name: String, region: Region?) throws {
-            self.name = try Name(name)
-            self.description = Description()
-            self.region = region
-            self.regionId = region?.id
-            return
-        }
-        
-        public init(name: String) throws {
-            self.name = try Name(name)
-            self.region = nil
-            self.regionId = nil
-            self.description = Description()
             return
         }
         

@@ -18,10 +18,28 @@ public class Session {
     public let userId: Int
     public let sessionId: Int
     
+    public func delete(then callback: @escaping (Error?) -> Void) {
+        do {
+            let _ = try AmatinoRequest(
+                path: Session.apiPath,
+                data: nil,
+                session: self,
+                urlParameters: nil,
+                method: .DELETE,
+                callback: { (error, _) in
+                    callback(error)
+                }
+            )
+        } catch {
+            callback(error)
+            return
+        }
+    }
+
     public static func create(
         email: String,
         secret: String,
-        callback: @escaping (Error?, Session?) -> Void
+        then callback: @escaping (Error?, Session?) -> Void
         ) {
         
         let creationData = CreateArguments(secret: secret, email: email)
@@ -67,6 +85,21 @@ public class Session {
         return
     }
     
+    public static func create(
+        email: String,
+        secret: String,
+        then callback: @escaping (Result<Session, Error>) -> Void
+    ) {
+        Session.create(email: email, secret: secret) { (error, session) in
+            guard let session = session else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(session))
+            return
+        }
+    }
+    
     internal init (attributes: Attributes) {
         apiKey = attributes.apiKey
         userId = attributes.userId
@@ -94,7 +127,7 @@ public class Session {
         let dataToHash = timestamp + path + dataString
 
         guard let signature = AMSignature.sha512(apiKey, data:dataToHash) else {
-            throw AmatinoError(.inconsistentInternalState)
+            throw AmatinoError(.inconsistentState)
         }
 
         return signature

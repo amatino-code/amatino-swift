@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class Position: EntityObject {
+public final class Position: EntityObject, Denominated {
     
     internal init(
         _ entity: Entity,
@@ -43,59 +43,66 @@ public final class Position: EntityObject {
     private var entityId: String { get { return attributes.entityId } }
     
     public static func retrieve(
-        entity: Entity,
-        globalUnit: GlobalUnit,
-        balanceTime: Date? = nil,
-        depth: Int? = nil,
-        callback: @escaping (Error?, Position?) -> Void
-        ) throws {
+        for entity: Entity,
+        at balanceTime: Date? = nil,
+        denominatedIn denomination: Denomination,
+        toDepth depth: Int? = nil,
+        then callback: @escaping (Error?, Position?) -> Void
+    ) {
         let arguments = Position.RetrievalArguments(
+            denomination: denomination,
             balanceTime: balanceTime,
-            globalUnitId: globalUnit.id,
-            customUnitId: nil,
             depth: depth
         )
-        try Position.executeRetrieval(entity, arguments, callback)
+        Position.executeRetrieval(entity, arguments, callback)
         return
     }
     
     public static func retrieve(
-        entity: Entity,
-        customUnit: CustomUnit,
-        balanceTime: Date? = nil,
-        depth: Int? = nil,
-        callback: @escaping (Error?, Position?) -> Void
-        ) throws {
-        let arguments = Position.RetrievalArguments(
-            balanceTime: balanceTime,
-            globalUnitId: nil,
-            customUnitId: customUnit.id,
-            depth: depth
-        )
-        try Position.executeRetrieval(entity, arguments, callback)
-        return
+        for entity: Entity,
+        at balanceTime: Date? = nil,
+        denominatedIn denomination: Denomination,
+        toDepth depth: Int? = nil,
+        then callback: @escaping (Result<Position, Error>) -> Void
+    ) {
+        Position.retrieve(
+            for: entity,
+            at: balanceTime,
+            denominatedIn: denomination,
+            toDepth: depth
+        ) { (error, position) in
+            guard let position = position else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(position))
+            return
+        }
     }
     
     private static func executeRetrieval(
         _ entity: Entity,
         _ arguments: Position.RetrievalArguments,
         _ callback: @escaping (Error?, Position?) -> Void
-        ) throws {
-        
-        let _ = try AmatinoRequest(
-            path: Position.path,
-            data: try RequestData(data: arguments, overrideListing: true),
-            session: entity.session,
-            urlParameters: UrlParameters(singleEntity: entity),
-            method: .GET
-        ) { (error, data) in
-            let _ = asyncInitSolo(
-                entity,
-                callback,
-                error,
-                data
-            )
-            return
+        ) {
+        do {
+            let _ = try AmatinoRequest(
+                path: Position.path,
+                data: try RequestData(data: arguments, overrideListing: true),
+                session: entity.session,
+                urlParameters: UrlParameters(singleEntity: entity),
+                method: .GET
+            ) { (error, data) in
+                let _ = asyncInitSolo(
+                    entity,
+                    callback,
+                    error,
+                    data
+                )
+                return
+            }
+        } catch {
+            callback(error, nil)
         }
     }
     
@@ -167,6 +174,25 @@ public final class Position: EntityObject {
             try container.encode(globalUnitId, forKey: .globalUnitId)
             try container.encode(customUnitId, forKey: .customUnitId)
             try container.encode(depth, forKey: .depth)
+            return
+        }
+        
+        public init(
+            denomination: Denomination,
+            balanceTime: Date? = nil,
+            depth: Int? = nil
+        ) {
+            if let customUnit = denomination as? CustomUnit {
+                self.customUnitId = customUnit.id
+                self.globalUnitId = nil
+            } else if let globalUnit = denomination as? GlobalUnit {
+                self.globalUnitId = globalUnit.id
+                self.customUnitId = nil
+            } else {
+                fatalError("Unknown Denomination type")
+            }
+            self.balanceTime = balanceTime
+            self.depth = depth
             return
         }
         

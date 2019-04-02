@@ -8,7 +8,7 @@
 import Foundation
 
 public class PlaceholderNode: Node, Decodable {
-    
+
     public let accountId: Int
     public let name: String
     public let type: AccountType

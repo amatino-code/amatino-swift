@@ -24,6 +24,7 @@ public class EntityList: Sequence {
     public let page: Int
     public let numberOfPages: Int
     public let entities: [Entity]
+    public let generated: Date
     
     public var morePagesAvailable: Bool {
         if numberOfPages > page {
@@ -43,10 +44,10 @@ public class EntityList: Sequence {
     }
     
     public static func retrieve(
-        session: Session,
-        scope: EntityListScope,
-        page: Int = 1,
-        callback: @escaping (Error?, EntityList?) -> Void
+        authenticatedBy session: Session,
+        inScope scope: EntityListScope,
+        startingAtPage page: Int = 1,
+        then callback: @escaping (Error?, EntityList?) -> Void
         ) {
         
         let state = UrlTarget(stringValue: scope.rawValue, key: stateKey)
@@ -75,7 +76,29 @@ public class EntityList: Sequence {
         }
     }
     
-    public func nextPage(callback: @escaping (Error?, EntityList?) -> Void) {
+    public static func retrieve(
+        authenticatedBy session: Session,
+        inScope scope: EntityListScope,
+        startingAtPage page: Int = 1,
+        then callback: @escaping (Result<EntityList, Error>) -> Void
+    ) {
+        EntityList.retrieve(
+            authenticatedBy: session,
+            inScope: scope,
+            startingAtPage: page
+        ) { (error, list) in
+            guard let list = list else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(list))
+            return
+        }
+    }
+
+    public func retrieveNextPage(
+        then callback: @escaping (Error?, EntityList?) -> Void
+    ) {
 
         guard self.morePagesAvailable else { callback(nil, nil); return}
         
@@ -110,6 +133,19 @@ public class EntityList: Sequence {
             callback(error, nil); return
         }
     }
+    
+    public func retrieveNextPage(
+        then callback: @escaping (Result<EntityList, Error>) -> Void
+    ) {
+        self.retrieveNextPage { (error, list) in
+            guard let list = list else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(list))
+            return
+        }
+    }
 
     private static func asyncInit(
         _ session: Session,
@@ -118,7 +154,7 @@ public class EntityList: Sequence {
         _ callback: @escaping (Error?, EntityList?) -> Void
     ) {
         guard let dataToDecode: Data = data else {
-            callback(AmatinoError(.inconsistentInternalState), nil)
+            callback(AmatinoError(.inconsistentState), nil)
             return
         }
 
@@ -147,16 +183,23 @@ public class EntityList: Sequence {
         internal let page: Int
         internal let numberOfPages: Int
         internal let entityAttributes: [Entity.Attributes]
+        internal let generated: Date
         
         enum JSONObjectKeys: String, CodingKey {
             case numberOfPages = "number_of_pages"
-            case page = "page_number"
+            case generated = "generated_time"
+            case page = "page"
             case entities
         }
         
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: JSONObjectKeys.self)
             page = try container.decode(Int.self, forKey: .page)
+            let rawGenerated = try container.decode(
+                String.self,
+                forKey: .generated
+            )
+            generated = try AmatinoDate(fromString: rawGenerated).decodedDate
             numberOfPages = try container.decode(
                 Int.self,
                 forKey: .numberOfPages
@@ -174,6 +217,7 @@ public class EntityList: Sequence {
         self.numberOfPages = list.numberOfPages
         self.page = list.page
         self.scope = scope
+        self.generated = list.generated
         return
     }
     

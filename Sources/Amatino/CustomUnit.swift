@@ -6,7 +6,7 @@
 //
 import Foundation
 
-public final class CustomUnit: EntityObject  {
+public final class CustomUnit: EntityObject, Denomination  {
 
     internal init(
         _ entity: Entity,
@@ -40,14 +40,14 @@ public final class CustomUnit: EntityObject  {
     public var exponent: Int { get { return attributes.exponent} }
     
     public static func create(
-        entity: Entity,
+        in entity: Entity,
         code: String,
-        name: String,
+        named name: String,
         priority: Int,
         description: String,
         exponent: Int,
-        callback: @escaping (Error?, CustomUnit?) -> Void
-        ) {
+        then callback: @escaping (Error?, CustomUnit?) -> Void
+    ) {
         do {
             let arguments = try CustomUnit.CreationArguments(
                 code: code,
@@ -70,10 +70,30 @@ public final class CustomUnit: EntityObject  {
         }
     }
     
+    public static func create(
+        in entity: Entity,
+        code: String,
+        named name: String,
+        priority: Int,
+        description: String,
+        exponent: Int,
+        then callback: @escaping (Result<CustomUnit, Error>) -> Void
+    ) {
+        CustomUnit.create(
+        in: entity, code: code, named: name, priority: priority, description: description, exponent: exponent) { (error, unit) in
+            guard let unit = unit else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(unit))
+            return
+        }
+    }
+    
     public static func retrieve(
-        entity: Entity,
-        id: Int,
-        callback: @escaping (Error?, CustomUnit?) -> Void
+        from entity: Entity,
+        withId id: Int,
+        then callback: @escaping (Error?, CustomUnit?) -> Void
         ) {
         let target = UrlTarget(integerValue: id, key: urlKey)
         do {
@@ -97,10 +117,26 @@ public final class CustomUnit: EntityObject  {
         return
     }
     
+    public static func retrieve(
+        from entity: Entity,
+        withId id: Int,
+        then callback: @escaping (Result<CustomUnit, Error>) -> Void
+    ) {
+        CustomUnit.retrieve(
+        from: entity, withId: id) { (error, unit) in
+            guard let unit = unit else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(unit))
+            return
+        }
+    }
+
     public static func createMany(
-        entity: Entity,
+        in entity: Entity,
         arguments: [CustomUnit.CreationArguments],
-        callback: @escaping (Error?, [CustomUnit]?) -> Void
+        then callback: @escaping (Error?, [CustomUnit]?) -> Void
         ) {
         do {
             let _ = try AmatinoRequest(
@@ -122,13 +158,31 @@ public final class CustomUnit: EntityObject  {
         }
     }
     
+    public static func createMany(
+        in entity: Entity,
+        arguments: [CustomUnit.CreationArguments],
+        then callback: @escaping (Result<[CustomUnit], Error>) -> Void
+    ) {
+        CustomUnit.createMany(
+            in: entity,
+            arguments: arguments
+        ) { (error, units) in
+            guard let units = units else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(units))
+            return
+        }
+    }
+    
     public func update(
         code: String,
         name: String,
         priority: Int,
         description: String,
         exponent: Int,
-        callback: @escaping (Error?, CustomUnit?) -> Void
+        then callback: @escaping (Error?, CustomUnit?) -> Void
         ) {
         do {
             let arguments = try CustomUnit.UpdateArguments(
@@ -155,6 +209,30 @@ public final class CustomUnit: EntityObject  {
             })
         } catch {
             callback(error, nil)
+        }
+    }
+    
+    public func update(
+        code: String,
+        name: String,
+        priority: Int,
+        description: String,
+        exponent: Int,
+        then callback: @escaping (Result<CustomUnit, Error>) -> Void
+    ) {
+        self.update(
+            code: code,
+            name: name,
+            priority: priority,
+            description: description,
+            exponent: exponent
+        ) { (error, unit) in
+            guard let unit = unit else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(unit))
+            return
         }
     }
     

@@ -30,9 +30,9 @@ class AccountTests: AmatinoTest {
         
         func retrieveUnit(_: Session, _: Entity) {
             let _ = GlobalUnit.retrieve(
-                unitId: 5,
-                session: session!,
-                callback: { (error, globalUnit) in
+                withId: 5,
+                authenticatedBy: session!,
+                then: { (error, globalUnit) in
                     do {
                         let _ = try self.assertNil(error)
                         let _ = try self.assertNotNil(globalUnit)
@@ -47,31 +47,26 @@ class AccountTests: AmatinoTest {
         }
         
         func createEntity(_: Session) {
-            do {
-                let _ = try Entity.create(
-                    session: session!,
-                    name: "Amatino Swift test entity") { (error, entity) in
-                        do {
-                            let _ = try self.assertNil(error)
-                            let _ = try self.assertNotNil(entity)
-                        } catch {
-                            self.failWith(error, expectations)
-                            return
-                        }
-                        self.entity = entity
-                        entityExpectation.fulfill()
-                        retrieveUnit(self.session!, self.entity!)
-                }
-            } catch {
-                XCTFail()
-                entityExpectation.fulfill()
+            let _ = Entity.create(
+                authenticatedBy: session!,
+                withName: "Amatino Swift test entity") { (error, entity) in
+                    do {
+                        let _ = try self.assertNil(error)
+                        let _ = try self.assertNotNil(entity)
+                    } catch {
+                        self.failWith(error, expectations)
+                        return
+                    }
+                    self.entity = entity
+                    entityExpectation.fulfill()
+                    retrieveUnit(self.session!, self.entity!)
             }
         }
         
         let _ = Session.create(
             email: dummyUserEmail(),
             secret: dummyUserSecret(),
-            callback: { (error, session) in
+            then: { (error, session) in
                 do {
                     let _ = try self.assertNil(error)
                     let _ = try self.assertNotNil(session)
@@ -94,13 +89,13 @@ class AccountTests: AmatinoTest {
         let _ = try assertNotNil(unit)
         let expectation = XCTestExpectation(description: "Create Account")
         
-        let _ = try Account.create(
-            entity: entity!,
-            name: "Amatino Swift test account",
+        let _ = Account.create(
+            in: entity!,
+            named: "Amatino Swift test account",
             type: .asset,
             description: "Testing account creation",
-            globalUnit: unit!,
-            callback: { (error, account) in
+            denominatedIn: unit!,
+            then: { (error, account) in
                 do {
                     let _ = try self.assertNil(error)
                     let _ = try self.assertNotNil(account)
@@ -124,36 +119,10 @@ class AccountTests: AmatinoTest {
         let expectation = XCTestExpectation(description: "Retrieve Account")
         
         func retrieveAccount(_ accountId: Int) {
-            do {
-                let _ = try Account.retrieve(
-                    entity: entity!,
-                    accountId: accountId,
-                    callback: { (error, account) in
-                        do {
-                            let _ = try self.assertNil(error)
-                            let _ = try self.assertNotNil(account)
-                        } catch {
-                            self.failWith(error, [expectation])
-                            return
-                        }
-                        expectation.fulfill()
-                        return
-                })
-            } catch {
-                XCTFail()
-                expectation.fulfill()
-                return
-            }
-        }
-        
-        do {
-            let _ = try Account.create(
-                entity: entity!,
-                name: "Amatino Swift test account",
-                type: .asset,
-                description: "Testing account retrieval",
-                globalUnit: unit!,
-                callback: { (error, account) in
+            let _ = Account.retrieve(
+                from: entity!,
+                withId: accountId,
+                then: { (error, account) in
                     do {
                         let _ = try self.assertNil(error)
                         let _ = try self.assertNotNil(account)
@@ -161,15 +130,29 @@ class AccountTests: AmatinoTest {
                         self.failWith(error, [expectation])
                         return
                     }
-                    let _ = retrieveAccount(account!.id)
+                    expectation.fulfill()
                     return
             })
-        } catch {
-            XCTFail()
-            expectation.fulfill()
-            return
         }
         
+        let _ = Account.create(
+            in: entity!,
+            named: "Amatino Swift test account",
+            type: .asset,
+            description: "Testing account retrieval",
+            denominatedIn: unit!,
+            then: { (error, account) in
+                do {
+                    let _ = try self.assertNil(error)
+                    let _ = try self.assertNotNil(account)
+                } catch {
+                    self.failWith(error, [expectation])
+                    return
+                }
+                let _ = retrieveAccount(account!.id)
+                return
+        })
+
         wait(for: [expectation], timeout: 5)
         return
     }
@@ -181,59 +164,48 @@ class AccountTests: AmatinoTest {
         let replacementName = "Updated Account"
         
         func updateAccount(_ account: Account) {
-            do {
-                let _ = try account.update(
-                    name: "Updated Account",
-                    description: account.description,
-                    parent: nil,
-                    type: account.type,
-                    counterParty: nil,
-                    colour: nil,
-                    globalUnit: unit!,
-                    callback: { (error, account) in
-                        guard error == nil else {
-                            let cast = error as? AmatinoError
-                            print(cast?.description ?? "Unknown Error")
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        guard let updatedAccount: Account = account else {
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        guard updatedAccount.name == replacementName else {
-                            print("Account name: \(updatedAccount.name)")
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        expectation.fulfill(); return
-                })
-            } catch {
-                print((error as? AmatinoError)?.description ?? "Unknown Err.")
-                XCTFail(); expectation.fulfill(); return
-            }
+            let _ = account.update(
+                name: "Updated Account",
+                description: account.description,
+                parent: nil,
+                type: account.type,
+                colour: nil,
+                denomination: unit!,
+                then: { (error, account) in
+                    guard error == nil else {
+                        let cast = error as? AmatinoError
+                        print(cast?.description ?? "Unknown Error")
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard let updatedAccount: Account = account else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard updatedAccount.name == replacementName else {
+                        print("Account name: \(updatedAccount.name)")
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    expectation.fulfill(); return
+            })
         }
         
         func executeProcedure() {
-            do {
-                let _ = try Account.create(
-                    entity: entity!,
-                    name: "Amatino Swift test account",
-                    type: .asset,
-                    description: "Testing account update",
-                    globalUnit: unit!,
-                    callback: { (error, account) in
-                        do {
-                            let _ = try self.assertNil(error)
-                            let _ = try self.assertNotNil(account)
-                        } catch {
-                            self.failWith(error, [expectation])
-                            return
-                        }
-                        updateAccount(account!)
+            let _ = Account.create(
+                in: entity!,
+                named: "Amatino Swift test account",
+                type: .asset,
+                description: "Testing account update",
+                denominatedIn: unit!,
+                then: { (error, account) in
+                    do {
+                        let _ = try self.assertNil(error)
+                        let _ = try self.assertNotNil(account)
+                    } catch {
+                        self.failWith(error, [expectation])
                         return
-                })
-            } catch {
-                print((error as? AmatinoError)?.description ?? "Unknown Err.")
-                XCTFail(); expectation.fulfill(); return
-            }
+                    }
+                    updateAccount(account!)
+                    return
+            })
         }
         
         executeProcedure()
@@ -247,26 +219,22 @@ class AccountTests: AmatinoTest {
         let expectation = XCTestExpectation(description: "Delete Account")
         
         func lookupDeletedAccount(_ account: Account) {
-            do {
-                let _ = try Account.retrieve(
-                    entity: entity!,
-                    accountId: account.id,
-                    callback: { (error, account) in
-                        guard account == nil else {
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        guard let amError = error as? AmatinoError else {
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        guard amError.kind == .notFound else {
-                            XCTFail(); expectation.fulfill(); return
-                        }
-                        expectation.fulfill()
-                        return
-                })
-            } catch {
-                
-            }
+            let _ = Account.retrieve(
+                from: entity!,
+                withId: account.id,
+                then: { (error, account) in
+                    guard account == nil else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard let amError = error as? AmatinoError else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    guard amError.kind == .notFound else {
+                        XCTFail(); expectation.fulfill(); return
+                    }
+                    expectation.fulfill()
+                    return
+            })
         }
         
         func deleteAccount(_ cash: Account, _ bank: Account) {
@@ -293,19 +261,19 @@ class AccountTests: AmatinoTest {
                     name: "[Deletion] T1A Cash",
                     type: .asset,
                     description: "Test asset account for deletion",
-                    globalUnit: unit!
+                    denomination: unit!
                 )
                 let revenueAccountArguments = try Account.CreateArguments(
                     name: "[Deletion] T1B Bank",
                     type: .asset,
                     description: "Test bank account for deletion",
-                    globalUnit: unit!
+                    denomination: unit!
                 )
                 let arguments = [cashAccountArguments, revenueAccountArguments]
-                let _ = try Account.createMany(
-                    entity: entity!,
+                let _ = Account.createMany(
+                    in: entity!,
                     arguments: arguments,
-                    callback: { (error, accounts) in
+                    then: { (error, accounts) in
                         guard accounts != nil else {
                             XCTFail(); expectation.fulfill(); return
                         }
