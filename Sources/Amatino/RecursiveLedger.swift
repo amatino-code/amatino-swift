@@ -57,52 +57,68 @@ public class RecursiveLedger: Sequence {
         return loadedRows[index]
     }
     
-    public func nextPage(
-        callback: @escaping (Error?, [LedgerRow]?) -> Void
-        ) throws {
-        
-        let targetPage = latestLoadedPage + 1
-        let arguments = LedgerPage.RetrievalArguments(
-            account: account,
-            page: targetPage
-        )
-        let requestData = try RequestData(
-            data: arguments,
-            overrideListing: true
-        )
-        let urlParameters = UrlParameters(singleEntity: entity)
-        let _ = try AmatinoRequest(
-            path: RecursiveLedger.path,
-            data: requestData,
-            session: session,
-            urlParameters: urlParameters,
-            method: .GET,
-            callback: {(error, data) in
-                guard error == nil else {
-                    callback(error, nil)
+    public func retrieveNextPage(
+        then callback: @escaping (Error?, [LedgerRow]?) -> Void
+    ) {
+        do {
+            let targetPage = latestLoadedPage + 1
+            let arguments = LedgerPage.RetrievalArguments(
+                account: account,
+                page: targetPage
+            )
+            let requestData = try RequestData(
+                data: arguments,
+                overrideListing: true
+            )
+            let urlParameters = UrlParameters(singleEntity: entity)
+            let _ = try AmatinoRequest(
+                path: RecursiveLedger.path,
+                data: requestData,
+                session: session,
+                urlParameters: urlParameters,
+                method: .GET,
+                callback: {(error, data) in
+                    guard error == nil else {
+                        callback(error, nil)
+                        return
+                    }
+                    let decoder = JSONDecoder()
+                    let ledger: RecursiveLedgerPage
+                    guard let dataToDecode: Data = data else {
+                        let state = AmatinoError(.inconsistentState)
+                        callback(state, nil)
+                        return
+                    }
+                    do {
+                        ledger = try decoder.decode(
+                            RecursiveLedgerPage.self,
+                            from: dataToDecode
+                        )
+                    } catch {
+                        callback(error, nil)
+                        return
+                    }
+                    callback(nil, ledger.rows)
+                    self.latestLoadedPage += 1
                     return
-                }
-                let decoder = JSONDecoder()
-                let ledger: RecursiveLedgerPage
-                guard let dataToDecode: Data = data else {
-                    let state = AmatinoError(.inconsistentState)
-                    callback(state, nil)
-                    return
-                }
-                do {
-                    ledger = try decoder.decode(
-                        RecursiveLedgerPage.self,
-                        from: dataToDecode
-                    )
-                } catch {
-                    callback(error, nil)
-                    return
-                }
-                callback(nil, ledger.rows)
-                self.latestLoadedPage += 1
-                return
-        })
+            })
+        } catch {
+            callback(error, nil)
+        }
         return
+    }
+    
+    public func retrieveNextPage(
+        then callback: @escaping (Result<[LedgerRow], Error>) -> Void
+    ) {
+        self.retrieveNextPage { (error, rows) in
+            guard let rows = rows else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(rows))
+            return
+        }
     }
 
     public static func retrieve(

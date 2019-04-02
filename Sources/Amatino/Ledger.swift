@@ -63,8 +63,8 @@ public class Ledger: Sequence, Denominated {
         return loadedRows[index]
     }
     
-    public func nextPage(
-        callback: @escaping (Error?, [LedgerRow]?) -> Void
+    public func retrieveNextPage(
+        then callback: @escaping (Error?, [LedgerRow]?) -> Void
     ) {
         
         let targetPage = latestLoadedPage + 1
@@ -115,6 +115,19 @@ public class Ledger: Sequence, Denominated {
         return
     }
     
+    public func retrieveNextPage(
+        then callback: @escaping (Result<[LedgerRow], Error>) -> Void
+    ) {
+        self.retrieveNextPage { (error, rows) in
+            guard let rows = rows else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(rows))
+            return
+        }
+    }
+
     public static func retrieve(
         for account: Account,
         denominatedIn denomination: Denomination? = nil,
@@ -161,8 +174,6 @@ public class Ledger: Sequence, Denominated {
         }
         return
     }
-    
-
 
     private static func retrieve(
         _ account: AccountRepresentative,
