@@ -12,7 +12,7 @@ public final class Account: EntityObject, AccountRepresentative {
     internal init (
         _ entity: Entity,
         _ attributes: Account.Attributes
-        ) {
+    ) {
         self.entity = entity
         self.attributes = attributes
         return

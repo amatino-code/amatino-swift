@@ -7,44 +7,72 @@
 
 import Foundation
 
-class Balance: AccountBalance {
+public final class Balance: EntityObject {
+
+    internal init (
+        _ entity: Entity,
+        _ attributes: Balance.Attributes
+    ) {
+        self.entity = entity
+        self.attributes = attributes
+        return
+    }
+    
+    internal let attributes: Balance.Attributes
+    
+    public let entity: Entity
+    public var session: Session { get { return entity.session } }
+    
+    public var accountId: Int { get { return attributes.accountId } }
+    public var balanceTime: Date { get { return attributes.balanceTime } }
+    public var generatedTime: Date { get { return attributes.generatedTime } }
+    public var recursive: Bool { get { return attributes.recursive } }
+    public var globalUnitId: Int? { get { return attributes.globalUnitId } }
+    public var customUnitId: Int? { get { return attributes.customUnitId } }
+    public var magnitude: Decimal { get { return attributes.magnitude } }
     
     private static let path = "/accounts/balance"
-    
-    public static func retrieve(
-        entity: Entity,
-        account: Account,
-        callback: @escaping (Error?, Balance?) -> Void
-        ) {
-        let arguments = Balance.RetrieveArguments(account: account)
-        let _ = Balance.retrieve(
-            entity: entity,
-            arguments: arguments,
-            callback: callback
-        )
-        return
-    }
-    
-    public static func retrieve(
-        entity: Entity,
-        account: Account,
-        balanceTime: Date,
-        callback: @escaping (Error?, Balance?) -> Void
-        ) {
-        let arguments = Balance.RetrieveArguments(
-            account: account,
-            balanceTime: balanceTime
-        )
-        let _ = Balance.retrieve(
-            entity: entity,
-            arguments: arguments,
-            callback: callback
-        )
 
+    public static func retrieve(
+        for account: Account,
+        at time: Date? = nil,
+        denominatedIn denomination: Denomination? = nil,
+        then callback: @escaping (Error?, Balance?) -> Void
+    ) {
+        let arguments = Balance.RetrieveArguments(
+            accountId: account.id,
+            balanceTime: time,
+            denomination: denomination
+        )
+        let _ = Balance.retrieve(
+            entity: account.entity,
+            arguments: arguments,
+            callback: callback
+        )
         return
     }
     
     public static func retrieve(
+        for account: Account,
+        at time: Date? = nil,
+        denominatedIn denomination: Denomination? = nil,
+        then callback: @escaping (Result<Balance, Error>) -> Void
+    ) {
+        Balance.retrieve(
+            for: account,
+            at: time,
+            denominatedIn: denomination
+        ) { (error, balance) in
+            guard let balance = balance else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(balance))
+            return
+        }
+    }
+
+    private static func retrieve(
         entity: Entity,
         arguments: Balance.RetrieveArguments,
         callback: @escaping (Error?, Balance?) -> Void
@@ -59,7 +87,12 @@ class Balance: AccountBalance {
                 urlParameters: urlParameters,
                 method: .GET,
                 callback: { (error, data) in
-                    let _ = loadResponse(error, data, callback)
+                    let _ = asyncInit(
+                        entity,
+                        callback,
+                        error,
+                        data
+                    )
                     return
             })
         } catch {
@@ -69,23 +102,64 @@ class Balance: AccountBalance {
         return
     }
     
-    private static func loadResponse(
-        _ responseError: Error?,
-        _ data: Data?,
-        _ callback: (Error?, Balance?) -> Void
-        ) {
-        guard responseError == nil else {callback(responseError, nil); return}
-        let decoder = JSONDecoder()
-        let balance: Balance
-        do {
-            balance = try decoder.decode(
-                [Balance].self,
-                from: data!
-            )[0]
-            callback(nil, balance)
+    internal struct Attributes: Decodable {
+
+        public let accountId: Int
+        public let balanceTime: Date
+        public let generatedTime: Date
+        public let recursive: Bool
+        public let globalUnitId: Int?
+        public let customUnitId: Int?
+        public let magnitude: Decimal
+        
+        enum ObjectKeys: String, CodingKey {
+            case accountId = "account_id"
+            case balanceTime = "balance_time"
+            case generatedTime = "generated_time"
+            case globalUnitId = "global_unit_denomination"
+            case customUnitId = "custom_unit_denomination"
+            case recursive
+            case balance
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: ObjectKeys.self)
+            accountId = try container.decode(Int.self, forKey: .accountId)
+            let formatter = DateFormatter()
+            formatter.dateFormat = RequestData.dateStringFormat
+            let rawBalanceTime = try container.decode(
+                String.self,
+                forKey: .balanceTime
+            )
+            guard let bTime: Date = formatter.date(from: rawBalanceTime) else {
+                throw AmatinoError(.badResponse)
+            }
+            balanceTime = bTime
+            let rawGeneratedTime = try container.decode(
+                String.self,
+                forKey: .generatedTime
+            )
+            guard let gTime: Date = formatter.date(
+                from: rawGeneratedTime
+            ) else {
+                throw AmatinoError(.badResponse)
+            }
+            generatedTime = gTime
+            globalUnitId = try container.decode(
+                Int?.self,
+                forKey: .globalUnitId
+            )
+            customUnitId = try container.decode(
+                Int?.self,
+                forKey: .customUnitId
+            )
+            let rawMagnitude = try container.decode(
+                String.self,
+                forKey: .balance
+            )
+            magnitude = try Magnitude(fromString: rawMagnitude).decimal
+            recursive = try container.decode(Bool.self, forKey: .recursive)
             return
-        } catch {
-            callback(error, nil)
         }
     }
 
@@ -93,140 +167,49 @@ class Balance: AccountBalance {
         
         let accountId: Int
         let balanceTime: Date?
-        let globalUnitDenominationId: Int?
-        let customUnitDenominationId: Int?
-        
-        public init(account: Account) {
-            accountId = account.id
-            balanceTime = nil
-            globalUnitDenominationId = nil
-            customUnitDenominationId = nil
-            return
-        }
-        
-        public init(account: Account, balanceTime: Date) {
-            accountId = account.id
-            self.balanceTime = balanceTime
-            globalUnitDenominationId = nil
-            customUnitDenominationId = nil
-            return
-        }
-        
-        public init(account: Account, globalUnitDenomination: GlobalUnit) {
-            accountId = account.id
-            self.balanceTime = nil
-            globalUnitDenominationId = globalUnitDenomination.id
-            customUnitDenominationId = nil
-            return
-        }
-        
-        public init(
-            account: Account,
-            balanceTime: Date,
-            globalUnitDenomination: GlobalUnit
-            ) {
-            accountId = account.id
-            self.balanceTime = balanceTime
-            globalUnitDenominationId = globalUnitDenomination.id
-            customUnitDenominationId = nil
-            return
-        }
-        
-        public init(account: Account, globalUnitDenominationId: Int) {
-            accountId = account.id
-            self.balanceTime = nil
-            self.globalUnitDenominationId = globalUnitDenominationId
-            customUnitDenominationId = nil
-            return
-        }
-        
-        public init(
-            account: Account,
-            balanceTime: Date,
-            globalUnitDenominationId: Int
-            ) {
-            accountId = account.id
-            self.balanceTime = balanceTime
-            self.globalUnitDenominationId = globalUnitDenominationId
-            customUnitDenominationId = nil
-            return
-        }
-        
-        public init(accountId: Int) {
-            self.accountId = accountId
-            balanceTime = nil
-            globalUnitDenominationId = nil
-            customUnitDenominationId = nil
-            return
-        }
-        
-        public init(accountId: Int, balanceTime: Date) {
-            self.accountId = accountId
-            self.balanceTime = balanceTime
-            globalUnitDenominationId = nil
-            customUnitDenominationId = nil
-            return
-        }
-        
-        public init(accountId: Int, globalUnitDenomination: GlobalUnit) {
-            self.accountId = accountId
-            self.balanceTime = nil
-            globalUnitDenominationId = globalUnitDenomination.id
-            customUnitDenominationId = nil
-            return
-        }
+        let globalUnitId: Int?
+        let customUnitId: Int?
         
         public init(
             accountId: Int,
-            balanceTime: Date,
-            globalUnitDenomination: GlobalUnit
-            ) {
+            balanceTime: Date? = nil,
+            denomination: Denomination? = nil
+        ) {
             self.accountId = accountId
-            self.balanceTime = balanceTime
-            globalUnitDenominationId = globalUnitDenomination.id
-            customUnitDenominationId = nil
-        }
-        
-        public init(accountId: Int, globalUnitDenominationId: Int) {
-            self.accountId = accountId
-            self.balanceTime = nil
-            self.globalUnitDenominationId = globalUnitDenominationId
-            customUnitDenominationId = nil
-            return
-        }
-        
-        public init(
-            accountId: Int,
-            balanceTime: Date,
-            globalUnitDenominationId: Int
-            ) {
-            self.accountId = accountId
-            self.balanceTime = balanceTime
-            self.globalUnitDenominationId = globalUnitDenominationId
-            customUnitDenominationId = nil
+            self.balanceTime = balanceTime ?? Date()
+            if let customUnit = denomination as? CustomUnit {
+                self.customUnitId = customUnit.id
+                self.globalUnitId = nil
+            } else if let globalUnit = denomination as? GlobalUnit {
+                self.globalUnitId = globalUnit.id
+                self.customUnitId = nil
+            } else {
+                fatalError("Unknown Denomination type")
+            }
             return
         }
         
         public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
+            var container = encoder.container(keyedBy: ObjectKeys.self)
             try container.encode(accountId, forKey: .accountId)
             try container.encode(
-                customUnitDenominationId,
-                forKey: .customUnitDenominationId
+                customUnitId,
+                forKey: .customUnitId
             )
             try container.encode(
-                globalUnitDenominationId,
-                forKey: .globalUnitDenominationId
+                globalUnitId,
+                forKey: .globalUnitId
             )
             try container.encode(balanceTime, forKey: .balanceTime)
             return
         }
         
-        enum CodingKeys: String, CodingKey {
+        enum ObjectKeys: String, CodingKey {
             case accountId = "account_id"
-            case customUnitDenominationId = "custom_unit_denomination"
-            case globalUnitDenominationId = "global_unit_denomination"
+            case customUnitId = "custom_unit_denomination"
+            case globalUnitId = "global_unit_denomination"
             case balanceTime = "balance_time"
         }
+
     }
 }

@@ -39,8 +39,6 @@
 		1E20CFD920DB259400C129D0 /* AmatinoAlpha.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20CFD820DB259400C129D0 /* AmatinoAlpha.swift */; };
 		1E22B8CA20FF79CE00D60340 /* RecursiveBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E22B8C920FF79CE00D60340 /* RecursiveBalance.swift */; };
 		1E22B8CB20FF79CE00D60340 /* RecursiveBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E22B8C920FF79CE00D60340 /* RecursiveBalance.swift */; };
-		1E22B8D020FF7ACF00D60340 /* AccountBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E22B8CF20FF7ACF00D60340 /* AccountBalance.swift */; };
-		1E22B8D120FF7ACF00D60340 /* AccountBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E22B8CF20FF7ACF00D60340 /* AccountBalance.swift */; };
 		1E2356D6201D6A200008E123 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2356D5201D6A200008E123 /* Transaction.swift */; };
 		1E2356DC201E21430008E123 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2356DB201E21430008E123 /* Session.swift */; };
 		1E2B420620FED2F100537C17 /* GlobalUnitList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2B420520FED2F100537C17 /* GlobalUnitList.swift */; };
@@ -174,7 +172,6 @@
 		1E20CD9D2027F7EB00EA3D73 /* AmatinoObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmatinoObject.swift; sourceTree = "<group>"; };
 		1E20CFD820DB259400C129D0 /* AmatinoAlpha.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmatinoAlpha.swift; sourceTree = "<group>"; };
 		1E22B8C920FF79CE00D60340 /* RecursiveBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecursiveBalance.swift; sourceTree = "<group>"; };
-		1E22B8CF20FF7ACF00D60340 /* AccountBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountBalance.swift; sourceTree = "<group>"; };
 		1E2356D5201D6A200008E123 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		1E2356DB201E21430008E123 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		1E2B420520FED2F100537C17 /* GlobalUnitList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalUnitList.swift; sourceTree = "<group>"; };
@@ -327,7 +324,6 @@
 			isa = PBXGroup;
 			children = (
 				1EEA82AC20ECE0BC00C406FE /* Account.swift */,
-				1E22B8CF20FF7ACF00D60340 /* AccountBalance.swift */,
 				1E7CB61E224D3810003CA877 /* AccountRepresentative.swift */,
 				1EEA82AA20ECDD0500C406FE /* AccountType.swift */,
 				1E54D29D202D9D42004E8599 /* Amatino.h */,
@@ -536,7 +532,6 @@
 				1E58D59B20F2283700069961 /* HTTPMethod.swift in Sources */,
 				1E4D5E36210FFC6400303BD2 /* EntityObject.swift in Sources */,
 				1E58D5B220F2283700069961 /* PermissionsGraph.swift in Sources */,
-				1E22B8D120FF7ACF00D60340 /* AccountBalance.swift in Sources */,
 				1E2BBB7222527BA400FB302F /* Denominated.swift in Sources */,
 				1E58D5B020F2283700069961 /* User.swift in Sources */,
 				1E97CDE4210096B400C149A6 /* LedgerRow.swift in Sources */,
@@ -612,7 +607,6 @@
 				1EFDC630211571400042EBCA /* Performance.swift in Sources */,
 				1EEA829C20ECCB2D00C406FE /* RegionListAttributes.swift in Sources */,
 				1E4D5E35210FFC6400303BD2 /* EntityObject.swift in Sources */,
-				1E22B8D020FF7ACF00D60340 /* AccountBalance.swift in Sources */,
 				1E2356D6201D6A200008E123 /* Transaction.swift in Sources */,
 				1E2BBB7122527BA400FB302F /* Denominated.swift in Sources */,
 				1E97CDE3210096B400C149A6 /* LedgerRow.swift in Sources */,
