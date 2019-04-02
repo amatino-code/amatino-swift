@@ -6,23 +6,23 @@
 //
 import Foundation
 
-public class RecursiveLedger: Sequence {
+public class RecursiveLedger: Sequence, Denominated {
     
     internal static let path: String = "/accounts/ledger/recursive"
     
     private var loadedRows: [LedgerRow]
     private var latestLoadedPage: Int
     
-    private let session: Session
-    private let entity: Entity
+    internal let session: Session
+    internal let entity: Entity
     private let account: Account
     
     public let start: Date
     public let end: Date
     public let generated: Date
     public let recursive: Bool
-    public let globalUnitDenominationId: Int?
-    public let customUnitDenominationId: Int?
+    public let globalUnitId: Int?
+    public let customUnitId: Int?
     public let order: LedgerOrder
 
     public var count: Int {
@@ -240,8 +240,8 @@ public class RecursiveLedger: Sequence {
         end = attributes.end
         generated = attributes.generated
         recursive = attributes.recursive
-        globalUnitDenominationId = attributes.globalUnitDenominationId
-        customUnitDenominationId = attributes.customUnitDenominationId
+        globalUnitId = attributes.globalUnitDenominationId
+        customUnitId = attributes.customUnitDenominationId
         loadedRows = attributes.rows
         latestLoadedPage = attributes.page
         order = attributes.order
