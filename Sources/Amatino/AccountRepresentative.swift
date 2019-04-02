@@ -10,7 +10,7 @@ import Foundation
 
 public protocol AccountRepresentative {
     
-    var id: Int { get }
+    var accountId: Int { get }
     var name: String { get }
     var type: AccountType { get }
 

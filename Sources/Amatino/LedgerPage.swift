@@ -160,7 +160,7 @@ public class LedgerPage: AmatinoObject, Sequence {
             page: Int? = nil,
             inOrder order: LedgerOrder = .oldestFirst
         ) {
-            accountId = account.id
+            accountId = account.accountId
             self.start = start
             self.end = end
             self.page = page

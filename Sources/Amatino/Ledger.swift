@@ -174,6 +174,55 @@ public class Ledger: Sequence, Denominated {
         }
         return
     }
+    
+    public static func retrieve(
+        for account: AccountRepresentative,
+        in entity: Entity,
+        denominatedIn denomination: Denomination? = nil,
+        startingAt start: Date? = nil,
+        endingAt end: Date? = nil,
+        inOrder order: LedgerOrder = .oldestFirst,
+        then callback: @escaping (Error?, Ledger?) -> Void
+    ) {
+        let arguments = LedgerPage.RetrievalArguments(
+            account: account,
+            denominatedIn: denomination,
+            startingAt: start,
+            endingAt: end,
+            inOrder: order
+        )
+        Ledger.retrieve(
+            account, entity, arguments, callback
+        )
+        return
+    }
+    
+    public static func retrieve(
+        for account: AccountRepresentative,
+        in entity: Entity,
+        denominatedIn denomination: Denomination? = nil,
+        startingAt start: Date? = nil,
+        endingAt end: Date? = nil,
+        inOrder order: LedgerOrder = .oldestFirst,
+        then callback: @escaping (Result<Ledger, Error>) -> Void
+        ) {
+        
+        Ledger.retrieve(
+            for: account,
+            in: entity,
+            denominatedIn: denomination,
+            startingAt: start,
+            endingAt: end,
+            inOrder: order
+        ) { (error, ledger) in
+            guard let ledger = ledger else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(ledger))
+        }
+        return
+    }
 
     private static func retrieve(
         _ account: AccountRepresentative,

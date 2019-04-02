@@ -38,6 +38,8 @@ public final class Account: EntityObject, AccountRepresentative {
     public var description: String { get { return attributes.description } }
     public var colour: Colour { get { return attributes.colour} }
     
+    public var accountId: Int { get { return self.id } }
+    
     public static func create(
         in entity: Entity,
         named name: String,
@@ -684,7 +686,7 @@ public final class Account: EntityObject, AccountRepresentative {
             try container.encode(name, forKey: .name)
             try container.encode(description, forKey: .description)
             try container.encode(type, forKey: .type)
-            try container.encode(parent?.id, forKey: .parent)
+            try container.encode(parent?.accountId, forKey: .parent)
             try container.encode(globalUnitId, forKey: .globalUnitId)
             try container.encode(customUnitId, forKey: .customUnitId)
             try container.encode(
@@ -712,10 +714,19 @@ public final class Account: EntityObject, AccountRepresentative {
         
         public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: JSONObjectKeys.self)
-            try container.encode(target.id, forKey: .target)
-            try container.encode(entryReplacement.id, forKey: .entryReplacement)
-            try container.encode(deleteRecursively, forKey: .deleteRecursively)
-            try container.encode(newChildParent?.id, forKey: .newChildParent)
+            try container.encode(target.accountId, forKey: .target)
+            try container.encode(
+                entryReplacement.accountId,
+                forKey: .entryReplacement
+            )
+            try container.encode(
+                deleteRecursively,
+                forKey: .deleteRecursively
+            )
+            try container.encode(
+                newChildParent?.accountId,
+                forKey: .newChildParent
+            )
             return
         }
         
