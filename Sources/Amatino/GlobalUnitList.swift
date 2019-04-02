@@ -21,8 +21,8 @@ class GlobalUnitList: Sequence {
     }
     
     public static func retrieve(
-        session: Session,
-        callback: @escaping (Error?, GlobalUnitList?) -> Void
+        authenticatedBy session: Session,
+        then callback: @escaping (Error?, GlobalUnitList?) -> Void
         ) {
 
         do {
@@ -59,6 +59,20 @@ class GlobalUnitList: Sequence {
 
     }
     
+    public static func retrieve(
+        authenticatedBy session: Session,
+        then callback: @escaping (Result<GlobalUnitList, Error>) -> Void
+    ) {
+        GlobalUnitList.retrieve(authenticatedBy: session) { (error, list) in
+            guard let list = list else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(list))
+            return
+        }
+    }
+
     public func unitWith(code: String) -> GlobalUnit? {
         let searchTerm = code.uppercased()
         for unit in units {
