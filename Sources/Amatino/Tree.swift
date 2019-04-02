@@ -44,16 +44,15 @@ public final class Tree: EntityObject, Sequence {
     private var entityid: String { get { return attributes.entityId } }
         
     public static func retrieve(
-        entity: Entity,
-        globalUnit: GlobalUnit,
-        balanceTime: Date? = nil,
-        callback: @escaping (_: Error?, _: Tree?) -> Void
-        )  {
+        for entity: Entity,
+        denominatedIn denomination: Denomination,
+        balancingAt balanceTime: Date? = nil,
+        then callback: @escaping (_: Error?, _: Tree?) -> Void
+    )  {
         
         let arguments = Tree.RetrievalArguments(
-            balanceTime: balanceTime ?? Date(),
-            globalUnitId: globalUnit.id,
-            customUnitId: nil
+            denomination: denomination,
+            balanceTime: balanceTime ?? Date()
         )
         do {
             let _ = try Tree.executeRetrieval(
@@ -66,6 +65,26 @@ public final class Tree: EntityObject, Sequence {
         }
         return
     }
+    
+    public static func retrieve(
+        for entity: Entity,
+        denominatedIn denomination: Denomination,
+        balancingAt balanceTime: Date? = nil,
+        then callback: @escaping (Result<Tree, Error>) -> Void
+    ) {
+        Tree.retrieve(
+            for: entity,
+            denominatedIn: denomination
+        ) { (error, tree) in
+            guard let tree = tree else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(tree))
+            return
+        }
+    }
+
     
     private static func executeRetrieval(
         _ entity: Entity,
@@ -136,6 +155,23 @@ public final class Tree: EntityObject, Sequence {
             case balanceTime =  "balance_time"
             case globalUnitId = "global_unit_denomination"
             case customUnitId = "custom_unit_denomination"
+        }
+        
+        public init(
+            denomination: Denomination,
+            balanceTime: Date
+            ) {
+            if let customUnit = denomination as? CustomUnit {
+                self.customUnitId = customUnit.id
+                self.globalUnitId = nil
+            } else if let globalUnit = denomination as? GlobalUnit {
+                self.globalUnitId = globalUnit.id
+                self.customUnitId = nil
+            } else {
+                fatalError("Unknown Denomination type")
+            }
+            self.balanceTime = balanceTime
+            return
         }
         
         internal func encode(to encoder: Encoder) throws {
