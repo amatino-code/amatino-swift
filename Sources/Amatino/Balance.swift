@@ -30,7 +30,7 @@ public final class Balance: EntityObject, Denominated {
     public var globalUnitId: Int? { get { return attributes.globalUnitId } }
     public var customUnitId: Int? { get { return attributes.customUnitId } }
     public var magnitude: Decimal { get { return attributes.magnitude } }
-    
+
     private static let path = "/accounts/balance"
 
     public static func retrieve(
