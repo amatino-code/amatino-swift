@@ -7,7 +7,7 @@ Pod::Spec.new do |spec|
     spec.summary          = 'Amatino accounting Swift library for macOS & iOS'
     spec.source           = { :git => 'https://github.com/amatino-code/amatino-swift.git', :tag => spec.version }
     spec.module_name      = 'Amatino'
-    spec.swift_version    = '4.0'
+    spec.swift_version    = '5.0'
     spec.social_media_url = 'https://twitter.com/amatinoapi'
   
     spec.ios.deployment_target  = '10.3'
