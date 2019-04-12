@@ -71,6 +71,15 @@ public class Entity: Equatable {
         }
     }
     
+    public static func create(
+        authenticatedBy session: Session,
+        withArguments arguments: Entity.CreateArguments,
+        then callback: @escaping (_: Error?, _: Entity?) -> Void
+    ) {
+        Entity.create(session, arguments, callback)
+        return
+    }
+
     private static func create(
         _ session: Session,
         _ arguments: Entity.CreateArguments,
