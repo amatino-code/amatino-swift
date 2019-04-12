@@ -143,7 +143,7 @@ public final class Account: EntityObject, AccountRepresentative {
         }
     }
     
-    private static func create(
+    public static func create(
         in entity: Entity,
         arguments: Account.CreateArguments,
         then callback: @escaping (Error?, Account?) -> Void
