@@ -380,6 +380,13 @@ public final class Transaction: EntityObject, Denominated {
         }
     }
     
+    public func doesTouch(account: AccountRepresentative) -> Bool {
+        for entry in entries {
+            if entry.accountId == account.accountId { return true }
+        }
+        return false
+    }
+    
     internal struct Attributes: Decodable {
         
         let id: Int
