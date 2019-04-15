@@ -21,8 +21,8 @@ public class Ledger: Sequence, Denominated {
 
     internal let session: Session
     internal let entity: Entity
-    private let account: AccountRepresentative
-
+    
+    public let account: AccountRepresentative
     public let start: Date
     public let end: Date
     public let generated: Date
