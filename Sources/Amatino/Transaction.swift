@@ -120,6 +120,30 @@ public final class Transaction: EntityObject, Denominated {
             return
         }
     }
+    
+    public static func create(
+        in entity: Entity,
+        arguments: Transaction.CreateArguments,
+        then callback: @escaping (_: Error?, _: Transaction?) -> Void
+    ) {
+        executeCreate(entity, arguments, callback)
+        return
+    }
+    
+    public static func create(
+        in entity: Entity,
+        arguments: Transaction.CreateArguments,
+        then callback: @escaping (Result<Transaction, Error>) -> Void
+    ) {
+        executeCreate(entity, arguments) { (error, transaction) in
+            guard let transaction = transaction else {
+                callback(.failure(error ?? AmatinoError(.inconsistentState)))
+                return
+            }
+            callback(.success(transaction))
+        }
+        return
+    }
 
     private static func executeCreate(
         _ entity: Entity,
