@@ -152,6 +152,30 @@ public class LedgerPage: AmatinoObject, Sequence {
         let customUnitDenominationId: Int?
         let order: LedgerOrder
         
+        internal init(
+            account: AccountRepresentative,
+            customUnitId: Int? = nil,
+            globalUnitId: Int? = nil,
+            startingAt start: Date? = nil,
+            endingAt end: Date? = nil,
+            page: Int? = nil,
+            inOrder order: LedgerOrder = .oldestFirst
+        ) {
+            accountId = account.accountId
+            self.start = start
+            self.end = end
+            self.page = page
+            self.order = order
+            self.globalUnitDenominationId = globalUnitId
+            self.customUnitDenominationId = customUnitId
+            
+            guard !(globalUnitId != nil && customUnitId != nil) else {
+                fatalError("Two denominations supplied")
+            }
+    
+            return
+        }
+        
         public init (
             account: AccountRepresentative,
             denominatedIn denomination: Denomination? = nil,
