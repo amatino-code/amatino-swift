@@ -127,6 +127,21 @@ public class Ledger: Sequence, Denominated {
             return
         }
     }
+    
+    public func refresh(then callback: @escaping (Error?, Ledger?) -> Void) {
+        
+        let arguments = LedgerPage.RetrievalArguments(
+            account: self.account,
+            customUnitId: self.customUnitId,
+            globalUnitId: self.globalUnitId,
+            startingAt: self.start,
+            endingAt: self.end,
+            inOrder: self.order
+        )
+        
+        Ledger.retrieve(self.account, self.entity, arguments, callback)
+        return
+    }
 
     public static func retrieve(
         for account: Account,
@@ -224,7 +239,7 @@ public class Ledger: Sequence, Denominated {
         return
     }
 
-    private static func retrieve(
+    internal static func retrieve(
         _ account: AccountRepresentative,
         _ entity: Entity,
         _ arguments: LedgerPage.RetrievalArguments,
