@@ -32,12 +32,17 @@ public final class Tree: EntityObject, Sequence, Denominated {
     public var accounts: Array<Node> { get { return attributes.accounts } }
     public var flatAccounts: Array<Node> {
         get {
-            let recursedChildren = accounts.map { $0.flatChildren }
-            let flattenedAccounts = recursedChildren.reduce(
+            func recurse(_ node: Node) -> Array<Node> {
+                if node.children.count < 1 { return [node] }
+                return node.children.map( {recurse($0)} ).reduce(
+                    [node],
+                    {x, y in x + y}
+                )
+            }
+            return self.accounts.map( {recurse($0)} ).reduce(
                 Array<Node>(),
-                { x, y in x + y }
+                {x, y in x + y}
             )
-            return accounts + flattenedAccounts
         }
     }
     
