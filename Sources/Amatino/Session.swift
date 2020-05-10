@@ -114,17 +114,10 @@ public class Session {
         return
     }
 
-    internal func signature(path: String, data: RequestData?) throws -> String {
-
-        let dataString: String
-        if data == nil {
-            dataString = ""
-        } else {
-            dataString = data!.encodedDataString
-        }
+    internal func signature(path: String) throws -> String {
         
         let timestamp = String(describing: Int(Date().timeIntervalSince1970))
-        let dataToHash = timestamp + path + dataString
+        let dataToHash = timestamp + path
 
         guard let signature = AMSignature.sha512(apiKey, data:dataToHash) else {
             throw AmatinoError(.inconsistentState)

@@ -11,7 +11,7 @@ public class Entity: Equatable {
     internal init(
         _ session: Session,
         _ attributes: Entity.Attributes
-        ) {
+    ) {
         self.session = session
         self.attributes = attributes
         return
@@ -202,7 +202,7 @@ public class Entity: Equatable {
         _ error: Error?,
         _ data: Data?,
         _ callback: @escaping (Error?, [Entity]?) -> Void
-        ) {
+    ) {
 
         guard let data = data else {
             callback(
@@ -276,7 +276,7 @@ public class Entity: Equatable {
                 forKey: .description
             )
             regionId = try container.decode(Int.self, forKey: .regionId)
-            active = try container.decode(Bool.self, forKey: .active)
+            active = true
             return
         }
         
@@ -286,8 +286,7 @@ public class Entity: Equatable {
             case name
             case permissionsGraph = "permissions_graph"
             case description
-            case regionId = "storage_region"
-            case active
+            case regionId = "region_id"
         }
         
     }

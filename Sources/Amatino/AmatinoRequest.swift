@@ -9,8 +9,9 @@ import Foundation
 
 internal class AmatinoRequest {
     
-    private let agent = "Amatino Swift 0.0.11"
-    private let apiEndpoint = "https://api.amatino.io"
+    private let agent = "Amatino Swift 0.0.12"
+    //private let apiEndpoint = "https://api.amatino.io"
+    private let apiEndpoint = "http://127.0.0.1:5000"
     private static let apiSession = URLSession(
         configuration: URLSessionConfiguration.ephemeral
     )
@@ -137,7 +138,7 @@ internal class AmatinoRequest {
         }
         
         if session != nil {
-            let signature = try session!.signature(path: path, data: data)
+            let signature = try session!.signature(path: path)
             let sessionId = String(describing: session!.sessionId)
             request.setValue(signature, forHTTPHeaderField: signatureHeaderName)
             request.setValue(sessionId, forHTTPHeaderField: sessionIdHeaderName)
