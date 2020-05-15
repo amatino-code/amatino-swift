@@ -79,9 +79,9 @@ class EntityTests: AmatinoTest {
                 XCTAssertNotNil(entity)
                 createExpectation.fulfill()
                 print("Entity created")
-                let _ = EntityList.retrieve(
+                let _ = Entity.retrieveList(
                     authenticatedBy: session,
-                    inScope: .all,
+                    inState: .all,
                     then: { (error, list) in
                         guard error == nil else {
                             self.failWith(error!, expectations)
@@ -89,12 +89,12 @@ class EntityTests: AmatinoTest {
                         }
                         guard let list = list else {
                             listExpectation.fulfill()
-                            XCTFail("EntityList missing")
+                            XCTFail("Entity list missing")
                             return
                         }
                         guard list.count > 1 else {
                             listExpectation.fulfill()
-                            XCTFail("List length < 1")
+                            XCTFail("Entity list length < 1")
                             return
                         }
                         listExpectation.fulfill()

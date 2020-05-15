@@ -68,8 +68,6 @@
 		1E58D58F20F2283700069961 /* AMCryptography.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E54D29B202D9C97004E8599 /* AMCryptography.m */; };
 		1E58D59120F2283700069961 /* CustomUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC8792022A864005F94DF /* CustomUnit.swift */; };
 		1E58D59220F2283700069961 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC87B2022A8E2005F94DF /* Entity.swift */; };
-		1E58D59520F2283700069961 /* EntityList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829320ECCB2B00C406FE /* EntityList.swift */; };
-		1E58D59620F2283700069961 /* EntityListAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829120ECCB2B00C406FE /* EntityListAttributes.swift */; };
 		1E58D59820F2283700069961 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E0E6F3D20258654006AF115 /* Entry.swift */; };
 		1E58D59920F2283700069961 /* GlobalUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CD2D2023BD4B0031CB2B /* GlobalUnit.swift */; };
 		1E58D59B20F2283700069961 /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EADC87F2022B289005F94DF /* HTTPMethod.swift */; };
@@ -103,6 +101,12 @@
 		1E7B837B20EDA07800867B30 /* Colour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7B837A20EDA07800867B30 /* Colour.swift */; };
 		1E7CB620224D3811003CA877 /* AccountRepresentative.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7CB61E224D3810003CA877 /* AccountRepresentative.swift */; };
 		1E7CB621224D3811003CA877 /* AccountRepresentative.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7CB61E224D3810003CA877 /* AccountRepresentative.swift */; };
+		1E809122246E4E2D00340427 /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E809121246E4E2D00340427 /* State.swift */; };
+		1E809123246E4E2D00340427 /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E809121246E4E2D00340427 /* State.swift */; };
+		1E809124246E4E2D00340427 /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E809121246E4E2D00340427 /* State.swift */; };
+		1E809126246E528400340427 /* Disposition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E809125246E528400340427 /* Disposition.swift */; };
+		1E809127246E528400340427 /* Disposition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E809125246E528400340427 /* Disposition.swift */; };
+		1E809128246E528400340427 /* Disposition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E809125246E528400340427 /* Disposition.swift */; };
 		1E84DF72210BDEE300EA399D /* LedgerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84DF70210BDEE300EA399D /* LedgerPage.swift */; };
 		1E84DF73210BDEE300EA399D /* LedgerPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E84DF70210BDEE300EA399D /* LedgerPage.swift */; };
 		1E97CDE3210096B400C149A6 /* LedgerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E97CDE1210096B400C149A6 /* LedgerRow.swift */; };
@@ -117,8 +121,6 @@
 		1ED0974A202A9EEA005D9732 /* UrlTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED09749202A9EEA005D9732 /* UrlTarget.swift */; };
 		1EEA829B20ECCB2D00C406FE /* Region.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA828F20ECCB2B00C406FE /* Region.swift */; };
 		1EEA829C20ECCB2D00C406FE /* RegionListAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829020ECCB2B00C406FE /* RegionListAttributes.swift */; };
-		1EEA829D20ECCB2D00C406FE /* EntityListAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829120ECCB2B00C406FE /* EntityListAttributes.swift */; };
-		1EEA829F20ECCB2D00C406FE /* EntityList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829320ECCB2B00C406FE /* EntityList.swift */; };
 		1EEA82A220ECCB2D00C406FE /* UserAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829620ECCB2C00C406FE /* UserAttributes.swift */; };
 		1EEA82A420ECCB2D00C406FE /* RegionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829820ECCB2C00C406FE /* RegionList.swift */; };
 		1EEA82A520ECCB2D00C406FE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEA829920ECCB2D00C406FE /* User.swift */; };
@@ -197,6 +199,8 @@
 		1E7AC3AD21195EBE00102932 /* Price.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Price.swift; sourceTree = "<group>"; };
 		1E7B837A20EDA07800867B30 /* Colour.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colour.swift; sourceTree = "<group>"; };
 		1E7CB61E224D3810003CA877 /* AccountRepresentative.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountRepresentative.swift; sourceTree = "<group>"; };
+		1E809121246E4E2D00340427 /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
+		1E809125246E528400340427 /* Disposition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Disposition.swift; sourceTree = "<group>"; };
 		1E84DF70210BDEE300EA399D /* LedgerPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerPage.swift; sourceTree = "<group>"; };
 		1E97CDD92100947000C149A6 /* Ledger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger.swift; sourceTree = "<group>"; };
 		1E97CDE1210096B400C149A6 /* LedgerRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerRow.swift; sourceTree = "<group>"; };
@@ -210,8 +214,6 @@
 		1ED09749202A9EEA005D9732 /* UrlTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlTarget.swift; sourceTree = "<group>"; };
 		1EEA828F20ECCB2B00C406FE /* Region.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Region.swift; sourceTree = "<group>"; };
 		1EEA829020ECCB2B00C406FE /* RegionListAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegionListAttributes.swift; sourceTree = "<group>"; };
-		1EEA829120ECCB2B00C406FE /* EntityListAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityListAttributes.swift; sourceTree = "<group>"; };
-		1EEA829320ECCB2B00C406FE /* EntityList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityList.swift; sourceTree = "<group>"; };
 		1EEA829620ECCB2C00C406FE /* UserAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAttributes.swift; sourceTree = "<group>"; };
 		1EEA829820ECCB2C00C406FE /* RegionList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegionList.swift; sourceTree = "<group>"; };
 		1EEA829920ECCB2D00C406FE /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -338,8 +340,6 @@
 				1E7B837A20EDA07800867B30 /* Colour.swift */,
 				1EADC8792022A864005F94DF /* CustomUnit.swift */,
 				1EADC87B2022A8E2005F94DF /* Entity.swift */,
-				1EEA829320ECCB2B00C406FE /* EntityList.swift */,
-				1EEA829120ECCB2B00C406FE /* EntityListAttributes.swift */,
 				1E4D5E33210FFC6400303BD2 /* EntityObject.swift */,
 				1E0E6F3D20258654006AF115 /* Entry.swift */,
 				1E15CD2D2023BD4B0031CB2B /* GlobalUnit.swift */,
@@ -376,6 +376,8 @@
 				1E7AC3AD21195EBE00102932 /* Price.swift */,
 				1E2BBB6D22527A9600FB302F /* Denomination.swift */,
 				1E2BBB7022527BA400FB302F /* Denominated.swift */,
+				1E809121246E4E2D00340427 /* State.swift */,
+				1E809125246E528400340427 /* Disposition.swift */,
 			);
 			name = Amatino;
 			path = Sources/Amatino;
@@ -516,7 +518,6 @@
 				1EFDC62121152ED60042EBCA /* TreeNode.swift in Sources */,
 				1E7AC3B021195EBE00102932 /* Price.swift in Sources */,
 				1E58D59E20F2283700069961 /* Region.swift in Sources */,
-				1E58D59520F2283700069961 /* EntityList.swift in Sources */,
 				1E58D5A520F2283700069961 /* Side.swift in Sources */,
 				1E2B420720FED2F100537C17 /* GlobalUnitList.swift in Sources */,
 				1E58D5B320F2283700069961 /* Colour.swift in Sources */,
@@ -546,8 +547,8 @@
 				1E7CB621224D3811003CA877 /* AccountRepresentative.swift in Sources */,
 				1E59DA02210EEECD0080C4CD /* RecursiveLedger.swift in Sources */,
 				1E59D9FE210EEE090080C4CD /* RecursiveLedgerPage.swift in Sources */,
-				1E58D59620F2283700069961 /* EntityListAttributes.swift in Sources */,
 				1E58D5A620F2283700069961 /* Transaction.swift in Sources */,
+				1E809124246E4E2D00340427 /* State.swift in Sources */,
 				1EFDC62D21155ADC0042EBCA /* Tree.swift in Sources */,
 				1E58D59220F2283700069961 /* Entity.swift in Sources */,
 				1E16F5E6210AF196002F1B81 /* AmatinoDate.swift in Sources */,
@@ -564,6 +565,7 @@
 				1E58D58620F2283700069961 /* Account.swift in Sources */,
 				1E58D5AD20F2283700069961 /* UrlParameters.swift in Sources */,
 				1E2B420A20FF023400537C17 /* Balance.swift in Sources */,
+				1E809128246E528400340427 /* Disposition.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -576,12 +578,14 @@
 				1E2B420F20FF11EA00537C17 /* BalanceTests.swift in Sources */,
 				1E59D9F6210E8C010080C4CD /* PopulatedEntityTest.swift in Sources */,
 				1E15311020FC7C3100EB8CC6 /* AmatinoAlphaTests.swift in Sources */,
+				1E809126246E528400340427 /* Disposition.swift in Sources */,
 				1E2BBB6C225233FE00FB302F /* UserTests.swift in Sources */,
 				1E15311420FC801B00EB8CC6 /* AmatinoTest.swift in Sources */,
 				1E2B421120FF124B00537C17 /* DerivedObjectTest.swift in Sources */,
 				OBJ_27 /* AncillaryTests.swift in Sources */,
 				1E15311A20FCB25900EB8CC6 /* TransactionTests.swift in Sources */,
 				1E15311820FCAAA900EB8CC6 /* AccountTests.swift in Sources */,
+				1E809122246E4E2D00340427 /* State.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -624,6 +628,7 @@
 				1EEA82AB20ECDD0500C406FE /* AccountType.swift in Sources */,
 				1EADC87A2022A864005F94DF /* CustomUnit.swift in Sources */,
 				1E20CFD920DB259400C129D0 /* AmatinoAlpha.swift in Sources */,
+				1E809123246E4E2D00340427 /* State.swift in Sources */,
 				1EFDC62C21155ADC0042EBCA /* Tree.swift in Sources */,
 				1E16F5E5210AF196002F1B81 /* AmatinoDate.swift in Sources */,
 				1E84DF72210BDEE300EA399D /* LedgerPage.swift in Sources */,
@@ -635,11 +640,10 @@
 				1EEA829B20ECCB2D00C406FE /* Region.swift in Sources */,
 				1E2BBB6E22527A9600FB302F /* Denomination.swift in Sources */,
 				1EADC8882022B402005F94DF /* UrlParameters.swift in Sources */,
-				1EEA829D20ECCB2D00C406FE /* EntityListAttributes.swift in Sources */,
-				1EEA829F20ECCB2D00C406FE /* EntityList.swift in Sources */,
 				1E54D29C202D9C97004E8599 /* AMCryptography.m in Sources */,
 				1E2B420920FF023400537C17 /* Balance.swift in Sources */,
 				1EADC8862022B289005F94DF /* RequestData.swift in Sources */,
+				1E809127246E528400340427 /* Disposition.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -858,7 +862,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0.0.12;
+				CURRENT_PROJECT_VERSION = 0.0.13;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -969,7 +973,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 0.0.12;
+				CURRENT_PROJECT_VERSION = 0.0.13;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";

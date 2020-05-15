@@ -18,9 +18,12 @@ public class Entity: Equatable {
     }
 
     private static let path = "/entities"
+    private static let listPath = "/entities/list"
     
     public static let maxNameLength = 1024
     public static let maxDescriptionLength = 4096
+    public static let minNameSearchLength = 3;
+    public static let maxNameSearchLength = 64;
     
     public let session: Session
 
@@ -35,6 +38,9 @@ public class Entity: Equatable {
     public var description: String? { get { return attributes.description } }
     public var regionId: Int { get { return attributes.regionId } }
     public var active: Bool { get { return attributes.active} }
+    public var disposition: Disposition { get {
+        return attributes.disposition
+    } }
     
     public static func create(
         authenticatedBy session: Session,
@@ -145,6 +151,76 @@ public class Entity: Equatable {
         }
     }
     
+    public static func retrieveList(
+        authenticatedBy session: Session,
+        offset: Int = 0,
+        limit: Int = 10,
+        withName name: Optional<String> = nil,
+        inState state: State = State.all,
+        then callback: @escaping (_: Error?, _: Array<Entity>?) -> Void
+    ) {
+        
+        var targets = [
+            UrlTarget(integerValue: offset, key: "offset"),
+            UrlTarget(integerValue: limit, key: "limit"),
+            UrlTarget(stringValue: state.rawValue, key: "state")
+        ]
+        
+        if let name = name {
+            if name.count < Self.minNameSearchLength {
+                callback(AmatinoError(.constraintViolated), nil);
+                return;
+            }
+            if name.count > Self.maxNameSearchLength {
+                callback(AmatinoError(.constraintViolated), nil);
+                return;
+            }
+            targets.append(UrlTarget(stringValue: name, key: "name"))
+        }
+        
+        do {
+            let _ = try AmatinoRequest(
+                path: Self.listPath,
+                data: nil,
+                session: session,
+                urlParameters: UrlParameters(targetsOnly: targets),
+                method: .GET,
+                callback: { (error, data) in
+                    Entity.asyncInitMany(session, error, data, callback)
+                }
+            )
+        } catch { callback(error, nil); return; }
+        
+    }
+    
+    public static func retrieveList(
+        authenticatedBy session: Session,
+        offset: Int = 0,
+        limit: Int = 10,
+        withName name: Optional<String> = nil,
+        inState state: State = State.all,
+        then callback: @escaping (Result<Array<Entity>, Error>) -> Void
+    ) {
+        
+        Entity.retrieveList(
+            authenticatedBy: session,
+            offset: offset,
+            limit: limit,
+            withName: name,
+            inState: state
+        ) { (error, entities) in
+                guard let entities = entities else {
+                    callback(
+                        .failure(error ?? AmatinoError(.inconsistentState))
+                    );
+                    return;
+                }
+                callback(.success(entities));
+                return;
+        }
+        
+    }
+    
     public func delete(then callback: @escaping (Error?, Entity?) -> Void) {
         let parameters = UrlParameters(singleEntity: self)
         do {
@@ -229,7 +305,7 @@ public class Entity: Equatable {
         error: Error?,
         data: Data?,
         callback: @escaping (Error?, Entity?) -> Void
-        ) {
+    ) {
         
         let _ = Entity.asyncInitMany(
             session, error, data, { (error, entities) in
@@ -261,6 +337,7 @@ public class Entity: Equatable {
         let description: String?
         let regionId: Int
         let active: Bool
+        let disposition: Disposition
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: JSONObjectKeys.self)
@@ -277,6 +354,10 @@ public class Entity: Equatable {
             )
             regionId = try container.decode(Int.self, forKey: .regionId)
             active = true
+            disposition = try container.decode(
+                Disposition.self,
+                forKey: .disposition
+            )
             return
         }
         
@@ -287,6 +368,7 @@ public class Entity: Equatable {
             case permissionsGraph = "permissions_graph"
             case description
             case regionId = "region_id"
+            case disposition = "disposition"
         }
         
     }
